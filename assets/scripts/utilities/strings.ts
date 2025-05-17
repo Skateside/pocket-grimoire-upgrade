@@ -1,19 +1,43 @@
-import {
-    random,
-} from "./numbers";
-
 /**
- * Generates a random ID containing letters and numbers.
+ * Generates a random ID containing numbers and the full range of lowercase
+ * latin letters. Use this function to create an ID that needs to be unique but
+ * only read by machines - use {@link randomGameId} for a human-readable ID.
  *
  * @param prefix Optional prefix for the ID.
- * @returns A random id.
+ * @returns A machine-readable random ID.
  */
 export function randomId(prefix = "") {
 
-    const rand = random().toString(16).slice(2);
-    const date = Date.now().toString(36);
+    const rand = window.crypto.randomUUID()
+        .split("-")
+        .map((hex) => Number.parseInt(hex, 16).toString(36))
+        .join("");
+    
+    return `${prefix}${rand}`;
 
-    return `${prefix}${rand}${date}`;
+}
+
+/**
+ * Generates a random ID that is designed to be human-readable. It's a series
+ * of random numbers and lowercase letters (range a-f). Each group is of length
+ * `length` and there are `groups` number of groups. The string that joins them
+ * into a single string is `glue`. For a function that generates IDs that are
+ * more random (to be consumed by machines) use {@link randomId}.
+ * 
+ * @param settings Optional settings to create the ID.
+ * @param settings.groups Number of groups - defaults to `4`.
+ * @param settings.length Length of each group - defaults to `4`.
+ * @param settings.glue Glue to combine each group - defaults to `"-"`.
+ * @returns A human-readable random ID.
+ */
+export function randomGameId({ groups = 4, length = 4, glue = "-" } = {}) {
+
+    const random = window.crypto.randomUUID().replace(/\-/g, "");
+    const totalLength = groups * length;
+    const string = random.padEnd(totalLength, random).slice(0, totalLength);
+    const regexp = new RegExp(`\\w{1,${length}}`, "g");
+
+    return (string.match(regexp) || []).join(glue);
 
 }
 
