@@ -1,0 +1,66 @@
+{% extends "base.html.twig" %}
+
+{% block stylesheets %}
+    {# { vite_entry_link_tags('app') } #}
+{% endblock %}
+
+{% block body %}
+    <div id="game"></div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        if (!Object.groupBy) {
+
+            Object.groupBy = function (collection, getGroup) {
+
+                return Array.prototype.reduce.call(collection, function (grouped, item, index) {
+
+                    var group = getGroup(item, index);
+
+                    if (!grouped[group]) {
+                        grouped[group] = [];
+                    }
+
+                    grouped[group].push(item);
+
+                    return grouped;
+
+                }, Object.create(null));
+
+            };
+
+        }
+
+        if (!Object.hasOwn) {
+
+            Object.hasOwn = function (object, property) {
+                return Object.prototype.hasOwnProperty.call(object, property);
+            };
+
+        }
+    </script>
+    <script>
+        var PG = {
+            game: {
+                 5: { townsfolk: 3, outsider: 0, minion: 1, demon: 1 },
+                 6: { townsfolk: 3, outsider: 1, minion: 1, demon: 1 },
+                 7: { townsfolk: 5, outsider: 0, minion: 1, demon: 1 },
+                 8: { townsfolk: 5, outsider: 1, minion: 1, demon: 1 },
+                 9: { townsfolk: 5, outsider: 2, minion: 1, demon: 1 },
+                10: { townsfolk: 7, outsider: 0, minion: 2, demon: 1 },
+                11: { townsfolk: 7, outsider: 1, minion: 2, demon: 1 },
+                12: { townsfolk: 7, outsider: 2, minion: 2, demon: 1 },
+                13: { townsfolk: 9, outsider: 0, minion: 3, demon: 1 },
+                14: { townsfolk: 9, outsider: 1, minion: 3, demon: 1 },
+                15: { townsfolk: 9, outsider: 2, minion: 3, demon: 1 },
+            },
+            i18n: {},
+            infoTokens: [],
+            roles: [],
+            scripts: {},
+        };
+    </script>
+    {{ vite_entry_script_tags('data/en_GB') }}
+    {{ vite_entry_script_tags('main') }}
+{% endblock %}

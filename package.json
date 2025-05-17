@@ -1,0 +1,36 @@
+{
+    "name": "pocketgrimoire",
+    "version": "2.0.0",
+    "description": "A digital version of the grimoire for Blood on the Clocktower",
+    "author": {
+        "name": "Skateside"
+    },
+    "type": "module",
+    "scripts": {
+        "data": "node tools/process-data.js",
+        "dev": "vite",
+        "build": "vue-tsc -b && vite build",
+        "build__full": "vue-tsc -b && vite build && yarn run data",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "pinia": "^2.3.1",
+        "vue": "^3.5.13"
+    },
+    "devDependencies": {
+        "@types/node": "^22.15.2",
+        "@vitejs/plugin-vue": "^5.2.3",
+        "@vue/tsconfig": "^0.7.0",
+        "sass": "^1.84.0",
+        "typescript": "~5.7.2",
+        "vite": "^6.1.0",
+        "vite-plugin-symfony": "^8.0",
+        "vue-tsc": "^2.2.0"
+    },
+    "keywords": [
+        "blood",
+        "botc",
+        "clocktower",
+        "grimoire"
+    ]
+}
