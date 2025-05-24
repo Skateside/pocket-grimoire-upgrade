@@ -17,6 +17,7 @@ import {
     computed,
     inject,
     ref,
+    watch,
 } from "vue";
 import {
     UnrecognisedRoleError,
@@ -37,8 +38,12 @@ const useRoleStore = defineStore("role", () => {
         ...storage.get<IRoleScript>(STORAGE_KEY, []),
     ]);
 
+    watch(script, (value) => {
+        storage.set(STORAGE_KEY, value);
+    });
+
     const isMeta = (id: IRole["id"]) => id === "_meta";
-    // const isUniversal = (id: IRole["id"]) => id === "universalinfo";
+    const isUniversal = (id: IRole["id"]) => id === "universalinfo";
 
     const asRoleObject = (roleOrId: IRole | IRoleMeta | IRole["id"]) => {
         return (
@@ -70,6 +75,10 @@ const useRoleStore = defineStore("role", () => {
 
         });
 
+    };
+
+    const getMeta = (script: IRoleScript) => {
+        return script.find((item) => isMeta(asRoleObject(item).id)) as IRoleMeta | void;
     };
 
     const combineJinxes = (
@@ -178,9 +187,23 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const getIsUniversal = computed(() => (id: IRole["id"]) => {
-        return id === "universalinfo";
+    const getIsUniversal = computed(() => isUniversal);
+    const getScriptMeta = computed(() => getMeta);
+
+    const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
+        // TODO: Actually validate the script.
+        return true;
     });
+
+    const getScriptById = computed(() => (id: string) => scripts.value[id]);
+
+    const setScript = (scriptData: IRoleScript) => {
+        script.value = scriptData;
+    }
+
+    const setScriptById = (id: string) => {
+        setScript(scripts.value[id] || []);
+    };
 
     return {
         // State.
@@ -192,7 +215,12 @@ const useRoleStore = defineStore("role", () => {
         getImage,
         getReminders,
         getIsUniversal,
+        getScriptMeta,
+        getIsValidScript,
+        getScriptById,
         // Actions.
+        setScript,
+        setScriptById,
     };
 
 });

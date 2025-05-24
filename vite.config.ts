@@ -1,4 +1,3 @@
-// import { type Plugin, defineConfig } from "vite";
 import { defineConfig } from "vite";
 import symfonyPlugin from "vite-plugin-symfony";
 import vue from "@vitejs/plugin-vue"

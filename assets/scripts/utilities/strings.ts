@@ -25,12 +25,12 @@ export function randomId(prefix = "") {
  * more random (to be consumed by machines) use {@link randomId}.
  * 
  * @param settings Optional settings to create the ID.
- * @param settings.groups Number of groups - defaults to `4`.
- * @param settings.length Length of each group - defaults to `4`.
+ * @param settings.groups Number of groups - defaults to `3`.
+ * @param settings.length Length of each group - defaults to `3`.
  * @param settings.glue Glue to combine each group - defaults to `"-"`.
  * @returns A human-readable random ID.
  */
-export function randomGameId({ groups = 4, length = 4, glue = "-" } = {}) {
+export function randomGameId({ groups = 3, length = 3, glue = "-" } = {}) {
 
     const random = window.crypto.randomUUID().replace(/\-/g, "");
     const totalLength = groups * length;

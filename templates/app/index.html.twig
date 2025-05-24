@@ -42,6 +42,7 @@
     </script>
     <script>
         var PG = {
+            /*
             game: {
                  5: { townsfolk: 3, outsider: 0, minion: 1, demon: 1 },
                  6: { townsfolk: 3, outsider: 1, minion: 1, demon: 1 },
@@ -55,11 +56,15 @@
                 14: { townsfolk: 9, outsider: 1, minion: 3, demon: 1 },
                 15: { townsfolk: 9, outsider: 2, minion: 3, demon: 1 },
             },
+            */
             i18n: {},
             infoTokens: [],
             roles: [],
             scripts: {},
         };
+        var URLS = Object.freeze({
+            // TODO: url() for various lookups.
+        });
     </script>
     {{ vite_entry_script_tags('data/en_GB') }}
     {{ vite_entry_script_tags('main') }}

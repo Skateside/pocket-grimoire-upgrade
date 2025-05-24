@@ -1,5 +1,7 @@
 <template>
 
+    <SelectEdition />
+
     <!-- <div v-for="(roles, group) in roleGroups">
         <p>{{ group }}</p>
         <div class="list">
@@ -33,7 +35,7 @@
 
     <hr> -->
 
-    <Grimoire />
+    <!-- <Grimoire />
 
     <div class="list">
         <button
@@ -68,57 +70,25 @@
             infoTokenFormId = '';
             infoTokenFormText = '';
         }"
-    />
+    /> -->
 
 </template>
 
 <script lang="ts" setup>
+import SelectEdition from './components/SelectEdition.vue';
+/*
 import type {
     IInfoToken,
-    // IRole,
 } from "./scripts/types/data";
 import {
-    // computed,
     ref,
     watch,
 } from 'vue';
 import useInfoTokenStore from "./scripts/store/infoToken";
-// import useRoleStore from "./scripts/store/role";
-// import RoleToken from './components/RoleToken.vue';
-// import ReminderToken from './components/ReminderToken.vue';
 import Dialog from './components/Dialog.vue';
 import InfoToken from './components/InfoToken.vue';
 import InfoTokenForm from "./components/InfoTokenForm.vue";
 import Grimoire from "./components/Grimoire.vue";
-
-// const roleStore = useRoleStore();
-// const roleGroups = computed(() => {
-
-//     const groups: Record<string, IRole[]> = {
-//         townsfolk: [],
-//         outsider: [],
-//         minion: [],
-//         demon: [],
-//         traveller: [],
-//         fabled: [],
-//         special: [],
-//     };
-
-//     roleStore.roles.forEach((role) => {
-
-//         if (role.edition === "special") {
-//             groups.special.push(role);
-//         } else {
-//             groups[role.team].push(role);
-//         }
-
-//     });
-
-//     return groups;
-
-// });
-// const roleId = ref("");
-// const reminders = computed(() => roleStore.getReminders(roleId.value));
 
 const infoTokenDialog = ref<typeof Dialog | null>(null);
 const infoTokenStore = useInfoTokenStore();
@@ -143,12 +113,15 @@ const updateInfoToken = (id: IInfoToken["id"], text: IInfoToken["text"]) => {
 const deleteInfoToken = (id: IInfoToken["id"]) => {
     infoTokenStore.remove(id);
 };
+*/
 </script>
 
 <style lang="scss" scoped>
+/*
 .list {
     display: flex;
     flex-flow: row wrap;
     gap: 0.25em;
 }
+*/
 </style>
