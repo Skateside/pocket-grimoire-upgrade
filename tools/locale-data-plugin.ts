@@ -1,6 +1,17 @@
-import type { Plugin } from "vite";
-import type { IInfoToken, IRole, IRoleJinx, IRoleMeta } from "../assets/scripts/types/data";
-import { promises as fs } from "fs";
+import type {
+    Plugin,
+} from "vite";
+import type {
+    IInfoToken,
+    IRole,
+    IRoleReminder,
+    IRoleReminderFlag,
+    IRoleJinx,
+    IRoleMeta,
+} from "../assets/scripts/types/data";
+import {
+    promises as fs,
+} from "fs";
 import path from "path";
 
 // Utility types.
@@ -37,6 +48,7 @@ type ILocaleDataOptionsReal = {
 type IRawRoleImages = {
     id: IRole["id"],
     image: IRole["image"],
+    reminders?: string[],
 }[];
 type IRawScripts = Record<string, (IRoleMeta | IRole["id"])[]>;
 type ILocaleJinxes = {
@@ -194,30 +206,127 @@ const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
 
         Object.assign(
             role,
-            (images as IRawRoleImages).find(({ id }) => id === role.id) || {},
             (localeRoles as IRole[]).find(({ id }) => id === role.id) || {},
         );
 
-        if (!role.jinxes?.length) {
-            return;
-        }
-
-        const jinxes = (localeJinxes as ILocaleJinxes).filter(({ target }) => target === role.id);
-
-        if (!jinxes) {
-            return;
-        }
-
-        role.jinxes = role.jinxes.map(({ id, reason }) => ({
-            id,
-            reason: jinxes.find(({ trick }) => trick === id)?.reason || reason,
-        }));
+        fixRoleJinxes(role, localeJinxes);
+        fixRoleReminders(role);
+        fixRoleImages(role, images);
 
     });
 
     resolve(roles.sort((a, b) => a.id.localeCompare(b.id)));
 
 }));
+
+const fixRoleJinxes = (role: IRole, localeJinxes: ILocaleJinxes) => {
+
+    if (!role.jinxes?.length) {
+        return;
+    }
+
+    const jinxes = localeJinxes.filter(({ target }) => target === role.id);
+
+    if (!jinxes) {
+        return;
+    }
+
+    role.jinxes = role.jinxes.map(({ id, reason }) => ({
+        id,
+        reason: jinxes.find(({ trick }) => trick === id)?.reason || reason,
+    }));
+
+};
+
+// This should be a temporary fix - eventually, the data itself should be
+// corrected to use the new format.
+const fixRoleReminders = (role: IRole) => {
+
+    const { reminders, remindersGlobal } = role as {
+        reminders?: IRoleReminder[] | string[],
+        remindersGlobal?: string[],
+    };
+
+    if (
+        (
+            reminders?.length
+            && reminders.some((reminder) => typeof reminder === "string")
+        )
+        || remindersGlobal?.length
+    ) {
+
+        role.reminders = [];
+
+        // Regular reminders are just that.
+        for (const [_index, name] of Object.entries(reminders || [])) {
+
+            const reminder: IRoleReminder = (
+                typeof name === "string"
+                ? { name }
+                : name
+            );
+            const found = role.reminders.find(({ name }) => reminder.name === name);
+
+            if (found) {
+
+                if (!found.count) {
+                    found.count = 1;
+                }
+
+                found.count += 1;
+
+            } else {
+                role.reminders.push(reminder);
+            }
+
+        }
+
+        // Global reminders need the global flag.
+        // If the role has a reveal/replace-character special, the first global
+        // reminder needs the "role" flag.
+        for (const [index, name] of Object.entries(remindersGlobal || [])) {
+
+            const flags: IRoleReminderFlag[] = ["global"];
+            const replace = role.special?.find(({ type, name }) => {
+                return type === "reveal" && name === "replace-character";
+            });
+
+            if (replace && Number(index) === 0) {
+                flags.push("role");
+            }
+
+            const reminder: IRoleReminder = { name, flags };
+            role.reminders.push(reminder);
+
+        }
+
+    }
+
+    delete (role as any).remindersGlobal;
+
+};
+
+const fixRoleImages = (role: IRole, images: IRawRoleImages) => {
+
+    const roleImages = (images as IRawRoleImages).find(({ id }) => id === role.id);
+
+    if (!roleImages) {
+        return;
+    }
+
+    role.image = roleImages.image;
+
+    roleImages.reminders?.forEach((image, index) => {
+
+        if ((role.reminders?.length || -1) < index || !image) {
+            return;
+        }
+
+        (role.reminders![index] as any).image = image;
+
+    });
+
+};
 
 const createScripts = (scriptFiles: string[]) => processFiles(scriptFiles).then(([
     rawScripts,

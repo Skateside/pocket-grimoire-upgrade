@@ -1,7 +1,7 @@
 <template>
 
     <template v-if="!role || !reminder">
-        <p><strong>Warning:</strong> Either no role or no reminder at index {{ props.index }}.</p>
+        <p><strong>Warning:</strong> Either no role or no reminder.</p>
     </template>
     <template v-else>
         
@@ -12,13 +12,13 @@
             <svg viewBox="0 0 150 150" class="reminder-token__text">
                 <path d="M 13 75 C 13 -10, 138 -10, 138 75" id="curve-top" fill="transparent"></path>
                 <text width="150" x="66.6%" text-anchor="middle" class="reminder-token__name" dominant-baseline="hanging">
-                    <textPath xlink:href="#curve-top" style="fill: currentColor;">{{ store.getIsUniversal(props.id) ? "" : role.name }}</textPath>
+                    <textPath xlink:href="#curve-top" style="fill: currentColor;">{{ store.getIsUniversal(props.role) ? "" : role.name }}</textPath>
                 </text>
             </svg>
             <svg viewBox="0 0 150 150" class="reminder-token__text">
                 <path d="M 13 75 C 13 160, 138 160, 138 75" id="curve-base" fill="transparent"></path>
                 <text width="150" x="66.6%" text-anchor="middle" class="reminder-token__name">
-                    <textPath xlink:href="#curve-base" style="fill: currentColor;">{{ reminder }}</textPath>
+                    <textPath xlink:href="#curve-base" style="fill: currentColor;">{{ reminder.name }}</textPath>
                 </text>
             </svg>
         </span>
@@ -28,48 +28,18 @@
 </template>
 
 <script setup lang="ts">
-import type { IRole } from "../scripts/types/data";
+import type { IRole, IRoleReminder } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
-    id: IRole["id"],
-    index: number,
+    role: IRole,
+    reminder: IRoleReminder,
     alignment?: 0 | 1 | 2,
-    isGlobal?: boolean,
 }>();
 
 const store = useRoleStore();
-const role = computed(() => store.getById(props.id));
-const image = computed(() => {
-
-    // The special "Universal Info" role handles images in a unique way:
-    // - The 1st image is a transparent gif and should be used in all situations
-    //   except the next 2:
-    // - The 2nd image is a generic good image to be used for global reminder 1.
-    // - The 3rd image is a generic evil image to be used for global reminder 2.
-    if (store.getIsUniversal(props.id) && props.isGlobal) {
-
-        const images = role.value!.image as string[];
-
-        if (props.index < 2) {
-            return images[props.index + 1];
-        }
-
-        return images[0];
-
-    }
-
-    return store.getImage(props.id, props.alignment);
-
-});
-const reminder = computed(() => {
-    return store.getReminders(props.id)[
-        props.isGlobal
-        ? "global"
-        : "local"    
-    ][props.index];
-});
+const image = computed(() => store.getReminderImage(props.reminder, props.role, props.alignment));
 </script>
 
 <style lang="scss" scoped>

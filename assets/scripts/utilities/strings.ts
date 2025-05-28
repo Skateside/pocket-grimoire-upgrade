@@ -140,3 +140,13 @@ export function supplant(
     });
 
 }
+
+/**
+ * Splits the given string up into a collection of words.
+ * 
+ * @param words String to break up into words.
+ * @returns Array of words.
+ */
+export function words<TWord = string>(words: string) {
+    return String(words).trim().split(/\s+/) as TWord[];
+}

@@ -633,8 +633,8 @@
     },
     {
         "id": "universalinfo",
-        "image": [
-            "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+        "image": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
+        "reminders": [
             "/assets/icons/good.svg",
             "/assets/icons/evil.svg"
         ]

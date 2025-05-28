@@ -2,6 +2,7 @@ import type {
     IRole,
     IRoleJinx,
     IRoleMeta,
+    IRoleReminder,
     IRoleScript,
 } from "../types/data";
 import type {
@@ -28,6 +29,7 @@ const useRoleStore = defineStore("role", () => {
     const storage = inject<IStorage>("storage")!;
 
     // TODO: Add functionality for augments.
+    // TODO: Work out how to augment the reminders.
 
     const STORAGE_KEY = "script";
     const roles = ref<IRole[]>(structuredClone(window.PG.roles));
@@ -140,13 +142,13 @@ const useRoleStore = defineStore("role", () => {
             data.jinxes = jinxes;
         }
 
+        // TODO: combineReminders()
+
         return data;
 
     });
 
-    const getImage = computed(() => (id: IRole["id"], index: 0 | 1 | 2 = 0) => {
-
-        const role = getById.value(id);
+    const getImage = computed(() => (role: IRole, index: 0 | 1 | 2 = 0) => {
 
         if (!role || !role.image) {
             return "";
@@ -160,34 +162,29 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const getReminders = computed(() => (id: IRole["id"]) => {
+    // const getReminders = computed(() => (role: IRole) => {
+    //     return role.reminders || [];
+    // });
 
-        const role = getById.value(id);
-        const reminders: {
-            local: NonNullable<IRole["reminders"]>,
-            global: NonNullable<IRole["remindersGlobal"]>,
-        } = {
-            local: [],
-            global: [],
-        };
+    const getReminderImage = computed(() => (reminder: IRoleReminder, role: IRole, index: 0 | 1 | 2 = 0) => {
 
         if (!role) {
-            return reminders;
+            return "";
         }
 
-        if (role.reminders) {
-            reminders.local.push(...role.reminders);
+        if ((reminder as any).image) {
+            return (reminder as any).image as string;
         }
 
-        if (role.remindersGlobal) {
-            reminders.global.push(...role.remindersGlobal);
+        if (Array.isArray(role.image)) {
+            return role.image[index];
         }
 
-        return reminders;
+        return role.image || "";
 
     });
 
-    const getIsUniversal = computed(() => isUniversal);
+    const getIsUniversal = computed(() => (role: IRole) => isUniversal(role.id));
     const getScriptMeta = computed(() => getMeta);
 
     const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
@@ -213,7 +210,8 @@ const useRoleStore = defineStore("role", () => {
         // Getters.
         getById,
         getImage,
-        getReminders,
+        // getReminders,
+        getReminderImage,
         getIsUniversal,
         getScriptMeta,
         getIsValidScript,

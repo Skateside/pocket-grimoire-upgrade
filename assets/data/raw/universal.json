@@ -3,9 +3,13 @@
         "id": "universalinfo",
         "name": "Universal information",
         "edition": "special",
-        "remindersGlobal": [
-            "Good team",
-            "Evil team"
+        "reminders": [
+            {
+                "name": "Good team"
+            },
+            {
+                "name": "Evil team"
+            }
         ],
         "firstNight": 0,
         "otherNight": 0

@@ -1,39 +1,7 @@
 <template>
 
     <SelectEdition />
-
-    <!-- <div v-for="(roles, group) in roleGroups">
-        <p>{{ group }}</p>
-        <div class="list">
-            <button
-                v-for="role in roles"
-                :key="role.id"
-                type="button"
-                @click="() => roleId = role.id"
-            >{{ role.name }}</button>
-        </div>
-    </div>
-    <p><button type="button" @click="() => roleId = ''"><em>- clear -</em></button></p>
-
-    <div v-if="roleId" class="list">
-        <div>
-            <RoleToken :id="roleId" />
-        </div>
-        <div
-            v-for="(_reminder, index) in reminders.local"
-            :key="`reminder-${roleId}-${index}`"
-        >
-            <ReminderToken :id="roleId" :index="index" />
-        </div>
-        <div
-            v-for="(_reminder, index) in reminders.global"
-            :key="`reminder-global-${roleId}-${index}`"
-        >
-            <ReminderToken :id="roleId" :index="index" :is-global="true" />
-        </div>
-    </div>
-
-    <hr> -->
+    <RoleList />
 
     <!-- <Grimoire />
 
@@ -75,7 +43,8 @@
 </template>
 
 <script lang="ts" setup>
-import SelectEdition from './components/SelectEdition.vue';
+import SelectEdition from "./components/SelectEdition.vue";
+import RoleList from "./components/RoleList.vue";
 /*
 import type {
     IInfoToken,

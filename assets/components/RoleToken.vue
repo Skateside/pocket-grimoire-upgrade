@@ -1,5 +1,7 @@
 <template>
 
+    <!-- TODO: Get the Role as the prop, rather than the ID. -->
+
     <template v-if="!role || role.id === '_meta'">
         <p><strong>Warning:</strong> Either no role or the meta role given.</p>
     </template>
@@ -7,7 +9,7 @@
 
         <div
             class="role-token"
-            :data-top="Math.min((role.reminders?.length ?? 0) + (role.remindersGlobal?.length ?? 0), 6)"
+            :data-top="Math.min(role.reminders?.length ?? 0, 6)"
             :data-first="(role.firstNight ?? 0) > 0"
             :data-other="(role.otherNight ?? 0) > 0"
             :data-setup="role.setup ?? false"
@@ -33,12 +35,11 @@ import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
-    id: IRole["id"],
+    role: IRole,
     alignment?: 0 | 1 | 2,
 }>();
 const store = useRoleStore();
-const role = computed(() => store.getById(props.id));
-const image = computed(() => store.getImage(props.id, props.alignment));
+const image = computed(() => store.getImage(props.role, props.alignment));
 </script>
 
 <style lang="scss" scoped>

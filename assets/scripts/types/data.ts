@@ -50,8 +50,7 @@ export type IRole = {
     otherNight?: number,
     otherNightReminder?: string,
     setup?: boolean,
-    reminders?: string[],
-    remindersGlobal?: string[],
+    reminders?: IRoleReminder[],
     jinxes?: IRoleJinx[],
     special?: IRoleSpecial[],
 };
@@ -59,6 +58,15 @@ export type IRole = {
 export type IRoleCoreTeam = "townsfolk" | "outsider" | "minion" | "demon";
 export type IRolePlayTeam = IRoleCoreTeam | "traveller";
 export type IRoleTeam = IRolePlayTeam | "fabled";
+
+export type IRoleReminderFlag = "global" | "public" | "kill" | "dead" | "role";
+
+export type IRoleReminder = {
+    name: string,
+    count?: number,
+    flags?: IRoleReminderFlag[],
+    // image?: string, // Not part of the spec - used for universal reminders.
+};
 
 export type IRoleJinx = {
     id: string,
