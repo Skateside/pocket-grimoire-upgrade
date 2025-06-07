@@ -95,8 +95,8 @@ const image = computed(() => store.getReminderImage(props.reminder, props.role, 
 
 .reminder-token {
     background-color: #7e84ff;
-    background-image: url("/assets/token/reminder-background.svg");
-    background-size: 100%;
+    // background-image: url("/assets/token/reminder-background.svg");
+    // background-size: 100%;
     box-shadow:
         inset 0.1em 0.1em 0.2em rgb(255 255 255 / 0.1),
         inset 0 0 1em #454a99,

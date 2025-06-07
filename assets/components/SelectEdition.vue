@@ -110,22 +110,24 @@
         }
 
         isLoading.value = true;
+        
         const data = new FormData((event.target as HTMLFormElement));
-        let promise: Promise<IRoleScript> = Promise.reject("Empty form");
+        const promises: [string, (_value: any) => Promise<IRoleScript>][] = [
+            ["script", processScriptId],
+            ["upload", processUploadedScript],
+            ["url", processURLScript],
+            ["paste", processPastedScript],
+            ["botc", processBotcScript],
+        ];
+        const [
+            name,
+            promiseMaker,
+        ] = promises.find(([name]) => data.has(name)) || [
+            "",
+            () => Promise.reject("Empty form"), // TODO: i18n
+        ];
 
-        if (data.has("script")) {
-            promise = processScriptId(data.get("script") as string)
-        } else if (data.has("upload")) {
-            promise = processUploadedScript(data.get("upload") as File);
-        } else if (data.has("url")) {
-            promise = processURLScript(data.get("url") as string);
-        } else if (data.has("paste")) {
-            promise = processPastedScript(data.get("paste") as string);
-        } else if (data.has("botc")) {
-            processBotcScript(data.get("botc") as string);
-        }
-
-        promise
+        promiseMaker(data.get(name))
             .then((script) => store.setScript(script))
             .catch((error) => errorMessage.value = error)
             .then(() => isLoading.value = false);

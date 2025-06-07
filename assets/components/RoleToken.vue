@@ -105,28 +105,28 @@ const image = computed(() => store.getImage(props.role, props.alignment));
     // --shadow-amount: calc(var(--shadow-offset) * var(--shadow-rotation));
 
     background-color: #fffef0;
-    background-image:
-        var(--left-leaf),
-        var(--top-leaf),
-        var(--right-leaf),
-        var(--setup-leaf),
-        url("/assets/token/role-background.svg"),
-        url("/assets/token/role-noise.webp");
-    background-position: 50% 50%;
-    background-repeat:
-        no-repeat, 
-        no-repeat,
-        no-repeat,
-        no-repeat,
-        no-repeat,
-        repeat;
-    background-size:
-        contain,
-        contain,
-        contain,
-        contain,
-        100%,
-        auto;
+    // background-image:
+    //     var(--left-leaf),
+    //     var(--top-leaf),
+    //     var(--right-leaf),
+    //     var(--setup-leaf),
+    //     url("/assets/token/role-background.svg"),
+    //     url("/assets/token/role-noise.webp");
+    // background-position: 50% 50%;
+    // background-repeat:
+    //     no-repeat, 
+    //     no-repeat,
+    //     no-repeat,
+    //     no-repeat,
+    //     no-repeat,
+    //     repeat;
+    // background-size:
+    //     contain,
+    //     contain,
+    //     contain,
+    //     contain,
+    //     100%,
+    //     auto;
     // box-shadow:
     //     inset 0.1em 0.1em 0.2em rgb(255 255 255 / 0.2),
     //     inset 0 0 0.7em #8a4d0f,
@@ -144,15 +144,15 @@ const image = computed(() => store.getImage(props.role, props.alignment));
     //     filter: grayscale(1) brightness(0.8);
     // }
 
-    &[data-top="1"]      { --top-leaf: url("/assets/token/top-1.webp"); }
-    &[data-top="2"]      { --top-leaf: url("/assets/token/top-2.webp"); }
-    &[data-top="3"]      { --top-leaf: url("/assets/token/top-3.webp"); }
-    &[data-top="4"]      { --top-leaf: url("/assets/token/top-4.webp"); }
-    &[data-top="5"]      { --top-leaf: url("/assets/token/top-5.webp"); }
-    &[data-top="6"]      { --top-leaf: url("/assets/token/top-6.webp"); }
-    &[data-first="true"] { --left-leaf: url("/assets/token/left-1.webp"); }
-    &[data-other="true"] { --right-leaf: url("/assets/token/right-1.webp"); }
-    &[data-setup="true"] { --setup-leaf: url("/assets/token/setup.webp"); }
+    // &[data-top="1"]      { --top-leaf: url("/assets/token/top-1.webp"); }
+    // &[data-top="2"]      { --top-leaf: url("/assets/token/top-2.webp"); }
+    // &[data-top="3"]      { --top-leaf: url("/assets/token/top-3.webp"); }
+    // &[data-top="4"]      { --top-leaf: url("/assets/token/top-4.webp"); }
+    // &[data-top="5"]      { --top-leaf: url("/assets/token/top-5.webp"); }
+    // &[data-top="6"]      { --top-leaf: url("/assets/token/top-6.webp"); }
+    // &[data-first="true"] { --left-leaf: url("/assets/token/left-1.webp"); }
+    // &[data-other="true"] { --right-leaf: url("/assets/token/right-1.webp"); }
+    // &[data-setup="true"] { --setup-leaf: url("/assets/token/setup.webp"); }
 
 }
 

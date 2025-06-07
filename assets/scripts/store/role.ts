@@ -189,6 +189,7 @@ const useRoleStore = defineStore("role", () => {
 
     const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
         // TODO: Actually validate the script.
+        console.log({ value });
         return true;
     });
 
