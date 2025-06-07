@@ -113,6 +113,7 @@
         
         const data = new FormData((event.target as HTMLFormElement));
         const promises: [string, (_value: any) => Promise<IRoleScript>][] = [
+            ["", () => Promise.reject("Empty form")], // TODO: i18n
             ["script", processScriptId],
             ["upload", processUploadedScript],
             ["url", processURLScript],
@@ -122,10 +123,7 @@
         const [
             name,
             promiseMaker,
-        ] = promises.find(([name]) => data.has(name)) || [
-            "",
-            () => Promise.reject("Empty form"), // TODO: i18n
-        ];
+        ] = promises.find(([name]) => data.has(name)) || promises[0];
 
         promiseMaker(data.get(name))
             .then((script) => store.setScript(script))
@@ -186,7 +184,13 @@
 
     const processURLScript = (url: string) => new Promise<IRoleScript>((resolve, reject) => {
         // TODO
-        console.log({ url, resolve, reject });
+        // console.log({ url, resolve, reject });
+        fetch("/get-url", {
+                method: "POST",
+                body: JSON.stringify({ url }),
+            })
+            .then((response) => response.json())
+            .then((json) => console.log({ json, resolve, reject }));
     });
 
     const processPastedScript = (data: string) => new Promise<IRoleScript>((resolve, reject) => {

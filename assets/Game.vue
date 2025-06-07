@@ -1,7 +1,7 @@
 <template>
 
     <SelectEdition />
-    <RoleList />
+    <!-- <RoleList /> -->
 
     <!-- <Grimoire />
 
@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import SelectEdition from "./components/SelectEdition.vue";
-import RoleList from "./components/RoleList.vue";
+// import RoleList from "./components/RoleList.vue";
 /*
 import type {
     IInfoToken,
