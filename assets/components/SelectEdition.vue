@@ -71,7 +71,10 @@
                 </fieldset>
                 <p>
                     <label for="script-botc">Search BotC Scripts</label>
-                    <input type="text" name="botc" id="script-botc" disabled>
+                    <input type="text" name="botc" id="script-botc" list="script-botc-list" disabled>
+                    <datalist id="script-botc-list">
+                        <option v-for="(value, key) in datalist" :value="key" :key="key">{{ value }}</option>
+                    </datalist>
                 </p>
             </div>
         </details>
@@ -84,13 +87,21 @@
 
 <script setup lang="ts">
     import type { IRoleScript } from "../scripts/types/data";
-    import { ref, useId } from "vue";
+    import { computed, ref, useId } from "vue";
     import useRoleStore from "../scripts/store/role";
 
     const store = useRoleStore();
     const inputId = useId();
     const isLoading = ref<boolean>(false);
     const errorMessage = ref<string>("");
+    const botcScripts = ref<Record<string, { name: string, script: IRoleScript }>>({});
+    const datalist = computed<Record<string, string>>(() => {
+        return Object.fromEntries(
+            Object
+                .entries(botcScripts.value)
+                .map(([id, { name }]) => [id, name])
+        );
+    });
 
     const toggleInputStates = (event: ToggleEvent) => {
 
@@ -182,17 +193,6 @@
 
     });
 
-    const processURLScript = (url: string) => new Promise<IRoleScript>((resolve, reject) => {
-        // TODO
-        // console.log({ url, resolve, reject });
-        fetch("/get-url", {
-                method: "POST",
-                body: JSON.stringify({ url }),
-            })
-            .then((response) => response.json())
-            .then((json) => console.log({ json, resolve, reject }));
-    });
-
     const processPastedScript = (data: string) => new Promise<IRoleScript>((resolve, reject) => {
 
         const { script, error } = handleScript(data);
@@ -205,9 +205,60 @@
 
     });
 
-    const processBotcScript = (name: string) => new Promise<IRoleScript>((resolve, reject) => {
-        // TODO
-        console.log({ name, resolve, reject });
+    const handleAjax = <TResponse = IRoleScript>(url: string, data: Record<string, any>): Promise<TResponse> => fetch(url, {
+            method: "POST",
+            body: JSON.stringify(data),
+        })
+        .then((response) => response.json())
+        .then(({ success, body }) => {
+            if (success) {
+                return body;
+            }
+            throw body;
+        });
+
+    const processURLScript = (url: string) => handleAjax("/get-url", { url });
+
+    /*
+    const processBotcScript = (term: string) => handleAjax("/get-url", {
+        term,
+        type: document
+            .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
+            ?.value || "",
     });
+    */
+    // TODO: Make this happen on keyup so that selecting the name gets the script.
+    const processBotcScript = (term: string) => new Promise<IRoleScript>((resolve, reject) => {
+        handleAjax<IBotcScriptResponse>("/get-botc", {
+            term,
+            type: document
+                .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
+                ?.value || "",
+        })
+        .then((body) => {
+            console.log({ body, resolve });
+
+            Object.keys(botcScripts.value).forEach((key) => delete botcScripts.value[key]);
+            body.results.forEach(({ content, name, pk }) => {
+                botcScripts.value[pk] = { name, script: content };
+            });
+
+        })
+        .catch(reject);
+    });
+
+    type IBotcScriptResponse = {
+        count: number,
+        next: string | null,
+        previous: string | null,
+        results: {
+            author: string,
+            content: IRoleScript,
+            name: string,
+            pk: number,
+            score: number,
+            version: string,
+        }[],
+    };
 
 </script>
