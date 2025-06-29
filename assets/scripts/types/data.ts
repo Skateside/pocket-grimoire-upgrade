@@ -131,3 +131,18 @@ export type ISeat = Required<ICoordinates> & {
     name?: string,
 };
 
+// BotC Scripts.
+
+export type IBotcScriptResponse = {
+    count: number,
+    next: string | null,
+    previous: string | null,
+    results: {
+        author: string,
+        content: IRoleScript,
+        name: string,
+        pk: number,
+        score: number,
+        version: string,
+    }[],
+};

@@ -39,6 +39,7 @@
                 <label :for="`url-${inputId}`">Enter a URL</label>
                 <input type="url" name="url" :id="`script-${inputId}`" class="input" placeholder="https://www.example.com/script.json" disabled>
             </div>
+            <p v-if="isLoading">Please wait ...</p>
         </details>
 
         <details name="select-edition">
@@ -71,11 +72,12 @@
                 </fieldset>
                 <p>
                     <label for="script-botc">Search BotC Scripts</label>
-                    <input type="text" name="botc" id="script-botc" list="script-botc-list" disabled>
+                    <input type="text" name="botc" id="script-botc" list="script-botc-list" v-model="botcLookup" disabled>
                     <datalist id="script-botc-list">
-                        <option v-for="(value, key) in datalist" :value="key" :key="key">{{ value }}</option>
+                        <option v-for="value in datalist" :key="value">{{ value }}</option>
                     </datalist>
                 </p>
+                <p v-if="isLoading">Please wait ...</p>
             </div>
         </details>
 
@@ -86,22 +88,29 @@
 </template>
 
 <script setup lang="ts">
-    import type { IRoleScript } from "../scripts/types/data";
-    import { computed, ref, useId } from "vue";
+    import type {
+        IBotcScriptResponse,
+        IRoleScript,
+    } from "../scripts/types/data";
+    import {
+        computed,
+        ref,
+        useId,
+        watch,
+    } from "vue";
     import useRoleStore from "../scripts/store/role";
+    import {
+        debounce,
+        memoise,
+    } from "../scripts/utilities/functons";
 
     const store = useRoleStore();
     const inputId = useId();
     const isLoading = ref<boolean>(false);
     const errorMessage = ref<string>("");
-    const botcScripts = ref<Record<string, { name: string, script: IRoleScript }>>({});
-    const datalist = computed<Record<string, string>>(() => {
-        return Object.fromEntries(
-            Object
-                .entries(botcScripts.value)
-                .map(([id, { name }]) => [id, name])
-        );
-    });
+    const botcScripts = ref<Record<string, IRoleScript>>({});
+    const botcLookup = defineModel<string>();
+    const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
 
     const toggleInputStates = (event: ToggleEvent) => {
 
@@ -219,46 +228,43 @@
 
     const processURLScript = (url: string) => handleAjax("/get-url", { url });
 
-    /*
-    const processBotcScript = (term: string) => handleAjax("/get-url", {
-        term,
-        type: document
-            .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
-            ?.value || "",
+    const processBotcScript = (name: string) => new Promise<IRoleScript>((resolve, reject) => {
+
+        if (!Object.hasOwn(botcScripts.value, name)) {
+            return reject(`Unrecognised script "${name}"`); // TODO: i18n
+        }
+
+        resolve(botcScripts.value[name]);
+
     });
-    */
-    // TODO: Make this happen on keyup so that selecting the name gets the script.
-    const processBotcScript = (term: string) => new Promise<IRoleScript>((resolve, reject) => {
-        handleAjax<IBotcScriptResponse>("/get-botc", {
+
+    const getBotcScripts = memoise(
+        (term: string, type: string) => handleAjax<IBotcScriptResponse>("/get-botc", {
             term,
-            type: document
-                .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
-                ?.value || "",
-        })
-        .then((body) => {
-            console.log({ body, resolve });
+            type,
+        }),
+        (term, type) => `${term}|${type}`,
+    );
 
-            Object.keys(botcScripts.value).forEach((key) => delete botcScripts.value[key]);
-            body.results.forEach(({ content, name, pk }) => {
-                botcScripts.value[pk] = { name, script: content };
-            });
+    watch(botcLookup, () => isLoading.value = true);
+    watch(botcLookup, debounce((value) => {
 
-        })
-        .catch(reject);
-    });
+        if (!value?.trim()) {
+            isLoading.value = false;
+            return;
+        }
 
-    type IBotcScriptResponse = {
-        count: number,
-        next: string | null,
-        previous: string | null,
-        results: {
-            author: string,
-            content: IRoleScript,
-            name: string,
-            pk: number,
-            score: number,
-            version: string,
-        }[],
-    };
+        const type = document
+            .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
+            ?.value || "";
 
+        getBotcScripts(value, type)
+            .then(({ results }) => {
+                const { value } = botcScripts;
+                Object.keys(value).forEach((key) => delete value[key]);
+                results.forEach(({ content, name }) => value[name] = content);
+            }, () => {})
+            .then(() => isLoading.value = false);
+
+    }, 150));
 </script>
