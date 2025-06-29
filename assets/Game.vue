@@ -2,10 +2,9 @@
 
     <SelectEdition />
     <!-- <RoleList /> -->
+    <Grimoire />
 
-    <!-- <Grimoire />
-
-    <div class="list">
+    <!-- <div class="list">
         <button
             v-for="infoToken in infoTokenStore.infoTokens"
             :key="infoToken.id"
@@ -44,6 +43,7 @@
 
 <script lang="ts" setup>
 import SelectEdition from "./components/SelectEdition.vue";
+import Grimoire from "./components/Grimoire.vue";
 // import RoleList from "./components/RoleList.vue";
 /*
 import type {
@@ -57,7 +57,6 @@ import useInfoTokenStore from "./scripts/store/infoToken";
 import Dialog from './components/Dialog.vue';
 import InfoToken from './components/InfoToken.vue';
 import InfoTokenForm from "./components/InfoTokenForm.vue";
-import Grimoire from "./components/Grimoire.vue";
 
 const infoTokenDialog = ref<typeof Dialog | null>(null);
 const infoTokenStore = useInfoTokenStore();

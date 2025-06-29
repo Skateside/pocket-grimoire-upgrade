@@ -123,12 +123,27 @@ export type IRoleSpecial = {
 
 export type IRoleScript = (IRoleMeta | IRole | IRole["id"])[];
 
-// Seats.
+// Tokens.
 
-export type ISeat = Required<ICoordinates> & {
+export type IToken = Required<ICoordinates> & {
     id: string,
+    type: "seat" | "role" | "reminder",
+};
+
+export type ITokenSeat = IToken & {
+    type: "seat",
     role?: IRole["id"],
     name?: string,
+};
+
+// NOTE: This is for something like a Fabled - on the grimoire pad but not a player.
+export type ITokenRole = IToken & {
+    type: "role",
+    role: IRole["id"],
+};
+
+export type ITokenReminder = IToken & {
+    type: "reminder",
 };
 
 // BotC Scripts.

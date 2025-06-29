@@ -102,7 +102,7 @@
     import {
         debounce,
         memoise,
-    } from "../scripts/utilities/functons";
+    } from "../scripts/utilities/functions";
 
     const store = useRoleStore();
     const inputId = useId();

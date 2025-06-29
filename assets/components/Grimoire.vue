@@ -2,106 +2,117 @@
     <div ref="grimoire" class="grimoire movable">
 
         <div
-            v-for="token, index in tokens"
+            v-for="seat in store.byType.seat"
             class="seat movable__item"
-            :data-index="index"
+            :data-id="seat.id"
             :style='{
-                "--x": token.x,
-                "--y": token.y,
-                "--z": token.z,
+                "--x": seat.x,
+                "--y": seat.y,
+                "--z": seat.z,
             }'
+            :title="seat.id"
         >
-            seat {{ index }}
+            {{ seat.id.slice(0, 8) }}
         </div>
 
     </div>
     
     <p><button type="button" @click="addSeat">Add seat</button></p>
+    <p>
+        <label for="remove-dropdown">Remove</label>
+        <select id="remove-dropdown" ref="removeDropdown">
+            <option value=""></option>
+            <option v-for="seat in store.byType.seat">{{ seat.id }}</option>
+        </select>
+        <button type="button" @click="removeSeat">Remove seat</button>
+    </p>
 
 </template>
 
 <script lang="ts" setup>
+import type {
+    ICoordinates,
+} from "../scripts/types/data";
 import {
     nextTick,
     onMounted,
     onUnmounted,
     ref,
 } from "vue";
+import useTokenStore from "../scripts/store/token";
 import {
     debounce,
     noop,
-} from "../scripts/utilities/functons";
+} from "../scripts/utilities/functions";
 import {
     clamp,
 } from "../scripts/utilities/numbers";
 
-type ICoordinates = {
+type IPad = {
     x: number,
     y: number,
-    z?: number,
-};
-
-type IToken = Required<ICoordinates> & {
-    // seat vs. reminder
-};
-
-type IPad = Required<ICoordinates> & {
     r: number,
     b: number,
 };
 
+const store = useTokenStore();
 const grimoire = ref<HTMLElement | null>(null);
-const tokens = ref<IToken[]>([]);
 const isDragging = ref<boolean>(false);
 const pad = ref<IPad>({
     x: 0,
     y: 0,
-    z: 0,
     r: 0,
     b: 0,
 });
+const removeDropdown = ref<HTMLSelectElement | null>(null);
 
 const addSeat = () => {
 
-    tokens.value.push({
+    store.createSeat({
         x: 0.1,
         y: 0.1,
-        z: pad.value.z,
+        z: store.nextZ,
     });
-
-    pad.value.z += 1;
 
 };
 
-const getToken = (target: Element) => {
-    return (target as HTMLElement).closest<HTMLElement>(".movable__item[data-index]");
+const removeSeat = () => {
+    const id = removeDropdown.value?.value;
+    if (!id) {
+        return;
+    }
+    store.destroy(id);
+};
+
+const getMovableItem = (target: Element) => {
+    return (target as HTMLElement).closest<HTMLElement>(".movable__item[data-id]");
 };
 
 let dragHandler: (event: MouseEvent | TouchEvent) => void = noop;
 
-const getIndex = (token: HTMLElement | null) => {
+const getId = (movableItem: HTMLElement | null) => {
 
     return (
-        token
-        ? Number(token.dataset.index || "-1")
-        : -1
+        movableItem?.hasAttribute("data-id")
+        ? movableItem.dataset.id
+        : ""
     );
 
 };
 
-const moveTo = (token: HTMLElement, { x, y, z }: ICoordinates) => {
+const moveTo = (movableItem: HTMLElement, { x, y, z }: ICoordinates) => {
 
-    if (typeof z !== "number" || Number.isNaN(z)) {
-        z = pad.value.z;
-    }
+    const id = getId(movableItem);
 
-    const index = getIndex(token);
-
-    if (index < 0) {
+    if (!id) {
         return;
     }
 
-    Object.assign(tokens.value[index], {
+    if (typeof z !== "number" || Number.isNaN(z)) {
+        z = store.nextZ;
+    }
+
+    store.update(id, {
         x,
         y,
         z,
@@ -109,7 +120,7 @@ const moveTo = (token: HTMLElement, { x, y, z }: ICoordinates) => {
 
 };
 
-const dragObject = (token: HTMLElement, event: MouseEvent | TouchEvent) => {
+const dragObject = (moveableItem: HTMLElement, event: MouseEvent | TouchEvent) => {
 
     event.preventDefault();
 
@@ -137,7 +148,8 @@ const dragObject = (token: HTMLElement, event: MouseEvent | TouchEvent) => {
         r,
         b,
     } = pad.value;
-    moveTo(token, {
+
+    moveTo(moveableItem, {
         x: clamp(0, (clientX - x) / (r - x), 1),
         y: clamp(0, (clientY - y) / (b - y), 1),
     });
@@ -146,22 +158,16 @@ const dragObject = (token: HTMLElement, event: MouseEvent | TouchEvent) => {
 
 const startDrag = (event: MouseEvent | TouchEvent) => {
 
-    const token = getToken(event.target as HTMLElement);
-    const index = getIndex(token);
+    const movableItem = getMovableItem(event.target as HTMLElement);
+    const id = getId(movableItem);
 
-    if (!token || index < 0) {
+    if (!movableItem || !id) {
         return;
     }
-
-    const {
-        z,
-    } = pad.value;
     
     endDragging();
-    dragHandler = (event) => dragObject(token, event);
-
-    tokens.value[index].z = z;
-    pad.value.z += 1;
+    dragHandler = (event) => dragObject(movableItem, event);
+    store.update(id, { z: store.nextZ });
 
     window.addEventListener("mousemove", dragHandler);
     window.addEventListener("touchmove", dragHandler, {
@@ -192,7 +198,7 @@ const endDragging = () => {
 
 const checkClick = (event: MouseEvent) => {
 
-    const element = getToken(event.target as HTMLElement);
+    const element = getMovableItem(event.target as HTMLElement);
 
     if (!element || isDragging.value) {
         return;
@@ -234,7 +240,6 @@ onMounted(() => {
     document.addEventListener("click", checkClick);
     window.addEventListener("resize", updatePadDimentions);
     window.addEventListener("scroll", updatePadDimentions);
-
     updatePadDimentions();
 
 });
