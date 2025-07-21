@@ -1,45 +1,59 @@
 <template>
 
-    <!-- TODO: Get the Role as the prop, rather than the ID. -->
-
-    <template v-if="!role || role.id === '_meta'">
-        <p><strong>Warning:</strong> Either no role or the meta role given.</p>
-    </template>
-    <template v-else>
-
-        <div
-            class="role-token"
-            :data-top="Math.min(role.reminders?.length ?? 0, 6)"
-            :data-first="(role.firstNight ?? 0) > 0"
-            :data-other="(role.otherNight ?? 0) > 0"
-            :data-setup="role.setup ?? false"
-        >
-            <span class="role-token__image" :class="`role-token__image--${role.team}`">
-                <img :src="image" alt="" class="role-token__icon" width="150" height="150" loading="lazy">
-            </span>
-            <svg viewBox="0 0 150 150" class="role-token__text">
-                <path d="M 13 75 C 13 160, 138 160, 138 75" id="curve" fill="transparent"></path>
-                <text width="150" x="66.6%" text-anchor="middle" class="role-token__name">
-                    <textPath xlink:href="#curve" style="fill: currentColor;">{{ role.name }}</textPath>
-                </text>
-            </svg>
-        </div>
-
-    </template>
+    <div
+        class="role-token"
+        :data-top="Math.min(theRole.reminders?.length ?? 0, 6)"
+        :data-first="(theRole.firstNight ?? 0) > 0"
+        :data-other="(theRole.otherNight ?? 0) > 0"
+        :data-setup="theRole.setup ?? false"
+    >
+        <span class="role-token__image" :class="`role-token__image--${theRole.team ?? ''}`">
+            <img :src="image" alt="" class="role-token__icon" width="150" height="150" loading="lazy">
+        </span>
+        <svg viewBox="0 0 150 150" class="role-token__text">
+            <path d="M 13 75 C 13 160, 138 160, 138 75" id="curve" fill="transparent"></path>
+            <text width="150" x="66.6%" text-anchor="middle" class="role-token__name">
+                <textPath xlink:href="#curve" style="fill: currentColor;">{{ theRole.name }}</textPath>
+            </text>
+        </svg>
+    </div>
 
 </template>
 
 <script lang="ts" setup>
 import type { IRole } from "../scripts/types/data";
+import type { RequireOnly } from "../scripts/types/lib";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
+// import noroleSrc from './../icons/norole.svg';
+// import metaroleSrc from './../icons/metarole.svg';
 
 const props = defineProps<{
-    role: IRole,
+    role?: IRole,
     alignment?: 0 | 1 | 2,
 }>();
 const store = useRoleStore();
-const image = computed(() => store.getImage(props.role, props.alignment));
+const theRole = computed<RequireOnly<IRole, 'name' | 'image'>>(() => {
+
+    const role: RequireOnly<IRole, 'name' | 'image'> = {
+        name: 'norole', // TODO: i18n
+        image: '', // TODO: link to the correct images.
+        // image: noroleSrc,
+    };
+
+    if (!role) {
+        return role;
+    }
+
+    if (role.id === "_meta") {
+        role.name = "rolemeta"; // TODO: i18n
+        // role.image = metaroleSrc;
+    }
+
+    return props.role!;
+
+});
+const image = computed(() => store.getImage(theRole.value as IRole, props.alignment));
 </script>
 
 <style lang="scss" scoped>

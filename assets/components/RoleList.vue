@@ -23,7 +23,7 @@
             v-for="(reminder, index) in (chosenRole.reminders || [])"
             :key="`reminder-${chosenRole.id}-${index}`"
         >
-            <ReminderToken :role="chosenRole" :reminder="reminder" />
+            <ReminderToken :reminder="reminder" />
         </div>
     </div>
 

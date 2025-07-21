@@ -4,6 +4,7 @@ import type {
     IRoleMeta,
     IRoleReminder,
     IRoleScript,
+    IRoleDeprecatedReminders,
 } from "../types/data";
 import type {
     RequireOnly,
@@ -27,12 +28,54 @@ import {
 const useRoleStore = defineStore("role", () => {
 
     const storage = inject<IStorage>("storage")!;
+    const STORAGE_KEY = "script";
 
     // TODO: Add functionality for augments.
     // TODO: Work out how to augment the reminders.
 
-    const STORAGE_KEY = "script";
-    const roles = ref<IRole[]>(structuredClone(window.PG.roles));
+    const innerSetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
+
+        if (typeof role === "object") {
+
+            (role as IRole).reminders?.forEach((reminder) => {
+                reminder.role = role as IRole;
+            });
+
+        }
+
+        return role;
+
+    };
+
+    const innerUnsetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
+
+        // This should never happen because the script should always be a role
+        // or the meta information, since `setScript` sorts that out.
+        if (typeof role === "string") {
+            return role;
+        }
+
+        const clone = { ...role } as IRole;
+
+        if (!clone.reminders) {
+            return clone;
+        }
+
+        clone.reminders = clone.reminders.map((reminder) => {
+            const updated = { ...reminder };
+            delete (updated as any).role;
+            return updated;
+        });
+
+        return clone;
+
+    };
+
+    const roles = ref<IRole[]>(
+        // Create each reminder's role reference here so that we can always
+        // access it.
+        structuredClone(window.PG.roles).map(innerSetRemindersRole)
+    );
     const scripts = ref<Record<string, IRoleScript>>(
         structuredClone(window.PG.scripts)
     );
@@ -41,13 +84,15 @@ const useRoleStore = defineStore("role", () => {
     ]);
 
     watch(script, (value) => {
-        storage.set(STORAGE_KEY, value);
+        // When saving a script, remove each reminder's role to prevent a
+        // circular reference.
+        storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
     });
 
-    const isMeta = (id: IRole["id"]) => id === "_meta";
-    const isUniversal = (id: IRole["id"]) => id === "universalinfo";
+    const innerIsMeta = (id: IRole["id"]) => id === "_meta";
+    const innerIsUniversal = (id: IRole["id"]) => id === "universalinfo";
 
-    const asRoleObject = (roleOrId: IRole | IRoleMeta | IRole["id"]) => {
+    const innerAsRoleObject = (roleOrId: IRole | IRoleMeta | IRole["id"]) => {
         return (
             typeof roleOrId === "string"
             ? ({ id: roleOrId } as RequireOnly<IRole, "id">)
@@ -55,11 +100,11 @@ const useRoleStore = defineStore("role", () => {
         );
     };
 
-    const getRole = (id: IRole["id"]) => {
+    const innerGetRole = (id: IRole["id"]) => {
         return roles.value.find(({ id: roleId }) => roleId === id);
     };
 
-    const getScriptRole = (id: IRole["id"]) => {
+    const innerGetScriptRole = (id: IRole["id"]) => {
 
         return script.value.find((role) => {
 
@@ -67,9 +112,9 @@ const useRoleStore = defineStore("role", () => {
                 return true;
             }
 
-            const { id: roleId } = asRoleObject(role);
+            const { id: roleId } = innerAsRoleObject(role);
 
-            if (roleId === id && !isMeta(roleId)) {
+            if (roleId === id && !innerIsMeta(roleId)) {
                 return true;
             }
 
@@ -79,11 +124,15 @@ const useRoleStore = defineStore("role", () => {
 
     };
 
-    const getMeta = (script: IRoleScript) => {
-        return script.find((item) => isMeta(asRoleObject(item).id)) as IRoleMeta | void;
+    const innerGetMeta = (script: IRoleScript) => {
+
+        return script.find((item) => {
+            return innerIsMeta(innerAsRoleObject(item).id);
+        }) as IRoleMeta | void;
+
     };
 
-    const combineJinxes = (
+    const innerCombineJinxes = (
         roleJinxes?: IRoleJinx[],
         homebrewJinxes?: IRoleJinx[],
     ) => {
@@ -106,6 +155,7 @@ const useRoleStore = defineStore("role", () => {
                 const jinx: IRoleJinx = {
                     id,
                     reason,
+                    state: "theoretical",
                 };
 
                 if (index < 0) {
@@ -124,19 +174,19 @@ const useRoleStore = defineStore("role", () => {
 
     const getById = computed(() => (id: IRole["id"]) => {
 
-        const role = getRole(id);
-        const homebrew = getScriptRole(id);
+        const role = innerGetRole(id);
+        const homebrew = innerGetScriptRole(id);
 
         if (!role && !homebrew) {
             throw new UnrecognisedRoleError(id);
         }
 
-        const update = asRoleObject(homebrew || id);
+        const update = innerAsRoleObject(homebrew || id);
         const data = {
             ...(role || {}),
             ...update,
         } as IRole;
-        const jinxes = combineJinxes(role?.jinxes, (update as IRole).jinxes);
+        const jinxes = innerCombineJinxes(role?.jinxes, (update as IRole).jinxes);
 
         if (jinxes) {
             data.jinxes = jinxes;
@@ -148,44 +198,35 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const getImage = computed(() => (role: IRole, index: 0 | 1 | 2 = 0) => {
+    const innerGetImage = (role: IRole, index: 0 | 1 | 2 = 0) => {
 
         if (!role || !role.image) {
             return "";
         }
 
-        if (Array.isArray(role.image)) {
-            return role.image[index];
-        }
-    
-        return role.image;
+        const { image } = role;
 
-    });
+        return (
+            Array.isArray(image)
+            ? (image[index] || image[0] || "")
+            : image
+        );
+
+    };
+
+    const getImage = computed(() => innerGetImage);
 
     // const getReminders = computed(() => (role: IRole) => {
     //     return role.reminders || [];
     // });
 
-    const getReminderImage = computed(() => (reminder: IRoleReminder, role: IRole, index: 0 | 1 | 2 = 0) => {
-
-        if (!role) {
-            return "";
-        }
-
-        if ((reminder as any).image) {
-            return (reminder as any).image as string;
-        }
-
-        if (Array.isArray(role.image)) {
-            return role.image[index];
-        }
-
-        return role.image || "";
-
+    const getReminderImage = computed(() => (reminder: IRoleReminder, index: 0 | 1 | 2 = 0) => {
+        return reminder.image || innerGetImage(reminder.role, index);
     });
 
-    const getIsUniversal = computed(() => (role: IRole) => isUniversal(role.id));
-    const getScriptMeta = computed(() => getMeta);
+    const getIsMeta = computed(() => (role: IRole) => innerIsMeta(role.id));
+    const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role.id));
+    const getScriptMeta = computed(() => innerGetMeta);
 
     const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
         // TODO: Actually validate the script.
@@ -195,8 +236,80 @@ const useRoleStore = defineStore("role", () => {
 
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
 
+    const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
+
+        const reminders: IRoleReminder[] = [];
+
+        if (!role.reminders && !(role as IRoleDeprecatedReminders).remindersGlobal) {
+            return role;
+        }
+
+        role.reminders?.forEach((reminder) => {
+
+            if (typeof reminder === "object") {
+                reminders.push(reminder);
+                return;
+            }
+
+            const found = reminders.find(({ name }) => name === reminder);
+
+            if (found) {
+                found.count = (found.count || 1) + 1;
+            } else {
+                
+                const newReminder: IRoleReminder = {
+                    role, // needed for TypeScript, gets set again in the next step.
+                    name: reminder as string,
+                };
+                reminders.push(newReminder);
+
+            }
+
+        });
+
+        (role as IRoleDeprecatedReminders).remindersGlobal?.forEach((reminder) => {
+
+            const found = reminders.find(({ name }) => name === reminder);
+
+            if (found) {
+                found.count = (found.count || 1) + 1;
+            } else {
+                
+                const newReminder: IRoleReminder = {
+                    role, // needed for TypeScript, gets set again in the next step.
+                    name: reminder as string,
+                    flags: ["global"],
+                };
+                reminders.push(newReminder);
+
+            }
+
+        });
+
+        role.reminders = reminders;
+
+        return role;
+
+    };
+
     const setScript = (scriptData: IRoleScript) => {
-        script.value = scriptData;
+
+        script.value = scriptData.map((data) => {
+
+            const role = (
+                typeof data === "string"
+                ? innerGetRole(data)
+                : data
+            );
+
+            if (!role) {
+                throw new UnrecognisedRoleError(String(data));
+            }
+
+            return innerSetRemindersRole(innerUpdateReminders(role as IRole));
+
+        });
+
     }
 
     const setScriptById = (id: string) => {
@@ -213,6 +326,7 @@ const useRoleStore = defineStore("role", () => {
         getImage,
         // getReminders,
         getReminderImage,
+        getIsMeta,
         getIsUniversal,
         getScriptMeta,
         getIsValidScript,

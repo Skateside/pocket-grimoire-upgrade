@@ -1,5 +1,4 @@
 import type {
-    IGame,
     II18nData,
     IInfoToken,
     IRole,
@@ -9,7 +8,6 @@ import type {
 declare global {
     interface Window {
         PG: {
-            game: IGame,
             i18n: II18nData,
             infoTokens: IInfoToken[],
             roles: IRole[],

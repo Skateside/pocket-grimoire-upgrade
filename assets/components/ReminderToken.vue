@@ -1,18 +1,18 @@
 <template>
 
-    <template v-if="!role || !reminder">
-        <p><strong>Warning:</strong> Either no role or no reminder.</p>
+    <template v-if="!reminder">
+        <p><strong>Warning:</strong> No reminder.</p>
     </template>
     <template v-else>
         
         <span class="reminder-token">
-            <span class="reminder-token__image" :class="`reminder-token__image--${role.team}`">
+            <span class="reminder-token__image" :class="`reminder-token__image--${reminder.role.team}`">
                 <img :src="image" alt="" class="reminder-token__icon" width="150" height="150" loading="lazy">
             </span>
             <svg viewBox="0 0 150 150" class="reminder-token__text">
                 <path d="M 13 75 C 13 -10, 138 -10, 138 75" id="curve-top" fill="transparent"></path>
                 <text width="150" x="66.6%" text-anchor="middle" class="reminder-token__name" dominant-baseline="hanging">
-                    <textPath xlink:href="#curve-top" style="fill: currentColor;">{{ store.getIsUniversal(props.role) ? "" : role.name }}</textPath>
+                    <textPath xlink:href="#curve-top" style="fill: currentColor;">{{ store.getIsUniversal(reminder.role) ? "" : reminder.role.name }}</textPath>
                 </text>
             </svg>
             <svg viewBox="0 0 150 150" class="reminder-token__text">
@@ -28,18 +28,17 @@
 </template>
 
 <script setup lang="ts">
-import type { IRole, IRoleReminder } from "../scripts/types/data";
+import type { IRoleReminder } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
-    role: IRole,
     reminder: IRoleReminder,
     alignment?: 0 | 1 | 2,
 }>();
 
 const store = useRoleStore();
-const image = computed(() => store.getReminderImage(props.reminder, props.role, props.alignment));
+const image = computed(() => store.getReminderImage(props.reminder, props.alignment));
 </script>
 
 <style lang="scss" scoped>

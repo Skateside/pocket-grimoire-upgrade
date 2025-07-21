@@ -53,6 +53,12 @@ export type IRole = {
     reminders?: IRoleReminder[],
     jinxes?: IRoleJinx[],
     special?: IRoleSpecial[],
+} & {
+};
+
+export type IRoleDeprecatedReminders = IRole & {
+    reminders?: string[],
+    remindersGlobal?: string[],
 };
 
 export type IRoleCoreTeam = "townsfolk" | "outsider" | "minion" | "demon";
@@ -65,13 +71,16 @@ export type IRoleReminder = {
     name: string,
     count?: number,
     flags?: IRoleReminderFlag[],
-    // image?: string, // Not part of the spec - used for universal reminders.
+} & {
+    role: IRole, // A reference back to the role.
+    image?: string, // Create a seperate image for universal reminders.
 };
 
 export type IRoleJinx = {
     id: string,
     reason: string,
-    // state: "theoretical" | "potential" | "active",
+} & {
+    state: "theoretical" | "potential" | "active",
 };
 // state: "theoretical" = this jinx exists but only the role is in the script,
 //                        the id mentioned here isn't.
