@@ -2,57 +2,45 @@
 
     <form
         @submit.prevent="handleSubmit"
-        @toggle.capture="toggleInputStates"
     >
 
         <div aria-live="assertive">
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <details name="select-edition" open>
-            <summary>Official scripts</summary>
-            <fieldset>
-                <legend>Official scripts</legend>
-                <ul>
-                    <li v-for="(script, id) in store.scripts" :key="id">
-                        <label :for="`script-${id}-${inputId}`">
-                            <input type="radio" name="script" :value="id" :id="`script-${id}-${inputId}`">
-                            {{ store.getScriptMeta(script)?.name }}
-                        </label>
-                    </li>
-                </ul>
-            </fieldset>
-        </details>
+        <Tabs @tabchange="handleTabchange">
+            <Tab title="Official scripts">
+                <fieldset>
+                    <legend>Official scripts</legend>
+                    <ul>
+                        <li v-for="(script, id) in store.scripts" :key="id">
+                            <label :for="`script-${id}-${inputId}`">
+                                <input type="radio" name="script" :value="id" :id="`script-${id}-${inputId}`">
+                                {{ store.getScriptMeta(script)?.name }}
+                            </label>
+                        </li>
+                    </ul>
+                </fieldset>
+            </Tab>
 
-        <details name="select-edition">
-            <summary>Upload a custom script</summary>
-            <div>
+            <Tab title="Upload a custom script">
                 <label :for="`upload-${inputId}`">Upload a custom script</label>
                 <input type="file" name="upload" :id="`upload-${inputId}`" accept="application/json" disabled>
                 <p v-if="isLoading">Please wait ...</p>
-            </div>
-        </details>
+            </Tab>
 
-        <details name="select-edition">
-            <summary>Enter a URL</summary>
-            <div>
+            <Tab title="Enter a URL">
                 <label :for="`url-${inputId}`">Enter a URL</label>
                 <input type="url" name="url" :id="`script-${inputId}`" class="input" placeholder="https://www.example.com/script.json" disabled>
-            </div>
-            <p v-if="isLoading">Please wait ...</p>
-        </details>
+                <p v-if="isLoading">Please wait ...</p>
+            </Tab>
 
-        <details name="select-edition">
-            <summary>Paste from clipboard</summary>
-            <div>
+            <Tab title="Paste from clipboard">
                 <label :for="`paste-${inputId}`">Paste from clipboard</label>
                 <textarea name="paste" :id="`paste-${inputId}`" placeholder='["washerwoman","investigator","librarian","chef"]' disabled></textarea>
-            </div>
-        </details>
-
-        <details name="select-edition">
-            <summary>Search BotC Scripts</summary>
-            <div>
+            </Tab>
+    
+            <Tab title="Search BotC Scripts">
                 <fieldset>
                     <legend>Script type</legend>
                     <ul>
@@ -78,8 +66,8 @@
                     </datalist>
                 </p>
                 <p v-if="isLoading">Please wait ...</p>
-            </div>
-        </details>
+            </Tab>
+        </Tabs>
 
         <p><button type="submit">Submit</button></p>
 
@@ -92,6 +80,7 @@
         IBotcScriptResponse,
         IRoleScript,
     } from "../scripts/types/data";
+    import type { ITabsChange } from "./ui/tabs";
     import {
         computed,
         ref,
@@ -103,6 +92,8 @@
         debounce,
         memoise,
     } from "../scripts/utilities/functions";
+    import Tabs from "./ui/Tabs.vue";
+    import Tab from "./ui/Tab.vue";
 
     const store = useRoleStore();
     const inputId = useId();
@@ -112,14 +103,15 @@
     const botcLookup = defineModel<string>();
     const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
 
-    const toggleInputStates = (event: ToggleEvent) => {
+    const handleTabchange = ({ tab, oldTab }: ITabsChange) => {
 
-        const details = (event.target as HTMLDetailsElement);
-        const { open } = details;
+        tab
+            ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
+            .forEach((input) => input.disabled = false);
 
-        details
-            .querySelectorAll("input,select,textarea")
-            .forEach((input) => (input as HTMLInputElement).disabled = !open);
+        oldTab
+            ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
+            .forEach((input) => input.disabled = true);
 
     };
 

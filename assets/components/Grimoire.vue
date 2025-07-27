@@ -26,55 +26,59 @@
     >
         <p>{{ currentTokenId }}</p>
 
-        <p><strong>Role</strong></p>
-        <menu>
-            <li><button type="button">Set</button></li>
-            <li><button type="button">Show</button></li>
-            <li><button type="button">Shroud</button></li>
-            <li><button type="button">Ghost vote</button></li>
-            <li><button type="button">Rotate</button></li>
-        </menu>
-        <fieldset>
-            <legend>Set alignment</legend>
-            <!--
-            NOTE: This means different things for different role types:
-                Townsfolk & Outsiders = good, evil
-                Minions & Demon = evil, good
-                Travellers = unknown, good, evil
-                Fabled = unknown
-            Also: hide this is there's only 1 image.
-            -->
-            <ul>
-                <li>
-                    <label :for="`alignment-0-${idSuffix}`">
-                        <input type="radio" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
-                        Default
-                    </label>
-                </li>
-                <li>
-                    <label :for="`alignment-1-${idSuffix}`">
-                        <input type="radio" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
-                        Alternative
-                    </label>
-                </li>
-            </ul>
-        </fieldset>
-
-        <p><strong>Reminder</strong></p>
-        <menu>
-            <li><button type="button">Add</button></li>
-        </menu>
-        <p>TODO: Recent reminders</p>
-
-        <p><strong>Player</strong></p>
-        <menu>
-            <li><button type="button">Remove</button></li>
-        </menu>
-        <form>
-            <label :for="`name-${idSuffix}`">What is the name of this player?</label>
-            <input type="text" name="name" :id="`name-${idSuffix}`">
-            <button type="submit">Set player name</button>
-        </form>
+        <Tabs>
+            <Tab title="Player">
+                <menu>
+                    <li><button type="button">Remove</button></li>
+                </menu>
+                <form>
+                    <label :for="`name-${idSuffix}`">What is the name of this player?</label>
+                    <input type="text" name="name" :id="`name-${idSuffix}`">
+                    <button type="submit">Set player name</button>
+                </form>
+            </Tab>
+            <Tab title="Role">
+                <menu>
+                    <li><button type="button">Set</button></li>
+                    <li><button type="button">Show</button></li>
+                    <li><button type="button">Shroud</button></li>
+                    <li><button type="button">Ghost vote</button></li>
+                    <li><button type="button">Rotate</button></li>
+                </menu>
+                <fieldset>
+                    <legend>Set alignment</legend>
+                    <!--
+                    NOTE: This means different things for different role types:
+                        Townsfolk & Outsiders = good, evil
+                        Minions & Demon = evil, good
+                        Travellers = unknown, good, evil
+                        Fabled = unknown
+                    Also: hide this is there's only 1 image.
+                    -->
+                    <ul>
+                        <li>
+                            <label :for="`alignment-0-${idSuffix}`">
+                                <input type="radio" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
+                                Default
+                            </label>
+                        </li>
+                        <li>
+                            <label :for="`alignment-1-${idSuffix}`">
+                                <input type="radio" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
+                                Alternative
+                            </label>
+                        </li>
+                    </ul>
+                </fieldset>
+            </Tab>
+            <Tab title="Reminder">
+                <menu>
+                    <li><button type="button">Add</button></li>
+                </menu>
+                <p>TODO: Recent reminders</p>
+            </Tab>
+        </Tabs>
+        
     </div>
 
     <p><button type="button" @click="addSeat">Add seat</button></p>
@@ -108,6 +112,8 @@ import {
 import {
     clamp,
 } from "../scripts/utilities/numbers";
+import Tabs from "./ui/Tabs.vue";
+import Tab from "./ui/Tab.vue";
 
 type IPad = {
     x: number,
