@@ -112,8 +112,10 @@ import {
 import {
     clamp,
 } from "../scripts/utilities/numbers";
-import Tabs from "./ui/Tabs.vue";
-import Tab from "./ui/Tab.vue";
+import {
+    Tabs,
+    Tab,
+} from "./ui/tabs";
 
 type IPad = {
     x: number,

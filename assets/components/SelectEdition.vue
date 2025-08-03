@@ -80,7 +80,6 @@
         IBotcScriptResponse,
         IRoleScript,
     } from "../scripts/types/data";
-    import type { ITabsChange } from "./ui/tabs";
     import {
         computed,
         ref,
@@ -92,8 +91,11 @@
         debounce,
         memoise,
     } from "../scripts/utilities/functions";
-    import Tabs from "./ui/Tabs.vue";
-    import Tab from "./ui/Tab.vue";
+    import {
+        type ITabsChange,
+        Tabs,
+        Tab,
+    } from "./ui/tabs";
 
     const store = useRoleStore();
     const inputId = useId();
