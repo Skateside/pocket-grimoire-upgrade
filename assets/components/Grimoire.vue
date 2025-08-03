@@ -12,75 +12,19 @@
                 "--z": seat.z,
             }'
             :title="seat.id"
-            @movable-click="handleSeatClick"
+            @movable-click="() => setTokenId(seat.id)"
         >
             {{ seat.id.slice(6, 12) }}
-            <span v-if="seat.name">{{ seat.name }}</span>
+            <div v-if="seat.name">{{ seat.name }}</div>
         </button>
 
     </div>
 
-    <div
-        ref="menu"
+    <SeatMenu
+        v-if="tokenId"
+        :token-id="tokenId"
         @toggle="handleMenuToggle"
-        popover
-    >
-        <p>{{ currentTokenId }}</p>
-
-        <Tabs>
-            <Tab title="Player">
-                <menu>
-                    <li><button type="button">Remove</button></li>
-                </menu>
-                <form @submit.prevent="setSeatName">
-                    <label :for="`name-${idSuffix}`">What is the name of this player?</label>
-                    <input type="text" name="name" :id="`name-${idSuffix}`" v-model="seatName">
-                    <button type="submit">Set player name</button>
-                </form>
-            </Tab>
-            <Tab title="Role">
-                <menu>
-                    <li><button type="button">Set</button></li>
-                    <li><button type="button">Show</button></li>
-                    <li><button type="button">Shroud</button></li>
-                    <li><button type="button">Ghost vote</button></li>
-                    <li><button type="button">Rotate</button></li>
-                </menu>
-                <fieldset>
-                    <legend>Set alignment</legend>
-                    <!--
-                    NOTE: This means different things for different role types:
-                        Townsfolk & Outsiders = good, evil
-                        Minions & Demon = evil, good
-                        Travellers = unknown, good, evil
-                        Fabled = unknown
-                    Also: hide this is there's only 1 image.
-                    -->
-                    <ul>
-                        <li>
-                            <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
-                                Default
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
-                                Alternative
-                            </label>
-                        </li>
-                    </ul>
-                </fieldset>
-            </Tab>
-            <Tab title="Reminder">
-                <menu>
-                    <li><button type="button">Add</button></li>
-                </menu>
-                <p>TODO: Recent reminders</p>
-            </Tab>
-        </Tabs>
-        
-    </div>
+    />
 
     <p><button type="button" @click="addSeat">Add seat</button></p>
     <p>
@@ -97,14 +41,11 @@
 <script lang="ts" setup>
 import type {
     ICoordinates,
-    ITokenSeat,
 } from "../scripts/types/data";
 import {
-    // computed,
     onMounted,
     onUnmounted,
     ref,
-    useId,
 } from "vue";
 import useTokenStore from "../scripts/store/token";
 import {
@@ -114,10 +55,7 @@ import {
 import {
     clamp,
 } from "../scripts/utilities/numbers";
-import {
-    Tabs,
-    Tab,
-} from "./ui/tabs";
+import SeatMenu from "./SeatMenu.vue";
 
 type IPad = {
     x: number,
@@ -126,8 +64,6 @@ type IPad = {
     b: number,
 };
 
-const idSuffix = useId();
-const menu = ref<HTMLElement | null>(null);
 const store = useTokenStore();
 const grimoire = ref<HTMLElement | null>(null);
 const isDragging = ref<boolean>(false);
@@ -138,9 +74,7 @@ const pad = ref<IPad>({
     b: 0,
 });
 const removeDropdown = ref<HTMLSelectElement | null>(null);
-const currentTokenId = ref<string>("");
-// const currentToken = computed(() => store.getById(currentTokenId.value));
-const seatName = defineModel<string>("");
+const tokenId = ref<string>("");
 
 const addSeat = () => {
 
@@ -160,16 +94,13 @@ const removeSeat = () => {
     store.destroy(id);
 };
 
-const setSeatName = () => {
-    
-    if (!currentTokenId.value) {
-        return;
+const setTokenId = (id: string) => tokenId.value = id;
+
+const handleMenuToggle = (state: string) => {
+
+    if (state === "closed") {
+        tokenId.value = "";
     }
-        
-    store.update<ITokenSeat>(currentTokenId.value, {
-        name: seatName.value,
-    });
-    // seatName.value = "";
 
 };
 
@@ -286,28 +217,6 @@ const checkClick = (event: MouseEvent) => {
 
 };
 
-const handleSeatClick = (event: Event) => {
-
-    const tokenId = (event.target as HTMLElement).id || "";
-
-    currentTokenId.value = tokenId;
-
-    if (tokenId) {
-        seatName.value = (store.getById(tokenId)as ITokenSeat)?.name || "";
-    }
-
-    menu.value?.showPopover();
-
-};
-
-const handleMenuToggle = (event: ToggleEvent) => {
-
-    if (event.newState === "closed") {
-        currentTokenId.value = "";
-    }
-
-};
-
 const updatePadDimentions = debounce(() => {
 
     if (!grimoire.value) {
@@ -369,6 +278,7 @@ onUnmounted(() => {
 .seat {
     width: 4em;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     aspect-ratio: 1;

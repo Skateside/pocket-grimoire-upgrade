@@ -1,10 +1,11 @@
 <template>
-    <div class="tabs">
-        <menu class="tabs__tablist" role="tablist" ref="tablist">
+    <div class="tabs" :class="props.class">
+        <menu class="tabs__tablist" :class="props.listClass" role="tablist" ref="tablist">
             <li v-for="{ disabled, title } in tabProps">
                 <button
                     type="button"
                     class="tabs__tab"
+                    :class="props.tabClass"
                     role="tab"
                     :aria-selected="isTabSelected(title)"
                     :aria-controls="makeId(title)"
@@ -17,7 +18,7 @@
                 </button>
             </li>
         </menu>
-        <div class="tabs__contents" ref="tabpanels">
+        <div class="tabs__contents" :class="props.contentsClass" ref="tabpanels">
             <slot></slot>
         </div>
     </div>
@@ -27,6 +28,7 @@
 import type {
     ITabsChange,
     ITabsInterface,
+    ITabsProps,
     ITabProps,
 } from "./tabTypes";
 import {
@@ -41,10 +43,11 @@ import {
 import { words } from "../../scripts/utilities/strings";
 import { clamp } from "../../scripts/utilities/numbers";
 
+const props = defineProps<ITabsProps>();
 const emit = defineEmits<{
     (e: "tabchange", tab: ITabsChange): void,
 }>();
-const prefix = useId();
+const suffix = useId();
 const slots = useSlots();
 const tablist = ref<HTMLElement | null>(null);
 const tabpanels = ref<HTMLElement | null>(null);
@@ -58,7 +61,7 @@ const selectedIndex = ref<number>(0);
 const selectedTitle = computed(() => tabProps.value[selectedIndex.value]?.title || "");
 
 const makeId: ITabsInterface["makeId"] = (title: string) => {
-    return `tab-${prefix}-${words(title.replace(/\W/g, "").toLowerCase()).join("-")}`;
+    return `tab-${words(title.replace(/\W/g, "").toLowerCase()).join("-")}-${suffix}`;
 };
 
 const isTabSelected: ITabsInterface["isTabSelected"] = (

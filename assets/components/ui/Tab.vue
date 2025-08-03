@@ -1,12 +1,13 @@
 <template>
     <div
         class="tabs__tab"
+        :class="props.class"
         role="tabpanel"
-        tabindex="0"
+        :tabindex="tabindex"
         :id="makeId(props.title)"
-        :hidden="disabled || !isTabSelected(props.title)"
+        :hidden="!isTabSelected(props.title)"
     >
-        <slot></slot>
+        <slot v-if="!disabled"></slot>
     </div>
 </template>
 
@@ -15,9 +16,17 @@ import type {
     ITabsInterface,
     ITabProps,
 } from './tabTypes';
-import { inject } from "vue";
+import {
+    computed,
+    inject,
+} from "vue";
 
 const props = defineProps<ITabProps>();
+const tabindex = computed(() => (
+    props.disabled
+    ? undefined
+    : 0)
+);
 const {
     isTabSelected,
     makeId,
