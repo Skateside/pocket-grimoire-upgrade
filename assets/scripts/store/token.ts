@@ -1,5 +1,8 @@
 import type {
     IToken,
+    ITokenSeat,
+    ITokenRole,
+    ITokenReminder,
 } from "../types/data";
 import type {
     IStorage,
@@ -30,7 +33,11 @@ const useTokenStore = defineStore("token", () => {
     }, { deep: true });
 
     const byType = computed(() => {
-        return Object.groupBy(tokens.value, ({ type }) => type);
+        return Object.groupBy(tokens.value, ({ type }) => type) as {
+            seat?: ITokenSeat[],
+            role?: ITokenRole[],
+            reminder?: ITokenReminder[],
+        };
     });
 
     const nextZ = computed(() => (
@@ -72,7 +79,7 @@ const useTokenStore = defineStore("token", () => {
     const createSeat = (settings: Partial<IToken> = {}) => create(settings, "seat");
     const createReminder = (settings: Partial<IToken> = {}) => create(settings, "reminder");
 
-    const update = (id: IToken["id"], settings: Partial<IToken>) => {
+    const update = <TToken extends IToken = IToken>(id: IToken["id"], settings: Partial<TToken>) => {
 
         const token = innerGetById(id);
 

@@ -236,6 +236,8 @@ const useRoleStore = defineStore("role", () => {
 
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
 
+    const hasScript = computed(() => script.value.length > 0);
+
     const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
 
         const reminders: IRoleReminder[] = [];
@@ -331,6 +333,7 @@ const useRoleStore = defineStore("role", () => {
         getScriptMeta,
         getIsValidScript,
         getScriptById,
+        hasScript,
         // Actions.
         setScript,
         setScriptById,

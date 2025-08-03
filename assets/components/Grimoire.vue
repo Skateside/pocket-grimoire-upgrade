@@ -15,6 +15,7 @@
             @movable-click="handleSeatClick"
         >
             {{ seat.id.slice(6, 12) }}
+            <span v-if="seat.name">{{ seat.name }}</span>
         </button>
 
     </div>
@@ -31,9 +32,9 @@
                 <menu>
                     <li><button type="button">Remove</button></li>
                 </menu>
-                <form>
+                <form @submit.prevent="setSeatName">
                     <label :for="`name-${idSuffix}`">What is the name of this player?</label>
-                    <input type="text" name="name" :id="`name-${idSuffix}`">
+                    <input type="text" name="name" :id="`name-${idSuffix}`" v-model="seatName">
                     <button type="submit">Set player name</button>
                 </form>
             </Tab>
@@ -96,6 +97,7 @@
 <script lang="ts" setup>
 import type {
     ICoordinates,
+    ITokenSeat,
 } from "../scripts/types/data";
 import {
     // computed,
@@ -138,6 +140,7 @@ const pad = ref<IPad>({
 const removeDropdown = ref<HTMLSelectElement | null>(null);
 const currentTokenId = ref<string>("");
 // const currentToken = computed(() => store.getById(currentTokenId.value));
+const seatName = defineModel<string>("");
 
 const addSeat = () => {
 
@@ -155,6 +158,19 @@ const removeSeat = () => {
         return;
     }
     store.destroy(id);
+};
+
+const setSeatName = () => {
+    
+    if (!currentTokenId.value) {
+        return;
+    }
+        
+    store.update<ITokenSeat>(currentTokenId.value, {
+        name: seatName.value,
+    });
+    // seatName.value = "";
+
 };
 
 const getMovableItem = (target: Element) => {
@@ -272,7 +288,14 @@ const checkClick = (event: MouseEvent) => {
 
 const handleSeatClick = (event: Event) => {
 
-    currentTokenId.value = (event.target as HTMLElement).id || "";
+    const tokenId = (event.target as HTMLElement).id || "";
+
+    currentTokenId.value = tokenId;
+
+    if (tokenId) {
+        seatName.value = (store.getById(tokenId)as ITokenSeat)?.name || "";
+    }
+
     menu.value?.showPopover();
 
 };
