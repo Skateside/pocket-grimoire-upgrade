@@ -24,6 +24,7 @@
         v-if="tokenId"
         :token-id="tokenId"
         @toggle="handleMenuToggle"
+        @remove="removeByMenu"
     />
 
     <p><button type="button" @click="addSeat">Add seat</button></p>
@@ -33,7 +34,7 @@
             <option value=""></option>
             <option v-for="seat in store.byType.seat">{{ seat.id }}</option>
         </select>
-        <button type="button" @click="removeSeat">Remove seat</button>
+        <button type="button" @click="removeByDropdown">Remove seat</button>
     </p>
 
 </template>
@@ -86,13 +87,34 @@ const addSeat = () => {
 
 };
 
-const removeSeat = () => {
+const removeByDropdown = () => {
+
     const id = removeDropdown.value?.value;
+
     if (!id) {
         return;
     }
-    store.destroy(id);
+
+    remove(id);
+
 };
+
+const removeByMenu = () => {
+
+    const id = tokenId.value;
+
+    if (!id) {
+        return;
+    }
+
+    remove(id);
+    tokenId.value = "";
+
+};
+
+const remove = (id: string) => {
+    store.destroy(id);
+}
 
 const setTokenId = (id: string) => tokenId.value = id;
 

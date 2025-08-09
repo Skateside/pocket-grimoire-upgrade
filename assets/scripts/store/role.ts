@@ -323,6 +323,7 @@ const useRoleStore = defineStore("role", () => {
         roles,
         script,
         scripts,
+        hasScript,
         // Getters.
         getById,
         getImage,
@@ -333,7 +334,6 @@ const useRoleStore = defineStore("role", () => {
         getScriptMeta,
         getIsValidScript,
         getScriptById,
-        hasScript,
         // Actions.
         setScript,
         setScriptById,

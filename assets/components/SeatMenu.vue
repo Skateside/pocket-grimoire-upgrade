@@ -9,7 +9,7 @@
         <Tabs>
             <Tab title="Player">
                 <menu>
-                    <li><button type="button">Remove</button></li>
+                    <li><button type="button" @click="removePlayer">Remove</button></li>
                 </menu>
                 <form @submit.prevent="setSeatName">
                     <label :for="`name-${idSuffix}`">What is the name of this player?</label>
@@ -17,7 +17,7 @@
                     <button type="submit">Set player name</button>
                 </form>
             </Tab>
-            <Tab title="Role">
+            <Tab title="Role" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button">Set</button></li>
                     <li><button type="button">Show</button></li>
@@ -51,7 +51,7 @@
                     </ul>
                 </fieldset>
             </Tab>
-            <Tab title="Reminder">
+            <Tab title="Reminder" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button">Add</button></li>
                 </menu>
@@ -70,6 +70,7 @@ import {
     ref,
     useId,
 } from 'vue';
+import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import {
     Tabs,
@@ -80,13 +81,15 @@ const idSuffix = useId();
 const props = defineProps<{
     tokenId: string,
 }>();
-const store = useTokenStore();
+const roleStore = useRoleStore();
+const tokenStore = useTokenStore();
 const seatName = defineModel<string>("");
 const emit = defineEmits<{
     (e: "toggle", newState: string): void,
+    (e: "remove"): void,
 }>();
 const menu = ref<HTMLElement | null>(null);
-const seatToken = computed(() => store.getById(props.tokenId) as ITokenSeat);
+const seatToken = computed(() => tokenStore.getById(props.tokenId) as ITokenSeat);
 
 const setSeatName = () => {
     
@@ -94,7 +97,7 @@ const setSeatName = () => {
         return;
     }
         
-    store.update<ITokenSeat>(props.tokenId, {
+    tokenStore.update<ITokenSeat>(props.tokenId, {
         name: seatName.value,
     });
 
@@ -102,6 +105,10 @@ const setSeatName = () => {
 
 const handleMenuToggle = (event: ToggleEvent) => {
     emit("toggle", event.newState);
+};
+
+const removePlayer = () => {
+    emit("remove");
 };
 
 onMounted(() => {
