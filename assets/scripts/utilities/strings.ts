@@ -8,6 +8,10 @@
  */
 export function randomId(prefix = "") {
 
+    // If we just take the UUID and parse it as hex, JavaScript will convert it
+    // into the form "1.23456e+83" and converting that into a string will create
+    // an unwanted format - splitting the UUID into parts and converting each
+    // one keeps it all as a number giving us a better return.
     const rand = window.crypto.randomUUID()
         .split("-")
         .map((hex) => Number.parseInt(hex, 16).toString(36))

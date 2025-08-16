@@ -54,6 +54,7 @@ export type IRole = {
     jinxes?: IRoleJinx[],
     special?: IRoleSpecial[],
 } & {
+    // TODO: anything that the Pocket Grimoire needs to manage the role.
 };
 
 export type IRoleDeprecatedReminders = IRole & {
@@ -130,7 +131,9 @@ export type IRoleSpecial = {
     global?: IRolePlayTeam,
 };
 
-export type IRoleScript = (IRoleMeta | IRole | IRole["id"])[];
+export type IRoleScript = (IRoleMeta | IRole)[];
+
+export type IRoleScriptImport = (IRoleMeta | IRole | IRole["id"])[];
 
 // Tokens.
 

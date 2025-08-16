@@ -4,11 +4,13 @@ import type {
     IRoleMeta,
     IRoleReminder,
     IRoleScript,
+    IRoleScriptImport,
     IRoleDeprecatedReminders,
+    IRoleTeam,
 } from "../types/data";
-import type {
-    RequireOnly,
-} from "../types/lib";
+// import type {
+//     RequireOnly,
+// } from "../types/lib";
 import type {
     IStorage,
 } from "../classes/Storage";
@@ -76,7 +78,7 @@ const useRoleStore = defineStore("role", () => {
         // access it.
         structuredClone(window.PG.roles).map(innerSetRemindersRole)
     );
-    const scripts = ref<Record<string, IRoleScript>>(
+    const scripts = ref<Record<string, IRoleScriptImport>>(
         structuredClone(window.PG.scripts)
     );
     const script = ref<IRoleScript>([
@@ -89,13 +91,15 @@ const useRoleStore = defineStore("role", () => {
         storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
     });
 
-    const innerIsMeta = (id: IRole["id"]) => id === "_meta";
-    const innerIsUniversal = (id: IRole["id"]) => id === "universalinfo";
+    // const innerIsMeta = (id: IRole["id"]) => id === "_meta";
+    const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => role.id === "_meta";
+    // const innerIsUniversal = (id: IRole["id"]) => id === "universalinfo";
+    const innerIsUniversal = (role: IRole) => role.id === "universalinfo";
 
-    const innerAsRoleObject = (roleOrId: IRole | IRoleMeta | IRole["id"]) => {
+    const innerAsRoleObject = (roleOrId: IRoleScriptImport[0]) => {
         return (
             typeof roleOrId === "string"
-            ? ({ id: roleOrId } as RequireOnly<IRole, "id">)
+            ? ({ id: roleOrId } as IRole)
             : roleOrId
         );
     };
@@ -108,13 +112,9 @@ const useRoleStore = defineStore("role", () => {
 
         return script.value.find((role) => {
 
-            if (role === id) {
-                return true;
-            }
+            const { id: roleId } = role;
 
-            const { id: roleId } = innerAsRoleObject(role);
-
-            if (roleId === id && !innerIsMeta(roleId)) {
+            if (roleId === id && !innerIsMeta(role)) {
                 return true;
             }
 
@@ -124,10 +124,10 @@ const useRoleStore = defineStore("role", () => {
 
     };
 
-    const innerGetMeta = (script: IRoleScript) => {
+    const innerGetMeta = (script: IRoleScriptImport) => {
 
         return script.find((item) => {
-            return innerIsMeta(innerAsRoleObject(item).id);
+            return innerIsMeta(innerAsRoleObject(item));
         }) as IRoleMeta | void;
 
     };
@@ -216,16 +216,12 @@ const useRoleStore = defineStore("role", () => {
 
     const getImage = computed(() => innerGetImage);
 
-    // const getReminders = computed(() => (role: IRole) => {
-    //     return role.reminders || [];
-    // });
-
     const getReminderImage = computed(() => (reminder: IRoleReminder, index: 0 | 1 | 2 = 0) => {
         return reminder.image || innerGetImage(reminder.role, index);
     });
 
-    const getIsMeta = computed(() => (role: IRole) => innerIsMeta(role.id));
-    const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role.id));
+    const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
+    const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role));
     const getScriptMeta = computed(() => innerGetMeta);
 
     const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
@@ -294,9 +290,40 @@ const useRoleStore = defineStore("role", () => {
 
     };
 
-    const setScript = (scriptData: IRoleScript) => {
+    const innerSortRoles = (roles: IRoleScript) => {
 
-        script.value = scriptData.map((data) => {
+        const sorted: (IRole | IRoleMeta)[] = roles.reduce((groups, role) => {
+
+                if (!innerIsMeta(role)) {
+                    groups.find(([team]) => team === role.team)?.[1].push(role);
+                }
+
+                return groups;
+
+            }, [
+                ["townsfolk", []],
+                ["outsider", []],
+                ["minion", []],
+                ["demon", []],
+                ["traveller", []],
+                ["fabled", []],
+            ] as [IRoleTeam, IRole[]][])
+            .map(([_team, roles]) => roles)
+            .flat();
+
+        const meta = roles.find(innerIsMeta);
+
+        if (meta) {
+            sorted.unshift(meta);
+        }
+
+        return sorted;
+
+    };
+
+    const setScript = (scriptData: IRoleScriptImport) => {
+
+        script.value = innerSortRoles(scriptData.map((data) => {
 
             const role = (
                 typeof data === "string"
@@ -310,7 +337,7 @@ const useRoleStore = defineStore("role", () => {
 
             return innerSetRemindersRole(innerUpdateReminders(role as IRole));
 
-        });
+        }));
 
     }
 
@@ -327,7 +354,6 @@ const useRoleStore = defineStore("role", () => {
         // Getters.
         getById,
         getImage,
-        // getReminders,
         getReminderImage,
         getIsMeta,
         getIsUniversal,

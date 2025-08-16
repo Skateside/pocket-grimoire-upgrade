@@ -19,7 +19,7 @@
             </Tab>
             <Tab title="Role" :disabled="!roleStore.hasScript">
                 <menu>
-                    <li><button type="button">Set</button></li>
+                    <li><button type="button" @click="setRole">Set</button></li>
                     <li><button type="button">Show</button></li>
                     <li><button type="button">Shroud</button></li>
                     <li><button type="button">Ghost vote</button></li>
@@ -60,6 +60,7 @@
         </Tabs>
         
     </div>
+    <!-- <RoleDialog v-if="isShowRoleDialog"/> -->
 </template>
 
 <script setup lang="ts">
@@ -83,7 +84,7 @@ const props = defineProps<{
 }>();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
-const seatName = defineModel<string>("");
+const seatName = defineModel<string>({ default: "" });
 const emit = defineEmits<{
     (e: "toggle", newState: string): void,
     (e: "remove"): void,
@@ -109,6 +110,12 @@ const handleMenuToggle = (event: ToggleEvent) => {
 
 const removePlayer = () => {
     emit("remove");
+};
+
+// const isShowRoleDialog = ref<boolean>(false);
+const setRole = () => {
+    // isShowRoleDialog.value = true;
+    // TODO: trigger a new event so that the grimoire can show the RoleDialog
 };
 
 onMounted(() => {
