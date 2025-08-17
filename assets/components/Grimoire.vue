@@ -2,7 +2,7 @@
     <div ref="grimoire" class="grimoire movable">
 
         <button
-            v-for="seat in store.byType.seat"
+            v-for="seat in tokenStore.byType.seat"
             type="button"
             class="seat movable__item"
             :id="seat.id"
@@ -12,7 +12,7 @@
                 "--z": seat.z,
             }'
             :title="seat.id"
-            @movable-click="() => setTokenId(seat.id)"
+            @movable-click="() => handleMovableClick(seat.id)"
         >
             {{ seat.id.slice(6, 12) }}
             <div v-if="seat.name">{{ seat.name }}</div>
@@ -20,19 +20,13 @@
 
     </div>
 
-    <SeatMenu
-        v-if="tokenId"
-        :token-id="tokenId"
-        @toggle="handleMenuToggle"
-        @remove="removeByMenu"
-    />
-
+    <!-- TODO: Remove this part from this component -->
     <p><button type="button" @click="addSeat">Add seat</button></p>
     <p>
         <label for="remove-dropdown">Remove</label>
         <select id="remove-dropdown" ref="removeDropdown">
             <option value=""></option>
-            <option v-for="seat in store.byType.seat">{{ seat.id }}</option>
+            <option v-for="seat in tokenStore.byType.seat">{{ seat.id }}</option>
         </select>
         <button type="button" @click="removeByDropdown">Remove seat</button>
     </p>
@@ -49,6 +43,7 @@ import {
     ref,
 } from "vue";
 import useTokenStore from "../scripts/store/token";
+import useUiStore from "../scripts/store/ui";
 import {
     debounce,
     noop,
@@ -56,7 +51,12 @@ import {
 import {
     clamp,
 } from "../scripts/utilities/numbers";
-import SeatMenu from "./SeatMenu.vue";
+
+const handleMovableClick = (seatId: string) => {
+    console.log("movable-click, seat.id = %o", seatId);
+    // uiStore.showSeatMenu(seatId);
+    uiStore.showPopover("seat-menu", seatId);
+};
 
 type IPad = {
     x: number,
@@ -65,7 +65,8 @@ type IPad = {
     b: number,
 };
 
-const store = useTokenStore();
+const tokenStore = useTokenStore();
+const uiStore = useUiStore();
 const grimoire = ref<HTMLElement | null>(null);
 const isDragging = ref<boolean>(false);
 const pad = ref<IPad>({
@@ -75,14 +76,13 @@ const pad = ref<IPad>({
     b: 0,
 });
 const removeDropdown = ref<HTMLSelectElement | null>(null);
-const tokenId = ref<string>("");
 
 const addSeat = () => {
 
-    store.createSeat({
+    tokenStore.createSeat({
         x: 0.1,
         y: 0.1,
-        z: store.nextZ,
+        z: tokenStore.nextZ,
     });
 
 };
@@ -99,32 +99,9 @@ const removeByDropdown = () => {
 
 };
 
-const removeByMenu = () => {
-
-    const id = tokenId.value;
-
-    if (!id) {
-        return;
-    }
-
-    remove(id);
-    tokenId.value = "";
-
-};
-
 const remove = (id: string) => {
-    store.destroy(id);
+    tokenStore.destroy(id);
 }
-
-const setTokenId = (id: string) => tokenId.value = id;
-
-const handleMenuToggle = (state: string) => {
-
-    if (state === "closed") {
-        tokenId.value = "";
-    }
-
-};
 
 const getMovableItem = (target: Element) => {
     return (target as HTMLElement).closest<HTMLElement>(".movable__item");
@@ -146,7 +123,7 @@ const moveTo = (movableItem: HTMLElement, { x, y, z }: ICoordinates) => {
         update.z = z;
     }
 
-    store.update(id, update);
+    tokenStore.update(id, update);
 
 };
 
@@ -197,7 +174,7 @@ const startDrag = (event: MouseEvent | TouchEvent) => {
     
     endDragging();
     dragHandler = (event) => dragObject(movableItem, event);
-    store.update(id, { z: store.nextZ });
+    tokenStore.update(id, { z: tokenStore.nextZ });
 
     window.addEventListener("mousemove", dragHandler);
     window.addEventListener("touchmove", dragHandler, {

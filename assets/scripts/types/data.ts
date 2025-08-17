@@ -100,6 +100,7 @@ export type IRoleMeta = {
 export type IRoleSpecial = {
     type: (
         "ability"
+        | "player"
         | "reveal"
         | "selection"
         | "signal"
@@ -109,13 +110,14 @@ export type IRoleSpecial = {
         "bag-disabled"
         | "bag-duplicate"
         | "card"
-        | "distribute-votes"
+        | "distribute-roles"
         | "ghost-votes"
         | "grimoire"
         | "hidden"
+        | "multiplier"
+        | "open-eyes"
         | "player"
         | "pointing"
-        | "multiplier"
         | "replace-character"
     ),
     value?: number | string, // string doesn't have to be numeric.
@@ -128,7 +130,7 @@ export type IRoleSpecial = {
         | "otherNight"
         | "otherDay"
     ),
-    global?: IRolePlayTeam,
+    global?: IRolePlayTeam | "dead",
 };
 
 export type IRoleScript = (IRoleMeta | IRole)[];

@@ -60,7 +60,6 @@
         </Tabs>
         
     </div>
-    <!-- <RoleDialog v-if="isShowRoleDialog"/> -->
 </template>
 
 <script setup lang="ts">
@@ -73,6 +72,7 @@ import {
 } from 'vue';
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
+// import useUiStore from "../scripts/store/ui";
 import {
     Tabs,
     Tab,
@@ -82,12 +82,14 @@ const idSuffix = useId();
 const props = defineProps<{
     tokenId: string,
 }>();
+// const uiStore = useUiStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const seatName = defineModel<string>({ default: "" });
 const emit = defineEmits<{
-    (e: "toggle", newState: string): void,
+    (e: "toggle", newState: "open" | "closed"): void,
     (e: "remove"): void,
+    (e: "set-role"): void,
 }>();
 const menu = ref<HTMLElement | null>(null);
 const seatToken = computed(() => tokenStore.getById(props.tokenId) as ITokenSeat);
@@ -105,7 +107,7 @@ const setSeatName = () => {
 };
 
 const handleMenuToggle = (event: ToggleEvent) => {
-    emit("toggle", event.newState);
+    emit("toggle", event.newState as "open" | "closed");
 };
 
 const removePlayer = () => {
@@ -116,6 +118,7 @@ const removePlayer = () => {
 const setRole = () => {
     // isShowRoleDialog.value = true;
     // TODO: trigger a new event so that the grimoire can show the RoleDialog
+    emit("set-role");
 };
 
 onMounted(() => {

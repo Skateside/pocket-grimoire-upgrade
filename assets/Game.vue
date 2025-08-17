@@ -4,6 +4,14 @@
     <!-- <RoleList /> -->
     <Grimoire />
 
+    <SeatMenu
+        v-if="uiStore.popoverOpen['seat-menu'] && uiStore.seatMenuToken"
+        :token-id="uiStore.seatMenuToken"
+        @toggle="(state) => uiStore.togglePopover('seat-menu', state === 'open')"
+        @remove="() => uiStore.hidePopover('seat-menu', true)"
+        @set-role="() => {}"
+    />
+
     <!-- <div class="list">
         <button
             v-for="infoToken in infoTokenStore.infoTokens"
@@ -44,6 +52,11 @@
 <script lang="ts" setup>
 import SelectEdition from "./components/SelectEdition.vue";
 import Grimoire from "./components/Grimoire.vue";
+import SeatMenu from "./components/SeatMenu.vue";
+import useUiStore from "./scripts/store/ui";
+
+const uiStore = useUiStore();
+
 // import RoleList from "./components/RoleList.vue";
 /*
 import type {
