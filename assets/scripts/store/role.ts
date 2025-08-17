@@ -91,9 +91,7 @@ const useRoleStore = defineStore("role", () => {
         storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
     });
 
-    // const innerIsMeta = (id: IRole["id"]) => id === "_meta";
     const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => role.id === "_meta";
-    // const innerIsUniversal = (id: IRole["id"]) => id === "universalinfo";
     const innerIsUniversal = (role: IRole) => role.id === "universalinfo";
 
     const innerAsRoleObject = (roleOrId: IRoleScriptImport[0]) => {

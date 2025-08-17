@@ -72,7 +72,8 @@ const image = computed(() => store.getImage(theRole.value as IRole, props.alignm
     // transform-origin: 0 0;
 
     // &[data-token="character"] {
-        width: clamp(70px, 100vw / 6, 150px);
+        // width: clamp(50px, 100vw / 6, 150px); // NOTE: This should just be 100%
+        width: 100%;
         // transform: scale(var(--token-size, 1));
     // }
 
@@ -145,9 +146,15 @@ const image = computed(() => store.getImage(theRole.value as IRole, props.alignm
     //     inset 0.1em 0.1em 0.2em rgb(255 255 255 / 0.2),
     //     inset 0 0 0.7em #8a4d0f,
     //     var(--shadow-amount) var(--shadow-amount) 0.2em rgb(0 0 0 / 0.8);
-    box-shadow:
-        inset 0.2em 0.2em 0.4em rgb(255 255 255 / 0.2),
-        inset 0 0 1.5em #8a4d0f;
+    // box-shadow:
+    //     inset 0.2em 0.2em 0.4em rgb(255 255 255 / 0.2),
+    //     inset 0 0 1.5em #8a4d0f;
+    background-image:
+        radial-gradient(
+            ellipse at center,
+            rgb(from #8a4d0f r g b / 0) 50%,
+            #8a4d0f 100%,
+        );
 
     // &.is-upside-down {
     //     --shadow-rotation: -1;

@@ -1,131 +1,94 @@
 <template>
-    <dialog
+    <article
         ref="dialog"
         class="dialog"
-        :class="[
-            {
-                'dialog--hide': props.hide,
-            },
-            dialogClasses,
-        ]"
-        @close="handleClose"
-        @click="({ target }) => checkClose(target)"
+        :class="[{
+            'dialog--hide': props.hide,
+        }, props.class]"
+        :popover="type"
     >
-        <form
-            v-if="visible"
-            method="dialog"
-            class="dialog__content"
-            :class="props.classes"
-        >
+        <section class="dialog__header">
+            <component
+                :is="`h${props.heading}`"
+                v-if="props.title"
+                class="dialog__title"
+            >
+                {{ props.title }}
+            </component>
+            <button
+                type="button"
+                class="dialog__close"
+                @click="dialog?.hidePopover()"
+            >
+                &times;
+            </button>
+        </section>
+        <section class="dialog__body">
             <slot />
-        </form>
-    </dialog>
+        </section>
+    </article>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import {
+    type HTMLAttributes,
+    computed,
+    onMounted,
+    ref,
+} from "vue";
 
-const visible = ref(false);
-const dialog = ref<HTMLDialogElement | null>();
-
-const props = defineProps<{
-    classes?: any,
-    dialogClasses?: any,
-    closeOn?: {
-        backdrop?: boolean,
-        click?: boolean,
-    },
+const props = withDefaults(defineProps<{
+    title?: string,
+    heading?: 1 | 2 | 3 | 4 | 5 | 6,
+    open?: boolean,
     hide?: boolean,
-}>();
-
-const emit = defineEmits<{
-    (e: "show"): void,
-    (e: "hide"): void,
-    (e: "toggle", visible: boolean): void,
-}>();
-
-const show = () => {
-    dialog.value?.showModal();
-    visible.value = true;
-    emit("show");
-};
-
-const close = (returnValue?: string) => {
-    dialog.value?.close(returnValue);
-};
-
-defineExpose({
-    visible,
-    show,
-    close,
+    manual?: boolean,
+    class?: HTMLAttributes["class"],
+}>(), {
+    heading: 3,
+    open: true,
+    hide: false,
+    manual: false,
 });
 
-const handleClose = () => {
+const dialog = ref<HTMLElement | null>(null);
 
-    visible.value = false;
-    emit("hide");
+const type = computed(() => (
+    props.manual
+    ? "manual"
+    : "auto"
+));
 
-};
-
-const checkClose = (target: EventTarget | null) => {
-
-    const { click, backdrop } = props.closeOn || {};
-
-    if (click) {
-        return close();
+onMounted(() => {
+    if (props.open) {
+        dialog.value?.showPopover();
     }
-
-    if (
-        backdrop
-        && !dialog.value?.firstElementChild?.contains(target as Node | null)
-    ) {
-        return close();
-    }
-
-    if ((target as HTMLElement | null)?.closest("[data-dialog=\"close\"]")) {
-        return close();
-    }
-
-};
-
-watch(visible, (value) => emit("toggle", value));
+});
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .dialog {
-    background-color: transparent;
-    border: none;
-    margin: auto;
-    padding: 0;
-}
+    width: min(80vw, 30em);
+    max-width: 100%; // NOTE: why?
+    max-height: 80vh;
+    background-color: #666;
 
-.dialog::backdrop {
-    background-image: radial-gradient(circle at center, rgb(0 0 0 / 50%) 20%, rgb(0 0 0 / 70%) 100%);
-    backdrop-filter: blur(0.5em);
+    &::backdrop {
+        background-image: radial-gradient(
+            circle at center,
+            rgb(0 0 0 / 50%) 20%,
+            rgb(0 0 0 / 70%) 100%
+        );
+        backdrop-filter: blur(0.5em);
+    }
 }
 
 .dialog--hide::backdrop {
     background-color: #000;
-    background-image: url("../../img/background-img3.webp");
-    backdrop-filter: none;
 }
 
-
-// .dialog__content {
-//     border: 0.2em solid #000;
-//     background-color: #fff;
-//     position: relative;
-//     width: min(80vw, 30em);
-//     max-width: 100%;
-//     background-image: url("../../img/background-img.webp");
-//     margin-left: auto;
-//     margin-right: auto;
-
-//     @at-root {
-//         .dialog--polyfilled > #{&} {
-//             max-height: 80vh;
-//             overflow: auto;
-//         }
-//     }
-// }
+.dialog__header {
+    position: sticky;
+    top: 0;
+}
 </style>
