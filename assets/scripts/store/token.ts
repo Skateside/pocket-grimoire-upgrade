@@ -116,9 +116,9 @@ const useTokenStore = defineStore("token", () => {
     return {
         // State.
         tokens,
-        // Getters.
         byType,
         getById,
+        // Getters.
         nextZ,
         // Actions.
         create,

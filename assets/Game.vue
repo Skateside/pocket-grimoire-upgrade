@@ -5,11 +5,15 @@
     <Grimoire />
 
     <SeatMenu
-        v-if="uiStore.popoverOpen['seat-menu'] && uiStore.seatMenuToken"
+        v-if="uiStore.isPopoverOpen('seat-menu')"
         :token-id="uiStore.seatMenuToken"
         @toggle="(state) => uiStore.togglePopover('seat-menu', state === 'open')"
         @remove="() => uiStore.hidePopover('seat-menu', true)"
-        @set-role="() => {}"
+        @set-role="setRoleFromSeatMenu"
+    />
+
+    <RoleDialog
+        v-if="uiStore.isPopoverOpen('role-dialog')"
     />
 
     <!-- <div class="list">
@@ -53,9 +57,20 @@
 import SelectEdition from "./components/SelectEdition.vue";
 import Grimoire from "./components/Grimoire.vue";
 import SeatMenu from "./components/SeatMenu.vue";
+import RoleDialog from "./components/RoleDialog.vue";
 import useUiStore from "./scripts/store/ui";
+import { nextTick } from "vue";
 
 const uiStore = useUiStore();
+
+const setRoleFromSeatMenu = () => {
+
+    uiStore.hidePopover("seat-menu");
+    nextTick(() => {
+        uiStore.showPopover("role-dialog");
+    });
+
+};
 
 // import RoleList from "./components/RoleList.vue";
 /*

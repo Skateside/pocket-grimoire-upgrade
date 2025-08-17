@@ -9,7 +9,7 @@ import {
     defineStore,
 } from "pinia";
 import {
-    // computed,
+    computed,
     // nextTick,
     // reactive,
     ref,
@@ -19,26 +19,44 @@ import {
 
 const useUiStore = defineStore("ui", () => {
 
-    
-    const innerPopoverHandlers: Record<string, Partial<Record<"show" | "hide" | "isOpen", AnyFunction>>> = Object.create(null);
-    
-    const popoverOpen = shallowReactive<Record<string, boolean>>({});
+    const innerPopoverHandlers: Record<
+        string,
+        Partial<{
+            show: (...args: any[]) => void,
+            hide: (...args: any[]) => void,
+            isOpen: () => boolean,
+        }>
+    > = Object.create(null);
+    const innerPopoverOpen = shallowReactive<Record<string, boolean>>({});
+
     const seatMenuToken = ref<IToken["id"]>("");
+
+    const isPopoverOpen = computed(() => (id: string) => {
+
+        if (!innerPopoverOpen[id]) {
+            return false;
+        }
+
+        if (innerPopoverHandlers[id]?.isOpen) {
+            return innerPopoverHandlers[id].isOpen();
+        }
+
+        return true;
+
+    });
 
     const togglePopover = (id: string, state?: boolean, ...args: any[]) => {
 
         if (state === undefined) {
-            state = !popoverOpen[id];
+            state = !innerPopoverOpen[id];
         }
 
-        if (state === Boolean(popoverOpen[id])) {
+        if (state === Boolean(innerPopoverOpen[id])) {
             return;
         }
 
-        popoverOpen[id] = state;
-
-        const method = state ? "show" : "hide";
-        innerPopoverHandlers[id]?.[method]?.(...args);
+        innerPopoverOpen[id] = state;
+        innerPopoverHandlers[id]?.[state ? "show" : "hide"]?.(...args);
 
     };
 
@@ -70,9 +88,9 @@ const useUiStore = defineStore("ui", () => {
 
     return {
         // State.
-        popoverOpen,
         seatMenuToken,
         // Getters.
+        isPopoverOpen,
         // Actions.
         togglePopover,
         showPopover,
