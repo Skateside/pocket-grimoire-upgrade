@@ -36,51 +36,11 @@
                 </menu>
                 <fieldset v-if="roleToken && showAlignment">
                     <legend>Set alignment</legend>
-                    <ul v-if="roleToken.team === 'townsfolk' || roleToken.team === 'outsider'">
-                        <li>
-                            <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
-                                Good
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
-                                Evil
-                            </label>
-                        </li>
-                    </ul>
-                    <ul v-else-if="roleToken.team === 'minion' || roleToken.team === 'demon'">
-                        <li>
-                            <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
-                                Evil
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
-                                Good
-                            </label>
-                        </li>
-                    </ul>
-                    <ul v-if="roleToken.team === 'traveller'">
-                        <li>
-                            <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
-                                Default
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
-                                Good
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`alignment-2-${idSuffix}`">
-                                <input type="radio" v-model="alignment" name="alignment" value="2" :id="`alignment-2-${idSuffix}`">
-                                Evil
+                    <ul>
+                        <li v-for="(text, index) in alignmentOptions" :key="index">
+                            <label :for="`alignment-${index}-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" :value="index" :id="`alignment-${index}-${idSuffix}`">
+                                {{ text }}
                             </label>
                         </li>
                     </ul>
@@ -156,6 +116,28 @@ const showAlignment = computed(() => {
         && image.length > 1
         && team !== "fabled"
     );
+
+});
+const alignmentOptions = computed<string[]>(() => {
+
+    const { team } = roleToken.value || {};
+
+    switch (team) {
+
+    case "townsfolk":
+    case "outsider":
+        return ["Good", "Evil"]; // TODO i18n
+
+    case "minion":
+    case "demon":
+        return ["Evil", "Good"]; // TODO i18n
+    
+    case "traveller":
+        return ["Default", "Good", "Evil"]; // TODO i18n;
+
+    }
+
+    return [];
 
 });
 
