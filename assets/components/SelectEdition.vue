@@ -78,7 +78,7 @@
 <script setup lang="ts">
     import type {
         IBotcScriptResponse,
-        IRoleScript,
+        IRoleScriptImport,
     } from "../scripts/types/data";
     import {
         computed,
@@ -101,7 +101,7 @@
     const inputId = useId();
     const isLoading = ref<boolean>(false);
     const errorMessage = ref<string>("");
-    const botcScripts = ref<Record<string, IRoleScript>>({});
+    const botcScripts = ref<Record<string, IRoleScriptImport>>({});
     const botcLookup = defineModel<string>();
     const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
 
@@ -126,7 +126,7 @@
         isLoading.value = true;
         
         const data = new FormData((event.target as HTMLFormElement));
-        const promises: [string, (_value: any) => Promise<IRoleScript>][] = [
+        const promises: [string, (_value: any) => Promise<IRoleScriptImport>][] = [
             ["", () => Promise.reject("Empty form")], // TODO: i18n
             ["script", processScriptId],
             ["upload", processUploadedScript],
@@ -146,7 +146,7 @@
 
     };
 
-    const processScriptId = (id: string) => new Promise<IRoleScript>((resolve, reject) => {
+    const processScriptId = (id: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
         const script = store.getScriptById(id);
 
@@ -158,7 +158,7 @@
 
     });
 
-    const handleScript = (data: string): { script?: IRoleScript, error?: string } => {
+    const handleScript = (data: string): { script?: IRoleScriptImport, error?: string } => {
 
         let script = [];
 
@@ -176,7 +176,7 @@
 
     };
 
-    const processUploadedScript = (file: File) => new Promise<IRoleScript>((resolve, reject) => {
+    const processUploadedScript = (file: File) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
         const reader = new FileReader();
 
@@ -196,7 +196,7 @@
 
     });
 
-    const processPastedScript = (data: string) => new Promise<IRoleScript>((resolve, reject) => {
+    const processPastedScript = (data: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
         const { script, error } = handleScript(data);
 
@@ -208,7 +208,7 @@
 
     });
 
-    const handleAjax = <TResponse = IRoleScript>(url: string, data: Record<string, any>): Promise<TResponse> => fetch(url, {
+    const handleAjax = <TResponse = IRoleScriptImport>(url: string, data: Record<string, any>): Promise<TResponse> => fetch(url, {
             method: "POST",
             body: JSON.stringify(data),
         })
@@ -222,7 +222,7 @@
 
     const processURLScript = (url: string) => handleAjax("/get-url", { url });
 
-    const processBotcScript = (name: string) => new Promise<IRoleScript>((resolve, reject) => {
+    const processBotcScript = (name: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
         if (!Object.hasOwn(botcScripts.value, name)) {
             return reject(`Unrecognised script "${name}"`); // TODO: i18n

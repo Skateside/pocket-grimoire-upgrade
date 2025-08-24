@@ -1,5 +1,8 @@
 <template>
-    <Dialog title="Roles">
+    <Dialog
+        title="Roles"
+        @hide="() => emit('hide')"
+    >
         <div class="o-grid">
             <button
                 v-for="role in roles"
@@ -21,6 +24,7 @@ import RoleToken from "./RoleToken.vue";
 import Dialog from "./Dialog.vue";
 
 const emit = defineEmits<{
+    (e: "hide"): void,
     (e: "role-click", id: IRole["id"]): void,
 }>();
 

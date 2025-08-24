@@ -53,8 +53,6 @@ import {
 } from "../scripts/utilities/numbers";
 
 const handleMovableClick = (seatId: string) => {
-    console.log("movable-click, seat.id = %o", seatId);
-    // uiStore.showSeatMenu(seatId);
     uiStore.showPopover("seat-menu", seatId);
 };
 

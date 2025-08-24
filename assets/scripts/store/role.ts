@@ -98,7 +98,7 @@ const useRoleStore = defineStore("role", () => {
         return (
             typeof roleOrId === "string"
             ? ({ id: roleOrId } as IRole)
-            : roleOrId
+            : roleOrId as IRole
         );
     };
 
@@ -176,7 +176,7 @@ const useRoleStore = defineStore("role", () => {
         const homebrew = innerGetScriptRole(id);
 
         if (!role && !homebrew) {
-            throw new UnrecognisedRoleError(id);
+            throw new UnrecognisedRoleError(id || "(empty role)");
         }
 
         const update = innerAsRoleObject(homebrew || id);

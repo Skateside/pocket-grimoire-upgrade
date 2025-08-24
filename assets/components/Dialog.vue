@@ -51,6 +51,12 @@ const props = withDefaults(defineProps<{
     manual: false,
 });
 
+const emit = defineEmits<{
+    (e: "show"): void,
+    (e: "hide"): void,
+    (e: "toggle", newState: "showing" | "hidden"): void,
+}>();
+
 const dialog = ref<HTMLElement | null>(null);
 
 const type = computed(() => (
@@ -60,9 +66,32 @@ const type = computed(() => (
 ));
 
 onMounted(() => {
+
     if (props.open) {
         dialog.value?.showPopover();
     }
+
+    dialog.value?.addEventListener("toggle", ({ newState }) => {
+
+        emit(
+            "toggle",
+            (
+                newState === "open"
+                ? "showing"
+                : "hidden"
+            ),
+        );
+
+        if (newState === "open") {
+            emit("show");
+        } else if (newState === "closed") {
+            emit("hide");
+        }
+
+    });
+
+    // TODO: beforeToggle event.
+
 });
 </script>
 

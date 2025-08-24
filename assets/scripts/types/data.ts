@@ -97,6 +97,7 @@ export type IRoleMeta = {
     otherNight?: string[],
 };
 
+/*
 export type IRoleSpecial = {
     type: (
         "ability"
@@ -132,10 +133,49 @@ export type IRoleSpecial = {
     ),
     global?: IRolePlayTeam | "dead",
 };
+*/
+export type IRoleSpecialTime = (
+    "pregame"
+    | "day"
+    | "night"
+    | "firstNight"
+    | "firstDay"
+    | "otherNight"
+    | "otherDay"
+);
+
+export type IRoleSpecialGlobal = IRolePlayTeam | "dead";
+
+export type IRoleSpecial = {
+    type: "selection",
+    name: "bag-disabled" | "bag-duplicate",
+} | {
+    type: "ability",
+    name: "pointing" | "ghost-votes" | "distribute-votes",
+    time?: IRoleSpecialTime,
+    global?: IRoleSpecialGlobal,
+} | {
+    type: "signal",
+    name: "grimoire",
+} | {
+    type: "signal",
+    name: "card" | "player",
+    value: string,
+} | {
+    type: "vote",
+    name: "hidden",
+} | {
+    type: "vote",
+    name: "multiplier",
+    value: number,
+} | {
+    type: "reveal",
+    name: "replace-character",
+};
 
 export type IRoleScript = (IRoleMeta | IRole)[];
 
-export type IRoleScriptImport = (IRoleMeta | IRole | IRole["id"])[];
+export type IRoleScriptImport = (IRoleMeta | IRole | IRole["id"] | { id: IRole["id"] })[];
 
 // Tokens.
 
@@ -148,6 +188,10 @@ export type ITokenSeat = IToken & {
     type: "seat",
     role?: IRole["id"],
     name?: string,
+    dead?: boolean,
+    ghostVote?: boolean,
+    rotate?: boolean,
+    alignment?: 0 | 1 | 2,
 };
 
 // NOTE: This is for something like a Fabled - on the grimoire pad but not a player.
@@ -168,7 +212,7 @@ export type IBotcScriptResponse = {
     previous: string | null,
     results: {
         author: string,
-        content: IRoleScript,
+        content: IRoleScriptImport,
         name: string,
         pk: number,
         score: number,

@@ -63,13 +63,8 @@ const useUiStore = defineStore("ui", () => {
 
         if (state) {
             currentPopover = [id, ...args];
-            // popoverList.push([id, ...args]);
         } else {
             currentPopover = null;
-            // const index = popoverList.findIndex(([popoverId]) => popoverId === id);
-            // if (index > -1) {
-            //     popoverList.splice(index, 1);
-            // }
         }
 
     };
