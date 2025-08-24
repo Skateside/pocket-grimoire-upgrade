@@ -3,10 +3,10 @@ import type {
 } from "vite";
 import type {
     IInfoToken,
-    IRole,
-    IRoleReminder,
+    IRoleRaw,
+    IRoleReminderRaw,
     IRoleReminderFlag,
-    IRoleJinx,
+    IRoleJinxRaw,
     IRoleMeta,
 } from "../assets/scripts/types/data";
 import {
@@ -46,15 +46,15 @@ type ILocaleDataOptionsReal = {
 
 // Types that describe the data that gets read from the files.
 type IRawRoleImages = {
-    id: IRole["id"],
-    image: IRole["image"],
+    id: IRoleRaw["id"],
+    image: IRoleRaw["image"],
     reminders?: string[],
 }[];
-type IRawScripts = Record<string, (IRoleMeta | IRole["id"])[]>;
+type IRawScripts = Record<string, (IRoleMeta | IRoleRaw["id"])[]>;
 type ILocaleJinxes = {
-    target: IRoleJinx["id"],
-    trick: IRoleJinx["id"],
-    reason: IRoleJinx["reason"],
+    target: IRoleJinxRaw["id"],
+    trick: IRoleJinxRaw["id"],
+    reason: IRoleJinxRaw["reason"],
 }[];
 type ILocaleInfoTokens = Record<string, IInfoToken["text"]>;
 type ILocaleScripts = {
@@ -194,19 +194,19 @@ const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
     localeRoles,
     localeExtraRoles,
     localeJinxes,
-]) => new Promise<IRole[]>((resolve, _reject) => {
+]) => new Promise<IRoleRaw[]>((resolve, _reject) => {
 
-    const roles = rawRoles as IRole[];
+    const roles = rawRoles as IRoleRaw[];
 
     roles.push(
-        ...(universalRoles as IRole[]),
-        ...((localeExtraRoles || []) as IRole[]),
+        ...(universalRoles as IRoleRaw[]),
+        ...((localeExtraRoles || []) as IRoleRaw[]),
     );
     roles.forEach((role) => {
 
         Object.assign(
             role,
-            (localeRoles as IRole[]).find(({ id }) => id === role.id) || {},
+            (localeRoles as IRoleRaw[]).find(({ id }) => id === role.id) || {},
         );
 
         fixRoleJinxes(role, localeJinxes);
@@ -219,7 +219,7 @@ const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
 
 }));
 
-const fixRoleJinxes = (role: IRole, localeJinxes: ILocaleJinxes) => {
+const fixRoleJinxes = (role: IRoleRaw, localeJinxes: ILocaleJinxes) => {
 
     if (!role.jinxes?.length) {
         return;
@@ -240,10 +240,10 @@ const fixRoleJinxes = (role: IRole, localeJinxes: ILocaleJinxes) => {
 
 // This should be a temporary fix - eventually, the data itself should be
 // corrected to use the new format.
-const fixRoleReminders = (role: IRole) => {
+const fixRoleReminders = (role: IRoleRaw) => {
 
     const { reminders, remindersGlobal } = role as {
-        reminders?: IRoleReminder[] | string[],
+        reminders?: IRoleReminderRaw[] | string[],
         remindersGlobal?: string[],
     };
 
@@ -260,7 +260,7 @@ const fixRoleReminders = (role: IRole) => {
         // Regular reminders are just that.
         for (const [_index, name] of Object.entries(reminders || [])) {
 
-            const reminder: IRoleReminder = (
+            const reminder: IRoleReminderRaw = (
                 typeof name === "string"
                 ? { name }
                 : name
@@ -295,7 +295,7 @@ const fixRoleReminders = (role: IRole) => {
                 flags.push("role");
             }
 
-            const reminder: IRoleReminder = { name, flags };
+            const reminder: IRoleReminderRaw = { name, flags };
             role.reminders.push(reminder);
 
         }
@@ -306,7 +306,7 @@ const fixRoleReminders = (role: IRole) => {
 
 };
 
-const fixRoleImages = (role: IRole, images: IRawRoleImages) => {
+const fixRoleImages = (role: IRoleRaw, images: IRawRoleImages) => {
 
     const roleImages = (images as IRawRoleImages).find(({ id }) => id === role.id);
 

@@ -37,7 +37,7 @@ export type IInfoTokenColours = (
 
 // Roles.
 
-export type IRole = {
+export type IRoleRaw = {
     id: string,
     team: IRoleTeam,
     name: string,
@@ -50,11 +50,15 @@ export type IRole = {
     otherNight?: number,
     otherNightReminder?: string,
     setup?: boolean,
+    reminders?: IRoleReminderRaw[],
+    jinxes?: IRoleJinxRaw[],
+    special?: IRoleSpecial[],
+};
+
+export type IRole = Omit<IRoleRaw, 'reminders' | 'jinxes'> & {
+    // TODO: anything that the Pocket Grimoire needs to manage the role.
     reminders?: IRoleReminder[],
     jinxes?: IRoleJinx[],
-    special?: IRoleSpecial[],
-} & {
-    // TODO: anything that the Pocket Grimoire needs to manage the role.
 };
 
 export type IRoleDeprecatedReminders = IRole & {
@@ -68,19 +72,23 @@ export type IRoleTeam = IRolePlayTeam | "fabled";
 
 export type IRoleReminderFlag = "global" | "public" | "kill" | "dead" | "role";
 
-export type IRoleReminder = {
+export type IRoleReminderRaw = {
     name: string,
     count?: number,
     flags?: IRoleReminderFlag[],
-} & {
+};
+
+export type IRoleReminder = IRoleReminderRaw & {
     role: IRole, // A reference back to the role.
     image?: string, // Create a seperate image for universal reminders.
 };
 
-export type IRoleJinx = {
+export type IRoleJinxRaw = {
     id: string,
     reason: string,
-} & {
+};
+
+export type IRoleJinx = IRoleJinxRaw & {
     state: "theoretical" | "potential" | "active",
 };
 // state: "theoretical" = this jinx exists but only the role is in the script,

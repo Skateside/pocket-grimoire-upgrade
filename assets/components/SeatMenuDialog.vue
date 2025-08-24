@@ -39,13 +39,13 @@
                     <ul v-if="roleToken.team === 'townsfolk' || roleToken.team === 'outsider'">
                         <li>
                             <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
                                 Good
                             </label>
                         </li>
                         <li>
                             <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
                                 Evil
                             </label>
                         </li>
@@ -53,13 +53,13 @@
                     <ul v-else-if="roleToken.team === 'minion' || roleToken.team === 'demon'">
                         <li>
                             <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
                                 Evil
                             </label>
                         </li>
                         <li>
                             <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
                                 Good
                             </label>
                         </li>
@@ -67,19 +67,19 @@
                     <ul v-if="roleToken.team === 'traveller'">
                         <li>
                             <label :for="`alignment-0-${idSuffix}`">
-                                <input type="radio" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="0" :id="`alignment-0-${idSuffix}`">
                                 Default
                             </label>
                         </li>
                         <li>
                             <label :for="`alignment-1-${idSuffix}`">
-                                <input type="radio" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="1" :id="`alignment-1-${idSuffix}`">
                                 Good
                             </label>
                         </li>
                         <li>
                             <label :for="`alignment-2-${idSuffix}`">
-                                <input type="radio" name="alignment" value="2" :id="`alignment-2-${idSuffix}`">
+                                <input type="radio" v-model="alignment" name="alignment" value="2" :id="`alignment-2-${idSuffix}`">
                                 Evil
                             </label>
                         </li>
@@ -107,6 +107,7 @@ import {
     onMounted,
     // ref,
     useId,
+    watch,
 } from 'vue';
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
@@ -125,7 +126,8 @@ const emit = defineEmits<{
     (e: "remove"): void,
     (e: "set-role"): void,
 }>();
-const seatName = defineModel<string>({ default: "" });
+const seatName = defineModel<string>('seat-name', { default: "" });
+const alignment = defineModel<0 | 1 | 2>('alignment', { default: 0 });
 
 const idSuffix = useId();
 // const uiStore = useUiStore();
@@ -213,6 +215,17 @@ const toggleRotate = () => {
 };
 
 onMounted(() => {
+
     seatName.value = seatToken.value?.name || "";
+    alignment.value = seatToken.value?.alignment || 0;
+
+});
+
+watch(alignment, (value) => {
+
+    tokenStore.update<ITokenSeat>(seatToken.value.id, {
+        alignment: value,
+    });
+
 });
 </script>

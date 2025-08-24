@@ -25,7 +25,7 @@
     <p>
         <label for="remove-dropdown">Remove</label>
         <select id="remove-dropdown" ref="removeDropdown">
-            <option value=""></option>
+            <option disabled value="">Please select</option>
             <option v-for="seat in tokenStore.byType.seat">{{ seat.id }}</option>
         </select>
         <button type="button" @click="removeByDropdown">Remove seat</button>
