@@ -7,7 +7,7 @@
     <SeatMenuDialog
         v-if="uiStore.isPopoverOpen('seat-menu')"
         :token-id="uiStore.seatMenuToken"
-        @toggle="(state) => uiStore.togglePopover('seat-menu', state === 'showing')"
+        @toggle="(visible) => uiStore.togglePopover('seat-menu', visible)"
         @remove="() => uiStore.hidePopover('seat-menu', true)"
         @set-role="() => uiStore.nextPopover('role-dialog')"
     />
