@@ -121,7 +121,7 @@ const props = defineProps<{
     tokenId: string,
 }>();
 const emit = defineEmits<{
-    (e: "toggle", newState: "showing" | "hidden"): void,
+    (e: "toggle", visible: boolean): void,
     (e: "remove"): void,
     (e: "set-role"): void,
 }>();
@@ -169,8 +169,8 @@ const setSeatName = () => {
 
 };
 
-const handleToggle = (newState: "showing" | "hidden") => {
-    emit("toggle", newState);
+const handleToggle = (visible: boolean) => {
+    emit("toggle", visible);
 };
 
 const removePlayer = () => {

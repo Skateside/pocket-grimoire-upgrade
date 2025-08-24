@@ -54,7 +54,7 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
     (e: "show"): void,
     (e: "hide"): void,
-    (e: "toggle", newState: "showing" | "hidden"): void,
+    (e: "toggle", visible: boolean): void,
 }>();
 
 const dialog = ref<HTMLElement | null>(null);
@@ -73,14 +73,7 @@ onMounted(() => {
 
     dialog.value?.addEventListener("toggle", ({ newState }) => {
 
-        emit(
-            "toggle",
-            (
-                newState === "open"
-                ? "showing"
-                : "hidden"
-            ),
-        );
+        emit("toggle", newState === "open");
 
         if (newState === "open") {
             emit("show");
