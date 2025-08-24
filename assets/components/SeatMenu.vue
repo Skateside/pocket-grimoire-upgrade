@@ -5,6 +5,7 @@
         popover
     >
         <p>{{ props.tokenId }}</p>
+        <p v-if="roleToken">{{ roleToken.name }}</p>
 
         <Tabs>
             <Tab title="Player">
@@ -63,7 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ITokenSeat } from "../scripts/types/data";
+import type {
+    // IRole,
+    ITokenSeat,
+} from "../scripts/types/data";
 import {
     computed,
     onMounted,
@@ -93,6 +97,9 @@ const emit = defineEmits<{
 }>();
 const menu = ref<HTMLElement | null>(null);
 const seatToken = computed(() => tokenStore.getById(props.tokenId) as ITokenSeat);
+const roleToken = computed(() => {
+    return roleStore.getById(seatToken.value.role || "") || null;
+});
 
 const setSeatName = () => {
     
@@ -114,10 +121,7 @@ const removePlayer = () => {
     emit("remove");
 };
 
-// const isShowRoleDialog = ref<boolean>(false);
 const setRole = () => {
-    // isShowRoleDialog.value = true;
-    // TODO: trigger a new event so that the grimoire can show the RoleDialog
     emit("set-role");
 };
 

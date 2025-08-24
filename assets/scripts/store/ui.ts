@@ -10,7 +10,7 @@ import {
 } from "pinia";
 import {
     computed,
-    // nextTick,
+    nextTick,
     // reactive,
     ref,
     shallowReactive,
@@ -45,6 +45,9 @@ const useUiStore = defineStore("ui", () => {
 
     });
 
+    let currentPopover: [string, ...any[]] | null = null;
+    const popoverList: [string, ...any[]][] = [];
+
     const togglePopover = (id: string, state?: boolean, ...args: any[]) => {
 
         if (state === undefined) {
@@ -58,6 +61,17 @@ const useUiStore = defineStore("ui", () => {
         innerPopoverOpen[id] = state;
         innerPopoverHandlers[id]?.[state ? "show" : "hide"]?.(...args);
 
+        if (state) {
+            currentPopover = [id, ...args];
+            // popoverList.push([id, ...args]);
+        } else {
+            currentPopover = null;
+            // const index = popoverList.findIndex(([popoverId]) => popoverId === id);
+            // if (index > -1) {
+            //     popoverList.splice(index, 1);
+            // }
+        }
+
     };
 
     const showPopover = (id: string, ...args: any[]) => {
@@ -66,6 +80,41 @@ const useUiStore = defineStore("ui", () => {
 
     const hidePopover = (id: string, ...args: any[]) => {
         togglePopover(id, false, ...args);
+    };
+
+    const nextPopover = (id: string, ...args: any[]) => {
+
+        if (currentPopover) {
+
+            popoverList.push([...currentPopover]);
+            hidePopover(currentPopover[0]);
+
+        }
+
+        nextTick(() => showPopover(id, ...args));
+
+    };
+
+    const previousPopover = () => {
+
+        if (currentPopover) {
+            hidePopover(currentPopover[0]);
+        }
+
+        nextTick(() => {
+
+            const params = popoverList.pop();
+
+            if (params) {
+                showPopover(...params);
+            }
+
+        });
+
+    };
+
+    const clearPopoverList = () => {
+        popoverList.length = 0;
     };
 
     // Register extra functionality for specific popovers.
@@ -95,6 +144,9 @@ const useUiStore = defineStore("ui", () => {
         togglePopover,
         showPopover,
         hidePopover,
+        nextPopover,
+        previousPopover,
+        clearPopoverList,
     };
 
 });

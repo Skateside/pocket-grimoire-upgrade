@@ -9,11 +9,12 @@
         :token-id="uiStore.seatMenuToken"
         @toggle="(state) => uiStore.togglePopover('seat-menu', state === 'open')"
         @remove="() => uiStore.hidePopover('seat-menu', true)"
-        @set-role="setRoleFromSeatMenu"
+        @set-role="() => uiStore.nextPopover('role-dialog')"
     />
 
     <RoleDialog
         v-if="uiStore.isPopoverOpen('role-dialog')"
+        @role-click="handleRoleClick"
     />
 
     <!-- <div class="list">
@@ -59,16 +60,27 @@ import Grimoire from "./components/Grimoire.vue";
 import SeatMenu from "./components/SeatMenu.vue";
 import RoleDialog from "./components/RoleDialog.vue";
 import useUiStore from "./scripts/store/ui";
-import { nextTick } from "vue";
+import useTokenStore from "./scripts/store/token";
+import type {
+    IRole,
+    ITokenRole,
+} from "./scripts/types/data";
+// import { nextTick } from "vue";
 
 const uiStore = useUiStore();
+const tokenStore = useTokenStore();
 
-const setRoleFromSeatMenu = () => {
+const handleRoleClick = (id: IRole["id"]) => {
 
-    uiStore.hidePopover("seat-menu");
-    nextTick(() => {
-        uiStore.showPopover("role-dialog");
+    if (!uiStore.seatMenuToken) {
+        return;
+    }
+
+    tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
+        role: id,
     });
+
+    uiStore.previousPopover();
 
 };
 

@@ -5,6 +5,7 @@
                 v-for="role in roles"
                 type="button"
                 class="no-button"
+                @click="() => emit('role-click', role.id)"
             >
                 <RoleToken :role="role" />
             </button>
@@ -18,6 +19,10 @@ import useRoleStore from "../scripts/store/role";
 import { computed } from "vue";
 import RoleToken from "./RoleToken.vue";
 import Dialog from "./Dialog.vue";
+
+const emit = defineEmits<{
+    (e: "role-click", id: IRole["id"]): void,
+}>();
 
 const store = useRoleStore();
 const roles = computed(() => {
