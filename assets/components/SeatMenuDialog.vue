@@ -160,7 +160,7 @@ const alignmentOptions = computed<string[]>(() => {
     case "minion":
     case "demon":
         return ["Evil", "Good"]; // TODO i18n
-    
+
     case "traveller":
         return ["Default", "Good", "Evil"]; // TODO i18n
 
@@ -175,11 +175,11 @@ const name = computed(() => {
 });
 
 const setSeatName = () => {
-    
+
     if (!props.tokenId) {
         return;
     }
-        
+
     tokenStore.update<ITokenSeat>(props.tokenId, {
         name: seatName.value,
     });
