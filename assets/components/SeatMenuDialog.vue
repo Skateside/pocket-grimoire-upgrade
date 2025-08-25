@@ -1,7 +1,7 @@
 <template>
     <Dialog
         :title="name"
-        @toggle="handleToggle"
+        v-on="bubbleEvents(emit)"
     >
         <!-- TEMP stats to make sure everything's correct -->
         <table>
@@ -98,7 +98,11 @@ import {
     Tabs,
     Tab,
 } from "./ui/tabs";
-import Dialog from "./Dialog.vue";
+import {
+    type IDialogEvents,
+    Dialog,
+    bubbleEvents,
+} from "./ui/dialog";
 import {
     supplant,
 } from "../scripts/utilities/strings";
@@ -106,8 +110,7 @@ import {
 const props = defineProps<{
     tokenId: string,
 }>();
-const emit = defineEmits<{
-    (e: "toggle", visible: boolean): void,
+const emit = defineEmits<IDialogEvents & {
     (e: "remove"): void,
     (e: "set-role"): void,
     (e: "show-role", id: IRole): void,
@@ -181,10 +184,6 @@ const setSeatName = () => {
         name: seatName.value,
     });
 
-};
-
-const handleToggle = (visible: boolean) => {
-    emit("toggle", visible);
 };
 
 const removePlayer = () => {

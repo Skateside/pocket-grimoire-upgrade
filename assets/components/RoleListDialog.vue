@@ -1,7 +1,7 @@
 <template>
     <Dialog
         title="Roles"
-        @hide="() => emit('hide')"
+        v-on="bubbleEvents(emit)"
     >
         <div class="o-grid">
             <button
@@ -21,10 +21,13 @@ import type { IRole } from "../scripts/types/data";
 import useRoleStore from "../scripts/store/role";
 import { computed } from "vue";
 import RoleToken from "./RoleToken.vue";
-import Dialog from "./Dialog.vue";
+import {
+    type IDialogEvents,
+    Dialog,
+    bubbleEvents,
+} from "./ui/dialog";
 
-const emit = defineEmits<{
-    (e: "hide"): void,
+const emit = defineEmits<IDialogEvents & {
     (e: "role-click", id: IRole["id"]): void,
 }>();
 

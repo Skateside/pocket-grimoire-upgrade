@@ -3,7 +3,7 @@
         :title="props.role.name"
         :manual="true"
         :hide="true"
-        @hide="() => emit('hide')"
+        v-on="bubbleEvents(emit)"
     >
         <RoleToken :role="props.role" :alignment="props.alignment" />
         <p>{{ props.role.ability }}</p>
@@ -15,14 +15,16 @@ import type {
     IRole,
     IRoleAlignment,
 } from "../scripts/types/data";
-import Dialog from "./Dialog.vue";
+import {
+    type IDialogEvents,
+    Dialog,
+    bubbleEvents,
+} from "./ui/dialog";
 import RoleToken from "./RoleToken.vue";
 
 const props = defineProps<{
     role: IRole,
     alignment?: IRoleAlignment,
 }>();
-const emit = defineEmits<{
-    (e: "hide"): void,
-}>();
+const emit = defineEmits<IDialogEvents>();
 </script>
