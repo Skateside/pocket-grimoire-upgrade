@@ -2,7 +2,9 @@
 
     <SelectEdition />
     <!-- <RoleList /> -->
-    <Grimoire />
+    <Grimoire
+        @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
+    />
 
     <SeatMenuDialog
         v-if="uiStore.isPopoverOpen('seat-menu')"

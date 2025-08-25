@@ -194,6 +194,7 @@ export type IToken = Required<ICoordinates> & {
 
 export type ITokenSeat = IToken & {
     type: "seat",
+    index?: number,
     role?: IRole["id"],
     name?: string,
     dead?: boolean,

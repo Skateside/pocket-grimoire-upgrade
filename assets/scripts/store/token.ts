@@ -54,6 +54,8 @@ const useTokenStore = defineStore("token", () => {
         return tokens.value.find(({ id: tokenId }) => tokenId === id);
     };
 
+    const innerIsSeat = (token: IToken): token is ITokenSeat => token.type === "seat";
+
     const getById = computed(() => innerGetById);
 
     const create = (settings: Partial<IToken> = {}, type: IToken["type"] = "seat") => {
@@ -68,6 +70,20 @@ const useTokenStore = defineStore("token", () => {
 
         if (!token.id) {
             token.id = randomId("token-");
+        }
+
+        if (innerIsSeat(token) && !token.index) {
+
+            const index = Math.max(
+                ...tokens.value.map((token) => (token as ITokenSeat).index || 0)
+            );
+
+            token.index = (
+                Number.isFinite(index)
+                ? index + 1
+                : 1
+            );
+
         }
 
         tokens.value.push(token);

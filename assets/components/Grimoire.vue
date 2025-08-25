@@ -5,6 +5,10 @@
             v-for="seat in tokenStore.byType.seat"
             type="button"
             class="seat movable__item"
+            :class='{
+                "is-dead": seat.dead,
+                "is-rotated": seat.rotate,
+            }'
             :id="seat.id"
             :style='{
                 "--x": seat.x,
@@ -12,10 +16,16 @@
                 "--z": seat.z,
             }'
             :title="seat.id"
-            @movable-click="() => handleMovableClick(seat.id)"
+            @movable-click="() => emit('seat-click', seat.id)"
         >
-            {{ seat.id.slice(6, 12) }}
-            <div v-if="seat.name">{{ seat.name }}</div>
+            <span class="seat__contents">
+                <RoleToken
+                    v-if="seat.role"
+                    :role="roleStore.getById(seat.role)"
+                    :alignment="seat.alignment"
+                />
+                <template v-else>{{ seat.name || seat.index }}</template>
+            </span>
         </button>
 
     </div>
@@ -43,7 +53,7 @@ import {
     ref,
 } from "vue";
 import useTokenStore from "../scripts/store/token";
-import useUiStore from "../scripts/store/ui";
+import useRoleStore from "../scripts/store/role";
 import {
     debounce,
     noop,
@@ -51,10 +61,11 @@ import {
 import {
     clamp,
 } from "../scripts/utilities/numbers";
+import RoleToken from "./RoleToken.vue";
 
-const handleMovableClick = (seatId: string) => {
-    uiStore.showPopover("seat-menu", seatId);
-};
+const emit = defineEmits<{
+    (e: "seat-click", id: string): void,
+}>();
 
 type IPad = {
     x: number,
@@ -64,7 +75,7 @@ type IPad = {
 };
 
 const tokenStore = useTokenStore();
-const uiStore = useUiStore();
+const roleStore = useRoleStore();
 const grimoire = ref<HTMLElement | null>(null);
 const isDragging = ref<boolean>(false);
 const pad = ref<IPad>({
@@ -266,22 +277,33 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .grimoire {
-    border: 2px solid #000;
+    border: 0.3ch solid #000;
     background-color: #222;
     height: 80vh;
     overflow: auto;
 }
 
 .seat {
-    width: 4em;
+    width: 8em;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     aspect-ratio: 1;
     background-color: #ddd;
-    border: 2px solid #000;
+    border: 0.3ch solid #000;
     border-radius: 50%;
+    padding: 0;
+}
+
+.is-dead > .seat__contents {
+    filter:
+        grayscale(1)
+        brightness(0.8);
+}
+
+.is-rotated > .seat__contents {
+    transform: rotate(180deg);
 }
 
 .movable {

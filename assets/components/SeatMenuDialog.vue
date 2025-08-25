@@ -1,19 +1,32 @@
 <template>
     <Dialog
-        :title="props.tokenId"
+        :title="name"
         @toggle="handleToggle"
     >
-        <p>{{ props.tokenId }}</p>
-        <dl>
-            <dt>Role</dt>
-            <dd>{{ roleToken ? roleToken.name : "(unset)" }}</dd>
-            <dt>Dead?</dt>
-            <dd>{{ seatToken.dead ? "yes" : "no" }}</dd>
-            <dt>Ghost Vote?</dt>
-            <dd>{{ seatToken.ghostVote === false ? "no" : "yes" }}</dd>
-            <dt>Rotated?</dt>
-            <dd>{{ seatToken.rotate ? "yes" : "no" }}</dd>
-        </dl>
+        <table>
+            <tbody>
+                <tr>
+                    <th scope="row">Token ID</th>
+                    <td>{{ props.tokenId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Role</th>
+                    <td>{{ roleToken ? roleToken.name : "(unset)" }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Dead?</th>
+                    <td>{{ seatToken.dead ? "yes" : "no" }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Ghost Vote?</th>
+                    <td>{{ seatToken.ghostVote === false ? "no" : "yes" }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Rotated?</th>
+                    <td>{{ seatToken.rotate ? "yes" : "no" }}</td>
+                </tr>
+            </tbody>
+        </table>
 
         <Tabs>
             <Tab title="Player">
@@ -22,7 +35,13 @@
                 </menu>
                 <form @submit.prevent="setSeatName">
                     <label :for="`name-${idSuffix}`">What is the name of this player?</label>
-                    <input type="text" name="name" :id="`name-${idSuffix}`" v-model="seatName">
+                    <input
+                        type="text"
+                        name="name"
+                        :id="`name-${idSuffix}`"
+                        v-model="seatName"
+                        @focus="({ target }) => (target as HTMLInputElement)?.select()"
+                    >
                     <button type="submit">Set player name</button>
                 </form>
             </Tab>
@@ -77,6 +96,9 @@ import {
     Tab,
 } from "./ui/tabs";
 import Dialog from "./Dialog.vue";
+import {
+    supplant,
+} from "../scripts/utilities/strings";
 
 const props = defineProps<{
     tokenId: string,
@@ -133,12 +155,16 @@ const alignmentOptions = computed<string[]>(() => {
         return ["Evil", "Good"]; // TODO i18n
     
     case "traveller":
-        return ["Default", "Good", "Evil"]; // TODO i18n;
+        return ["Default", "Good", "Evil"]; // TODO i18n
 
     }
 
     return [];
 
+});
+const name = computed(() => {
+    const token = seatToken.value;
+    return token.name || supplant("Player {0}", [token.index ?? 1]); // TODO i18n
 });
 
 const setSeatName = () => {
@@ -198,7 +224,7 @@ const toggleRotate = () => {
 
 onMounted(() => {
 
-    seatName.value = seatToken.value?.name || "";
+    seatName.value = seatToken.value?.name || name.value;
     alignment.value = seatToken.value?.alignment || 0;
 
 });
