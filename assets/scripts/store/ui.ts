@@ -1,4 +1,6 @@
 import type {
+    IRole,
+    IRoleAlignment,
     IToken,
     // ITokenSeat,
     // ITokenRole,
@@ -30,6 +32,10 @@ const useUiStore = defineStore("ui", () => {
     const innerPopoverOpen = shallowReactive<Record<string, boolean>>({});
 
     const seatMenuToken = ref<IToken["id"]>("");
+    const roleDialog = shallowReactive<{
+        role?: IRole,
+        alignment?: IRoleAlignment,
+    }>({});
 
     const isPopoverOpen = computed(() => (id: string) => {
 
@@ -130,9 +136,16 @@ const useUiStore = defineStore("ui", () => {
         },
     };
 
+    innerPopoverHandlers["role-dialog"] = {
+        isOpen() {
+            return Boolean(roleDialog.role);
+        },
+    };
+
     return {
         // State.
         seatMenuToken,
+        roleDialog,
         // Getters.
         isPopoverOpen,
         // Actions.

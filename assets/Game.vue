@@ -11,13 +11,21 @@
         :token-id="uiStore.seatMenuToken"
         @toggle="(visible) => uiStore.togglePopover('seat-menu', visible)"
         @remove="() => uiStore.hidePopover('seat-menu', true)"
-        @set-role="() => uiStore.nextPopover('role-dialog')"
+        @set-role="() => uiStore.nextPopover('role-list-dialog')"
+        @show-role="handleShowRole"
+    />
+
+    <RoleListDialog
+        v-if="uiStore.isPopoverOpen('role-list-dialog')"
+        @hide="handleRoleListHide"
+        @role-click="handleRoleListClick"
     />
 
     <RoleDialog
         v-if="uiStore.isPopoverOpen('role-dialog')"
-        @hide="() => uiStore.previousPopover()"
-        @role-click="handleRoleClick"
+        :role="uiStore.roleDialog.role!"
+        :alignment="uiStore.roleDialog.alignment"
+        @hide="handleRoleDialogHide"
     />
 
     <!-- <div class="list">
@@ -58,22 +66,22 @@
 </template>
 
 <script lang="ts" setup>
-import SelectEdition from "./components/SelectEdition.vue";
-import Grimoire from "./components/Grimoire.vue";
-import SeatMenuDialog from "./components/SeatMenuDialog.vue";
-import RoleDialog from "./components/RoleDialog.vue";
-import useUiStore from "./scripts/store/ui";
-import useTokenStore from "./scripts/store/token";
 import type {
     IRole,
     ITokenRole,
 } from "./scripts/types/data";
-// import { nextTick } from "vue";
+import useUiStore from "./scripts/store/ui";
+import useTokenStore from "./scripts/store/token";
+import SelectEdition from "./components/SelectEdition.vue";
+import Grimoire from "./components/Grimoire.vue";
+import SeatMenuDialog from "./components/SeatMenuDialog.vue";
+import RoleListDialog from "./components/RoleListDialog.vue";
+import RoleDialog from "./components/RoleDialog.vue";
 
 const uiStore = useUiStore();
 const tokenStore = useTokenStore();
 
-const handleRoleClick = (id: IRole["id"]) => {
+const handleRoleListClick = (id: IRole["id"]) => {
 
     if (!uiStore.seatMenuToken) {
         return;
@@ -84,6 +92,29 @@ const handleRoleClick = (id: IRole["id"]) => {
     });
 
     uiStore.previousPopover();
+
+};
+
+const handleRoleListHide = () => {
+
+    uiStore.hidePopover("role-list-dialog");
+    uiStore.clearPopoverList();
+
+};
+
+const handleShowRole = (role: IRole) => {
+
+    uiStore.roleDialog.role = role;
+    uiStore.nextPopover("role-dialog");
+
+};
+
+const handleRoleDialogHide = () => {
+
+    uiStore.hidePopover("role-dialog");
+    uiStore.roleDialog.role = undefined;
+    uiStore.roleDialog.alignment = undefined;
+    uiStore.clearPopoverList();
 
 };
 

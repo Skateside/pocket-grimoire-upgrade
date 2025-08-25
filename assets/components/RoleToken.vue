@@ -21,24 +21,21 @@
 </template>
 
 <script lang="ts" setup>
-import type { IRole } from "../scripts/types/data";
+import type { IRole, IRoleAlignment } from "../scripts/types/data";
 import type { RequireOnly } from "../scripts/types/lib";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
-// import noroleSrc from './../icons/norole.svg';
-// import metaroleSrc from './../icons/metarole.svg';
 
 const props = defineProps<{
     role?: IRole,
-    alignment?: 0 | 1 | 2,
+    alignment?: IRoleAlignment,
 }>();
 const store = useRoleStore();
 const theRole = computed<RequireOnly<IRole, 'name' | 'image'>>(() => {
 
     const role: RequireOnly<IRole, 'name' | 'image'> = {
         name: 'norole', // TODO: i18n
-        image: '', // TODO: link to the correct images.
-        // image: noroleSrc,
+        image: '/icons/norole.svg',
     };
 
     if (!role) {
@@ -46,11 +43,15 @@ const theRole = computed<RequireOnly<IRole, 'name' | 'image'>>(() => {
     }
 
     if (role.id === "_meta") {
+
         role.name = "rolemeta"; // TODO: i18n
-        // role.image = metaroleSrc;
+        role.image = '/icons/metarole.svg';
+
+        return role;
+
     }
 
-    return props.role!;
+    return Object.assign(role, props.role || {});
 
 });
 const image = computed(() => store.getImage(theRole.value as IRole, props.alignment));

@@ -15,13 +15,16 @@
             >
                 {{ props.title }}
             </component>
-            <button
-                type="button"
-                class="dialog__close"
-                @click="dialog?.hidePopover()"
-            >
-                &times;
-            </button>
+            <div class="dialog__top-actions">
+                <button
+                    type="button"
+                    class="dialog__close"
+                    @click="dialog?.hidePopover()"
+                    aria-label="Close"
+                >
+                    &times;
+                </button>
+            </div>
         </section>
         <section class="dialog__body">
             <slot />
@@ -112,5 +115,17 @@ onMounted(() => {
 .dialog__header {
     position: sticky;
     top: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    background-color: #666;
+}
+
+.dialog__title {
+    margin: 0;
+    flex-grow: 1;
+}
+
+.dialog__top-actions {
+    margin-inline-start: auto;
 }
 </style>

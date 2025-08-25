@@ -4,7 +4,7 @@
         <button
             v-for="seat in tokenStore.byType.seat"
             type="button"
-            class="seat movable__item"
+            class="grimoire__token grimoire__seat movable__item"
             :class='{
                 "is-dead": seat.dead,
                 "is-rotated": seat.rotate,
@@ -18,7 +18,7 @@
             :title="seat.id"
             @movable-click="() => emit('seat-click', seat.id)"
         >
-            <span class="seat__contents">
+            <span class="grimoire__contents">
                 <RoleToken
                     v-if="seat.role"
                     :role="roleStore.getById(seat.role)"
@@ -26,6 +26,7 @@
                 />
                 <template v-else>{{ seat.name || seat.index }}</template>
             </span>
+            <span class="grimoire__name" v-if="seat.name">{{ seat.name }}</span>
         </button>
 
     </div>
@@ -283,27 +284,38 @@ onUnmounted(() => {
     overflow: auto;
 }
 
-.seat {
-    width: 8em;
+.grimoire__token {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     aspect-ratio: 1;
     background-color: #ddd;
-    border: 0.3ch solid #000;
     border-radius: 50%;
     padding: 0;
 }
 
-.is-dead > .seat__contents {
+.grimoire__seat {
+    width: 8em;
+    border: 0.3ch solid #000;
+}
+
+.is-dead > .grimoire__contents {
     filter:
         grayscale(1)
         brightness(0.8);
 }
 
-.is-rotated > .seat__contents {
+.is-rotated > .grimoire__contents {
     transform: rotate(180deg);
+}
+
+.grimoire__name {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    margin-top: 0.5em;
+    background-color: #ddd;
 }
 
 .movable {

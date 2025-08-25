@@ -7,6 +7,7 @@ import type {
     IRoleScriptImport,
     IRoleDeprecatedReminders,
     IRoleTeam,
+    IRoleAlignment,
 } from "../types/data";
 // import type {
 //     RequireOnly,
@@ -196,7 +197,7 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const innerGetImage = (role: IRole, index: 0 | 1 | 2 = 0) => {
+    const innerGetImage = (role: IRole, index: IRoleAlignment = 0) => {
 
         if (!role || !role.image) {
             return "";
@@ -214,7 +215,10 @@ const useRoleStore = defineStore("role", () => {
 
     const getImage = computed(() => innerGetImage);
 
-    const getReminderImage = computed(() => (reminder: IRoleReminder, index: 0 | 1 | 2 = 0) => {
+    const getReminderImage = computed(() => (
+        reminder: IRoleReminder,
+        index: IRoleAlignment = 0,
+    ) => {
         return reminder.image || innerGetImage(reminder.role, index);
     });
 

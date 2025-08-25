@@ -105,6 +105,8 @@ export type IRoleMeta = {
     otherNight?: string[],
 };
 
+export type IRoleAlignment = 0 | 1 | 2;
+
 /*
 export type IRoleSpecial = {
     type: (
@@ -200,7 +202,7 @@ export type ITokenSeat = IToken & {
     dead?: boolean,
     ghostVote?: boolean,
     rotate?: boolean,
-    alignment?: 0 | 1 | 2,
+    alignment?: IRoleAlignment,
 };
 
 // NOTE: This is for something like a Fabled - on the grimoire pad but not a player.

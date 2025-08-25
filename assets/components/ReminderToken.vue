@@ -28,13 +28,13 @@
 </template>
 
 <script setup lang="ts">
-import type { IRoleReminder } from "../scripts/types/data";
+import type { IRoleReminder, IRoleAlignment } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
     reminder: IRoleReminder,
-    alignment?: 0 | 1 | 2,
+    alignment?: IRoleAlignment,
 }>();
 
 const store = useRoleStore();
@@ -62,7 +62,8 @@ const image = computed(() => store.getReminderImage(props.reminder, props.alignm
     // }
 
     // &[data-token="reminder"] {
-        width: clamp(55px, 100vw / 9, 125px);
+        // width: clamp(55px, 100vw / 9, 125px);
+        width: 100%;
     //     transform: scale(var(--reminder-size, 1));
     // }
 

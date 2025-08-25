@@ -3,6 +3,7 @@
         :title="name"
         @toggle="handleToggle"
     >
+        <!-- TEMP stats to make sure everything's correct -->
         <table>
             <tbody>
                 <tr>
@@ -48,7 +49,8 @@
             <Tab title="Role" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button" @click="setRole">Set</button></li>
-                    <li><button type="button">Show</button></li>
+                    <li v-if="roleToken"><button type="button" @click="unsetRole">Remove</button></li>
+                    <li><button type="button" @click="showRole">Show</button></li>
                     <li><button type="button" @click="toggleDead">Shroud</button></li>
                     <li v-if="seatToken.dead"><button type="button" @click="toggleGhostVote">Ghost vote</button></li>
                     <li><button type="button" @click="toggleRotate">Rotate</button></li>
@@ -78,7 +80,8 @@
 
 <script setup lang="ts">
 import type {
-    // IRole,
+    IRole,
+    IRoleAlignment,
     ITokenSeat,
 } from "../scripts/types/data";
 import {
@@ -107,9 +110,10 @@ const emit = defineEmits<{
     (e: "toggle", visible: boolean): void,
     (e: "remove"): void,
     (e: "set-role"): void,
+    (e: "show-role", id: IRole): void,
 }>();
 const seatName = defineModel<string>('seat-name', { default: "" });
-const alignment = defineModel<0 | 1 | 2>('alignment', { default: 0 });
+const alignment = defineModel<IRoleAlignment>('alignment', { default: 0 });
 
 const idSuffix = useId();
 // const uiStore = useUiStore();
@@ -189,6 +193,22 @@ const removePlayer = () => {
 
 const setRole = () => {
     emit("set-role");
+};
+
+const unsetRole = () => {
+
+    tokenStore.update<ITokenSeat>(props.tokenId, {
+        role: undefined,
+    });
+
+};
+
+const showRole = () => {
+
+    if (roleToken.value) {
+        emit("show-role", roleToken.value);
+    }
+
 };
 
 const toggleDead = () => {

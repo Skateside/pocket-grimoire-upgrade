@@ -75,7 +75,9 @@ const useTokenStore = defineStore("token", () => {
         if (innerIsSeat(token) && !token.index) {
 
             const index = Math.max(
-                ...tokens.value.map((token) => (token as ITokenSeat).index || 0)
+                ...tokens.value
+                    .filter(innerIsSeat)
+                    .map((token) => token.index || 0)
             );
 
             token.index = (
