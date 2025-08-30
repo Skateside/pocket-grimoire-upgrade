@@ -1,0 +1,23 @@
+menu,
+ul,
+ol,
+li,
+dd,
+dt,
+dd {
+	margin-block: var(--base-sizing);
+}
+
+menu,
+ul,
+ol {
+	padding-inline-start: var(--base-sizing-large);
+}
+
+dt {
+	font-weight: bold;
+}
+
+dd {
+	margin-inline-start: var(--base-sizing-large);
+}

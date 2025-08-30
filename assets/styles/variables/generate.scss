@@ -1,0 +1,11 @@
+@use "../themes/general" as gen;
+@use "../themes/light" as light;
+@use "../base/mixins" as mx;
+
+:root {
+	// @include mx.create-vars(gen.$theme);
+	@include mx.create-font-vars(gen.$theme);
+	@include mx.create-sizing-vars(gen.$sizing);
+	@include mx.create-colour-vars(light.$theme);
+	@include mx.create-value-vars(light.$layout);
+}

@@ -1,0 +1,42 @@
+@use '../base/functions' as func;
+
+/**
+ * Box
+ *
+ * A generic box that can be easily styled and re-used.
+ *
+ * 1. The lack of a `+` is not a mistake - the padding should be consistent.
+ * 2. Windows High Contrast Mode will work with `outline`.
+ */
+
+@property --o-box-background-colour { syntax: '<color>'; initial-value: #0000; inherits: true; }
+@property --o-box-border-colour { syntax: '<color>'; initial-value: #0000; inherits: true; }
+@property --o-box-border-width { syntax: '<length-percentage>'; initial-value: #{func.get-sizing-pixels-unit('xxxxs')}; inherits: true; }
+@property --o-box-colour { syntax: '<color>'; initial-value: currentColor; inherits: true; }
+@property --o-box-outline-width { syntax: '<length-percentage>'; initial-value: #{func.get-sizing-pixels-unit('xxxxs')}; inherits: true; }
+@property --o-box-padding { syntax: '<length-percentage>'; initial-value: #{func.get-sizing-pixels-unit('base-sizing')}; inherits: true; } // [1]
+
+.o-box,
+%o-box {
+	--o-box-background-colour: transparent;
+	--o-box-border-colour: transparent;
+	--o-box-border-width: var(--border-width);
+	--o-box-colour: var(--font-colour);
+	--o-box-outline-width: var(--border-width);
+	--o-box-padding: var(--base-sizing);
+
+	background-color: var(--o-box-background-colour);
+	border: var(--o-box-border-colour) solid var(--o-box-border-width);
+	color: var(--o-box-colour);
+	outline: var(--o-box-outline-width) solid transparent; // [2]
+	outline-offset: calc(var(--o-box-outline-width) * -1); // [2]
+	padding: var(--o-box-padding);
+
+	// * {
+	// 	color: inherit;
+	// }
+
+	> * {
+		margin-block: 0;
+	}
+}

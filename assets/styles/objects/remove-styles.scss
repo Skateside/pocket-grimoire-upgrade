@@ -1,0 +1,39 @@
+/**
+ * Remove the styling from a button so it's indistingishable from regular text.
+ * A good use-case would be an icon next to an input - probably doesn't want to
+ * look like a button but should be a <button> element.
+ */
+
+.no-button,
+%no-button {
+	-webkit-appearance: none;
+	appearance: none;
+	border: none;
+	padding: 0;
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+	font-style: inherit;
+	font-weight: inherit;
+	color: inherit;
+	background-color: transparent;
+}
+
+/**
+ * Remove the list styling for any element that might need the list semantics
+ * but not the bullet points.
+ * https://medium.com/@havard.brynjulfsen/removing-list-style-on-lists-and-the-accessibility-implications-that-follow-2392f5ddb332
+ */
+
+.no-list,
+%no-list {
+	padding-inline-start: 0;
+
+	> :where(li) {
+		margin-block: 0;
+
+		&::marker {
+			font-size: 0;
+		}
+	}
+}

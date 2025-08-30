@@ -1,0 +1,176 @@
+@use "../base/functions" as func;
+
+$theme: (
+	"colour": (
+		// "primary": #4863f0,
+		// "secondary": #dbb561,
+		// "tertiary": #7e6b4f,
+		// "info": var(--colour-blue),
+		// "success": var(--colour-green),
+		// "warning": var(--colour-orange),
+		// "danger": var(--colour-red),
+		// "white": #f0f0f0,
+		// "grey": #8e8e8e,
+		// "black": #141414,
+		// "pink": #e83e8c,
+		// "red": #b52c2c,
+		// "orange": #ff7c00,
+		// "yellow": #ffc107,
+		// "green": #03782d,
+		// "teal": #20c997,
+		// "cyan": #63c2de,
+		// "blue": #0a6e80,
+		// "indigo": #6610f2,
+		// "purple": #6f42c1,
+
+		// Colours
+		"white": #f0f0f0,
+		"black": #141414,
+		"primary": #4863f0,
+		"blue": #679fd0,
+		"orange": #d09f67,
+		"red": #d06767,
+		"dark-orange": #a16930,
+		"green": #679f67,
+		"dark-purple": #9f679f,
+		"purple": #d067d0,
+		"grey": #999,
+		// Group Colours
+		"good-team": #00f,
+		"evil-team": #f00,
+	),
+);
+
+$layout: (
+	// Component sizing.
+	"base-sizing": (
+		"value": var(--sizing-lg),
+		"syntax": "<length>",
+		"initial-value": #{func.get-sizing-pixels-unit("base-sizing")},
+	),
+	"base-sizing-large": (
+		"value": calc(var(--base-sizing) * 2),
+		"syntax": "<length>",
+		"initial-value": #{func.get-sizing-pixels-unit("base-sizing-large")},
+	),
+	"base-sizing-small": (
+		"value": calc(var(--base-sizing) / 2),
+		"syntax": "<length>",
+		"initial-value": #{func.get-sizing-pixels-unit("base-sizing-small")},
+	),
+	"padding-block": (
+		"value": var(--sizing-xxxs),
+		"syntax": "<length-percentage>+",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxs")},
+	),
+	"padding-inline": (
+		"value": var(--sizing-xs),
+		"syntax": "<length-percentage>+",
+		"initial-value": #{func.get-sizing-pixels-unit("xs")},
+	),
+	"padding-block-start": (
+		"value": var(--padding-block),
+		"syntax": "<length-percentage>",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxs")},
+	),
+	"padding-block-end": (
+		"value": var(--padding-block),
+		"syntax": "<length-percentage>",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxs")},
+	),
+	"padding-inline-start": (
+		"value": var(--padding-inline),
+		"syntax": "<length-percentage>",
+		"initial-value": #{func.get-sizing-pixels-unit("xs")},
+	),
+	"padding-inline-end": (
+		"value": var(--padding-inline),
+		"syntax": "<length-percentage>",
+		"initial-value": #{func.get-sizing-pixels-unit("xs")},
+	),
+	"padding": (
+		"value": var(--padding-block-start) var(--padding-inline-end) var(--padding-block-end) var(--padding-inline-start),
+		"syntax": "<length-percentage>+",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxs")} #{func.get-sizing-pixels-unit("xs")} #{func.get-sizing-pixels-unit("xxxs")} #{func.get-sizing-pixels-unit("xs")},
+	),
+	// Basic borders.
+	"border-colour": (
+		"value": var(--colour-black),
+		"syntax": "<color>",
+		"initial-value": #000,
+	),
+	"border-radius": (
+		"value": var(--sizing-xxs),
+		"syntax": "<length>+",
+		"initial-value": #{func.get-sizing-pixels-unit("xxs")},
+	),
+	"border-width": (
+		"value": var(--sizing-xxxxs),
+		"syntax": "<length>+",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxxs")},
+	),
+	// Focus styles.
+	"outline-colour": (
+		"value": rgb(from var(--colour-dark-orange) r g b / 80%),
+		"syntax": "<color>",
+		"initial-value": #ff0,
+	),
+	"outline-offset": (
+		"value":  var(--sizing-xxxs),
+		"syntax": "<length>",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxs")},
+	),
+	"outline-width": (
+		"value": var(--sizing-xxxs),
+		"syntax": "<length>",
+		"initial-value": #{func.get-sizing-pixels-unit("xxxs")},
+	),
+	// Background colours.
+	"background-colour": (
+		"value": var(--colour-white),
+		"syntax": "<color>",
+		"initial-value": #fff,
+	),
+	"background-input": (
+		"value": var(--colour-white),
+		"syntax": "<color>",
+		"initial-value": #fff,
+	),
+	// Font styles.
+	"font-colour": (
+		"value": var(--colour-black),
+		"syntax": "<color>",
+		"initial-value": #000,
+	),
+	"font-size": (
+		"value": var(--sizing-md),
+		"syntax": "<length>",
+		"initial-value": 16px,
+	),
+	"link-colour": (
+		"value": var(--colour-primary),
+		"syntax": "<color>",
+		"initial-value": #00f,
+	),
+	"line-height": (
+		"value": var(--sizing-ratio),
+		"syntax": "<number>",
+		"initial-value": 1.618,
+	),
+	// Specific elements.
+	// "header-height": (
+	// 	"value": calc(var(--sizing-md) * 2),
+	// 	"syntax": "<length>",
+	// 	"initial-value": #{func.get-pixels-unit(func.get-sizing-value("md") * 2)},
+	// ),
+	// "sidebar-width": (
+	// 	"value": calc(var(--sizing-md) * 10),
+	// 	"syntax": "<length>",
+	// 	"initial-value": #{func.get-pixels-unit(func.get-sizing-value("md") * 10)},
+	// ),
+	// "sidebar-width-closed": (
+	// 	"value": calc(var(--sizing-md) * 2),
+	// 	"syntax": "<length>",
+	// 	"initial-value": #{func.get-pixels-unit(func.get-sizing-value("md") * 2)},
+	// ),
+);

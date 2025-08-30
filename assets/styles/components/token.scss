@@ -1,0 +1,33 @@
+@use "../objects/centre";
+@use "../objects/circle";
+
+.token {
+    @extend %o-centre-contents;
+    @extend %o-circle;
+
+    background-color: #ddd;
+    padding: 0;
+}
+
+.token--seat {
+    width: 8em; // TODO: Remove magic number.
+    border: 0.3ch solid #000;
+}
+
+.is-dead > .token__contents {
+    filter:
+        grayscale(1)
+        brightness(0.8);
+}
+
+.is-rotated > .token__contents {
+    transform: rotate(180deg);
+}
+
+.token__name {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    margin-top: var(--sizing-md);
+    background-color: #ddd;
+}

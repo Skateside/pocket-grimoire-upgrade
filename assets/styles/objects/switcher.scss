@@ -1,0 +1,29 @@
+@use '../base/functions' as func;
+
+@property --o-switcher-gap { syntax: '<length>'; initial-value: #{func.get-sizing-pixels-unit('base-sizing')}; inherits: true;  }
+@property --o-switcher-threshold { syntax: '<length>'; initial-value: #{func.get-pixels-unit(30rem)}; inherits: true;  }
+
+.o-switcher,
+%o-switcher {
+	--o-switcher-gap: var(--base-sizing);
+	--o-switcher-threshold: 30rem;
+
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--o-switcher-gap);
+
+	> * {
+		flex-grow: 1;
+		flex-basis: calc((var(--o-switcher-threshold) - 100%) * 999);
+	}
+}
+
+@for $i from 3 through 12 {
+	.o-switcher--#{$i},
+	%o-switcher--#{$i} {
+		> :where(:nth-last-child(n + #{$i})),
+		> :where(:nth-last-child(n + #{$i}) ~ *) {
+			flex-basis: 100%;
+		}
+	}
+}

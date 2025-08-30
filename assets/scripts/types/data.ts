@@ -55,7 +55,7 @@ export type IRoleRaw = {
     special?: IRoleSpecial[],
 };
 
-export type IRole = Omit<IRoleRaw, 'reminders' | 'jinxes'> & {
+export type IRole = Omit<IRoleRaw, "reminders" | "jinxes"> & {
     // TODO: anything that the Pocket Grimoire needs to manage the role.
     reminders?: IRoleReminder[],
     jinxes?: IRoleJinx[],
@@ -184,8 +184,7 @@ export type IRoleSpecial = {
 };
 
 export type IRoleScript = (IRoleMeta | IRole)[];
-
-export type IRoleScriptImport = (IRoleMeta | IRole | IRole["id"] | { id: IRole["id"] })[];
+export type IRoleScriptImport = (IRoleMeta | IRole | IRole["id"] | Pick<IRole, "id">)[];
 
 // Tokens.
 

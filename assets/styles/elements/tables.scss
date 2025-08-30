@@ -1,0 +1,17 @@
+table {
+	border-collapse: collapse;
+	border-color: currentColor;
+	margin-block: var(--base-sizing);
+	width: 100%;
+}
+
+th,
+td {
+	padding: var(--padding);
+	text-align: start;
+	vertical-align: top;
+}
+
+th {
+	font-weight: bold;
+}

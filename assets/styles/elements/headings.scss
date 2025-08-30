@@ -1,0 +1,34 @@
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+	font-family: var(--font-family-serif);
+	font-weight: bold;
+	margin-block: var(--base-sizing);
+}
+
+h1, .h1 {
+	font-size: var(--sizing-xxxl);
+}
+
+h2, .h2 {
+	font-size: var(--sizing-xxl);
+}
+
+h3, .h3 {
+	font-size: var(--sizing-xl);
+}
+
+h4, .h4 {
+	font-size: var(--sizing-lg);
+}
+
+h5, .h5 {
+	font-size: var(--sizing-md);
+}
+
+h6, .h6 {
+	font-size: var(--sizing-md);
+}

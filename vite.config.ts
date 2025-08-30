@@ -31,6 +31,7 @@ export default defineConfig({
         rollupOptions: {
             input: {
                 main: "./assets/main.ts",
+                styles: "./assets/styles/index.scss",
                 ...getGeneratedInputs(),
             },
         }

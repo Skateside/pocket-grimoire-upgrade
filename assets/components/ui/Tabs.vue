@@ -142,18 +142,3 @@ watch(selectedIndex, (index, oldIndex) => {
 
 });
 </script>
-
-<style lang="scss" scoped>
-.tabs__tablist {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-flow: row wrap;
-    gap: 0.5em;
-}
-
-.tabs__tab[aria-selected="true"] {
-    font-weight: bold;
-}
-</style>

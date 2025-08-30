@@ -1,0 +1,11 @@
+@use "../objects/remove-styles";
+@use "../objects/cluster";
+
+.tabs__tablist {
+    @extend %no-list;
+    @extend %o-cluster;
+}
+
+.tabs__tab[aria-selected="true"] {
+    font-weight: bold;
+}

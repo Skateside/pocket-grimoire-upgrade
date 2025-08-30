@@ -1,0 +1,41 @@
+@use '../base/functions' as func;
+
+/**
+ * Stack
+ *
+ * Creates a consistent vertical gap between each of the contents.
+ */
+
+@property --o-stack-gap { syntax: '<length-percentage>'; initial-value: #{func.get-sizing-pixels-unit('base-sizing')}; inherits: true; }
+
+.o-stack,
+%o-stack {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+
+	> * {
+		--o-stack-gap: inherit;
+		margin-block: 0;
+
+		+ * {
+			margin-block-start: var(--o-stack-gap, var(--base-sizing));
+		}
+	}
+}
+
+.o-stack--0 > * {
+	--o-stack-gap: 0;
+}
+
+.o-stack--default > * {
+	--o-stack-gap: var(--base-sizing);
+}
+
+.o-stack--small > * {
+	--o-stack-gap: var(--base-sizing-small);
+}
+
+.o-stack--large > * {
+	--o-stack-gap: var(--base-sizing-large);
+}

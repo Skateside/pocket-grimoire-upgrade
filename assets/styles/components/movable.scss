@@ -1,0 +1,17 @@
+.movable {
+    position: relative;
+}
+
+.movable__item {
+    --x: 0;
+    --y: 0;
+    --z: 0;
+    cursor: move;
+    position: absolute;
+    inset-inline-start: calc(var(--x) * 100%);
+    inset-block-start: calc(var(--y) * 100%);
+    transform: translate(-50%, -50%);
+    z-index: var(--z);
+    touch-action: none;
+    user-select: none;
+}

@@ -1,0 +1,28 @@
+@use '../base/functions' as func;
+
+@property --o-media-gap { syntax: '<length>'; initial-value: #{func.get-sizing-pixels-unit('base-sizing')}; inherits: true; }
+@property --o-media-content-size { syntax: '<length-percentage>'; initial-value: 50%; inherits: true; }
+@property --o-media-side-size { syntax: '<length-percentage>'; initial-value: #{func.get-pixels-unit(30ch)}; inherits: true; }
+
+.o-media,
+%o-media {
+	--o-media-gap: var(--base-sizing);
+	--o-media-content-size: 50%;
+	--o-media-side-size: 30ch;
+
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--o-media-gap);
+
+	> * {
+		flex-grow: 1;
+		flex-basis: var(--o-media-side-size);
+	}
+}
+
+.o-media__content,
+%o-media__content {
+	flex-basis: 0;
+	flex-grow: 999;
+	min-inline-size: var(--o-media-content-size);
+}

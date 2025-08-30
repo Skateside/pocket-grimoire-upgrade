@@ -157,13 +157,3 @@ const deleteInfoToken = (id: IInfoToken["id"]) => {
 };
 */
 </script>
-
-<style lang="scss" scoped>
-/*
-.list {
-    display: flex;
-    flex-flow: row wrap;
-    gap: 0.25em;
-}
-*/
-</style>

@@ -1,0 +1,20 @@
+@property --o-frame-numerator { syntax: '<number>'; initial-value: 16; inherits: true; }
+@property --o-frame-denominator { syntax: '<number>'; initial-value: 9; inherits: true; }
+
+.o-frame,
+%o-frame {
+	--o-frame-numerator: 16;
+	--o-frame-denominator: 9;
+
+	aspect-ratio: var(--o-frame-numerator) / var(--o-frame-denominator);
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	> :where(img, video) {
+		inline-size: 100%;
+		block-size: 100%;
+		object-fit: cover;
+	}
+}

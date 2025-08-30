@@ -1,0 +1,7 @@
+@use "../objects/grid";
+
+.role-list {
+    @extend %o-grid;
+    --o-grid-gap: var(--sizing-sm);
+    --o-grid-max-width: 10ch;
+}

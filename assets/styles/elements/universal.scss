@@ -1,0 +1,26 @@
+* {
+	box-sizing: border-box;
+
+	&:focus {
+		outline: var(--outline-width) solid var(--outline-colour);
+		outline-offset: var(--outline-offset);
+
+		// Remove the outline if someone uses the mouse but keep it if someone
+		// uses the keyboard.
+		&:where(:not(:focus-visible)) {
+			outline: none;
+		}
+	}
+
+	&::before,
+	&::after {
+		box-sizing: inherit;
+	}
+
+	// Hide anything with the `hidden` attribute.
+	// This is the ONLY time that `!important` may be used outside of the
+	// overrides folder!
+	&[hidden] {
+		display: none !important;
+	}
+}

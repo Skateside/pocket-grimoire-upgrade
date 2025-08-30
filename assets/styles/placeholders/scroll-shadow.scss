@@ -1,0 +1,86 @@
+@use '../base/functions' as func;
+
+/**
+ * Add shadows to an element that can scroll but only when the scrolling would
+ * be necessary to see the rest of the content.
+ *
+ * How to use
+ * ----------
+ *
+ * - Extend %p-scroll-shadow, %p-scroll-shadow-v, or %p-scroll-shadow-h.
+ * - Optionally set `--p-scroll-shadow-colour` and/or `--p-scroll-shadow-size`.
+ *
+ * How to works
+ * ------------
+ *
+ * The trick is the combination of the "p-scroll-shadow" @keyframes and the
+ * `scroll()` function being set as `animation-timeline`. This gives the effect
+ * of converting a number (`p-scroll-shadow-scroll`) from 0 to 1, depending on
+ * how much of the scrolling has occurred. We use that as a multiplier for
+ * background positioning, moving the shadows into and out of view.
+ *
+ * The second trick is that the background colour is
+ * `--p-scroll-shadow-real-colour` and that's only set in the @keyframes.
+ * Technically the shadows are always present, but because they're transparent
+ * unless the `scroll()` function can trigger (which only works if there's any
+ * scrolling possible) it creates the illusion of shadows only appearing when
+ * the element has the ability to scroll.
+ *
+ * Known issues
+ * ------------
+ *
+ * 1.
+ * At time of writing (2025-04-28), Firefox only understands the `scroll()`
+ * function if enabled by a flag. This means that the shadow probably won't
+ * appear in Firefox.
+ *
+ * 2.
+ * The background position can't use the logical directions, so combining this
+ * with `writing-mode: vertical-lr` might create strange effects.
+ *
+ * Author: https://stackoverflow.com/a/79136430/557019
+ */
+
+@property --p-scroll-shadow-angle { syntax: '<angle>'; initial-value: 0; inherits: true; }
+@property --p-scroll-shadow-colour { syntax: '<color>'; initial-value: currentColor; inherits: true; }
+@property --p-scroll-shadow-real-colour { syntax: '<color>'; initial-value: transparent; inherits: true; }
+@property --p-scroll-shadow-size { syntax: '<length-percentage>'; initial-value: #{func.get-sizing-pixels-unit('base-sizing')}; inherits: true; }
+@property --p-scroll-shadow-scroll { syntax: '<number>'; initial-value: 0; inherits: true; }
+
+@keyframes p-scroll-shadow {
+	from,
+	to {
+		--p-scroll-shadow-real-colour: var(--p-scroll-shadow-colour);
+	}
+	to {
+		--p-scroll-shadow-scroll: 1;
+	}
+}
+
+%p-scroll-shadow,
+%p-scroll-shadow-v,
+%p-scroll-shadow-h,
+.p-scroll-shadow,
+.p-scroll-shadow-v,
+.p-scroll-shadow-h {
+	--p-scroll-shadow-angle: 0;
+	--p-scroll-shadow-colour: rgb(from currentColor r g b / 20%);
+	--p-scroll-shadow-size: var(--base-sizing);
+
+	animation: p-scroll-shadow cubic-bezier(.25,.85,.8,.22);
+	animation-timeline: scroll(self);
+	animation-range: 0 100%;
+	background-image: linear-gradient(
+		var(--p-scroll-shadow-angle),
+		var(--p-scroll-shadow-real-colour) 0%,
+		transparent calc((var(--p-scroll-shadow-scroll)) * var(--p-scroll-shadow-size)),
+		transparent calc(100% - var(--p-scroll-shadow-size) * (1 - var(--p-scroll-shadow-scroll))),
+		var(--p-scroll-shadow-real-colour) 100%
+	);
+}
+
+%p-scroll-shadow-h,
+.p-scroll-shadow-h {
+	--p-scroll-shadow-angle: 90deg;
+	animation-timeline: scroll(self inline);
+}

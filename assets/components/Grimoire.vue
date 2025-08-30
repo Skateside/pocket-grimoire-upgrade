@@ -4,7 +4,7 @@
         <button
             v-for="seat in tokenStore.byType.seat"
             type="button"
-            class="grimoire__token grimoire__seat movable__item"
+            class="token token--seat movable__item"
             :class='{
                 "is-dead": seat.dead,
                 "is-rotated": seat.rotate,
@@ -15,10 +15,9 @@
                 "--y": seat.y,
                 "--z": seat.z,
             }'
-            :title="seat.id"
             @movable-click="() => emit('seat-click', seat.id)"
         >
-            <span class="grimoire__contents">
+            <span class="token__contents">
                 <RoleToken
                     v-if="seat.role"
                     :role="roleStore.getById(seat.role)"
@@ -26,7 +25,7 @@
                 />
                 <template v-else>{{ seat.name || seat.index }}</template>
             </span>
-            <span class="grimoire__name" v-if="seat.name">{{ seat.name }}</span>
+            <span class="token__name" v-if="seat.name">{{ seat.name }}</span>
         </button>
 
     </div>
@@ -275,64 +274,3 @@ onUnmounted(() => {
 
 });
 </script>
-
-<style lang="scss" scoped>
-.grimoire {
-    border: 0.3ch solid #000;
-    background-color: #222;
-    height: 80vh;
-    overflow: auto;
-}
-
-.grimoire__token {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    aspect-ratio: 1;
-    background-color: #ddd;
-    border-radius: 50%;
-    padding: 0;
-}
-
-.grimoire__seat {
-    width: 8em;
-    border: 0.3ch solid #000;
-}
-
-.is-dead > .grimoire__contents {
-    filter:
-        grayscale(1)
-        brightness(0.8);
-}
-
-.is-rotated > .grimoire__contents {
-    transform: rotate(180deg);
-}
-
-.grimoire__name {
-    position: absolute;
-    top: 100%;
-    width: 100%;
-    margin-top: 0.5em;
-    background-color: #ddd;
-}
-
-.movable {
-    position: relative;
-}
-
-.movable__item {
-    --x: 0;
-    --y: 0;
-    --z: 0;
-    cursor: move;
-    position: absolute;
-    left: calc(var(--x) * 100%);
-    top: calc(var(--y) * 100%);
-    transform: translate(-50%, -50%);
-    z-index: var(--z);
-    touch-action: none;
-    user-select: none;
-}
-</style>

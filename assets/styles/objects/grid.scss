@@ -1,0 +1,14 @@
+@use '../base/functions' as func;
+
+@property --o-grid-gap { syntax: '<length>'; initial-value: #{func.get-sizing-pixels-unit('base-sizing')}; inherits: true; }
+@property --o-grid-max-width { syntax: '<length-percentage>'; initial-value: #{func.get-pixels-unit(30ch)}; inherits: true; }
+
+.o-grid,
+%o-grid {
+	--o-grid-gap: var(--base-sizing);
+	--o-grid-max-width: 30ch;
+
+	display: grid;
+	grid-gap: var(--o-grid-gap);
+	grid-template-columns: repeat(auto-fit, minmax(min(var(--o-grid-max-width), 100%), 1fr));
+}

@@ -1,0 +1,130 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use 'sass:string';
+@use '../themes/general' as gen;
+
+@function deep-get($map, $keys...) {
+	@each $key in $keys {
+		@if $map == null {
+			@return null;
+		}
+
+		$map: map.get($map, $key);
+	}
+
+	@return $map;
+}
+
+@function deep-set($map, $keys, $value) {
+	$maps: ( $map, );
+	$result: null;
+
+	// If the last key is a map already, warn the user we will be overriding it with $value.
+	@if meta.type-of(list.nth($keys, -1)) == 'map' {
+		@warn 'The last key you specified is a map; it will override with `#{$value}`.';
+	}
+
+	// If $keys is a single key, just merge and return.
+	@if list.length($keys) == 1 {
+		@return map.merge($map, ($keys: $value));
+	}
+
+	// Loop from the first to the second to last key from $keys and store the associated map to
+	// this key in the $maps list, if the key doesn't exist, throw an error.
+	@for $i from 1 through list.length($keys) - 1 {
+		$current-key: list.nth($keys, $i);
+		$current-map: list.nth($maps, -1);
+		$current-get: map.get($current-map, $current-key);
+
+		@if $current-get == null {
+			@error 'Key `#{$key}` doesn\'t exist at current level in map.';
+		}
+
+		$maps: append($maps, $current-get);
+	}
+
+	// Loop from the last map to the first one and merge it with the previous one.
+	@for $i from list.length($maps) through 1 {
+		$current-map: list.nth($maps, $i);
+		$current-key: list.nth($keys, $i);
+		$current-val: if($i == list.length($maps), $value, $result);
+		$result: map.merge($current-map, ($current-key: $current-val));
+	}
+
+	// Return result.
+	@return $result;
+}
+
+@function strip-unit($number) {
+	@if meta.type-of($number) == 'number' and not math.is-unitless($number) {
+		@return math.div($number, $number * 0 + 1);
+	}
+
+	@return $number;
+}
+
+@function get-pixels($value, $rem: 16) {
+	$unit: math.unit($value);
+	$raw: strip-unit($value);
+	@if $unit == '' {
+		@return $raw;
+	}
+	@if $unit == 'rem' or $unit == 'em' {
+		@return $raw * $rem;
+	}
+	@if $unit == 'ch' or $unit == 'ex' {
+		@return $raw * math.div($rem, 2);
+	}
+	@return $value;
+}
+
+@function get-colour-value($colour, $map) {
+	@if meta.type-of($colour) == 'color' {
+		@return $colour;
+	}
+	@if (
+		meta.type-of($colour) == 'string'
+		and string.slice($colour, 0, 13) == 'var(--colour-'
+	 ) {
+		@return map.get($map, string.slice($colour, 14, -2));
+	}
+	@return $colour;
+}
+
+@function get-sizing-value($name, $sizing: gen.$sizing) {
+	// The "base-sizing*" values are multiples of "lg" so return those.
+	@if $name == 'base-sizing' {
+		@return get-sizing-value('lg', $sizing);
+	}
+	@if $name == 'base-sizing-large' {
+		@return get-sizing-value('lg', $sizing) * 2;
+	}
+	@if $name == 'base-sizing-small' {
+		@return math.div(get-sizing-value('lg', $sizing), 2);
+	}
+
+	$unit: map.get($sizing, 'unit');
+	$index: list.index(map.get($sizing, 'sizes'), $name);
+	
+	@if $index == null {
+		@warn '"#{$name}" is not a recognised size, returning unchanged unit.';
+		@return $unit;
+	}
+	
+	@return (
+		$unit * math.pow(
+			map.get($sizing, 'ratio'),
+			$index - list.index(map.get($sizing, 'sizes'), 'md')
+		)
+	);
+}
+
+@function get-pixels-unit($value, $rem: 16) {
+	@return math.ceil(get-pixels($value, $rem)) + 'px';
+}
+
+@function get-sizing-pixels-unit($name) {
+	@return get-pixels-unit(get-sizing-value($name));
+}

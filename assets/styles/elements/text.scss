@@ -1,0 +1,65 @@
+html {
+	color: var(--font-colour);
+	font-family: var(--font-family-sans-serif);
+	line-height: var(--line-height);
+	-webkit-text-size-adjust: 100%; // Prevent adjustments of font size after orientation changes in iOS.
+	tab-size: 4; // Use a more readable tab size (opinionated).
+}
+
+p,
+blockquote {
+	margin-block: var(--base-sizing);
+}
+
+blockquote {
+	margin-inline: var(--base-sizing);
+}
+
+figure {
+	margin: var(--base-sizing) 0;
+}
+
+b,
+strong {
+	font-weight: bolder; // Add the correct font weight in Chrome and Safari.
+}
+
+code,
+kbd,
+samp,
+pre {
+	font-family: var(--font-family-mono);
+	font-size: 1em; // Correct the odd 'em' font sizing in all browsers.
+}
+
+a {
+	color: var(--link-colour);
+}
+
+/**
+Add the correct font size in all browsers.
+*/
+
+small {
+	font-size: 80%;
+}
+
+/**
+Prevent 'sub' and 'sup' elements from affecting the line height in all browsers.
+*/
+
+sub,
+sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+
+sub {
+	bottom: -0.25em;
+}
+
+sup {
+	top: -0.5em;
+}

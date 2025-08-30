@@ -1,0 +1,29 @@
+@use '../placeholders/scroll-shadow';
+
+.o-reel,
+%o-reel {
+	--o-reel-gap: var(--base-sizing);
+	--o-reel-overflowing-gap: var(--o-reel-gap);
+
+	display: flex;
+	block-size: auto;
+	overflow-x: auto;
+	overflow-y: hidden;
+
+	> * {
+		flex: 0 0 auto;
+		+ * {
+			margin-inline-start: var(--o-reel-gap);
+		}
+	}
+
+	&:where(.is-overflowing) {
+		padding-block-end: var(--o-reel-overflowing-gap);
+	}
+}
+
+.o-reel--shadows,
+%o-reel--shadows {
+	@extend %p-scroll-shadow-h;
+	--p-scroll-shadow-colour: rgb(from currentColor r g b / 20%);
+}

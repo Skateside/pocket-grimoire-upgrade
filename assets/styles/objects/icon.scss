@@ -1,0 +1,35 @@
+@use '../base/functions' as func;
+
+/**
+ * Icon
+ *
+ * A simple object that puts an icon next to some text. The container can ensure
+ * that the icon and text are always correctly aligned.
+ */
+
+@property --o-icon-space { syntax: '<length>'; initial-value: #{func.get-pixels-unit(1ex)}; inherits: true; }
+
+.o-icon,
+%o-icon {
+	--o-icon-space: 1ex;
+	height: 0.75em;
+	height: 1cap;
+	width: 0.75em;
+	width: 1cap;
+}
+
+.o-icon--before,
+%o-icon--before {
+	margin-inline-end: var(--o-icon-space);
+}
+
+.o-icon--after,
+%o-icon--after {
+	margin-inline-start: var(--o-icon-space);
+}
+
+.o-icon-container,
+%o-icon-container {
+	display: inline-flex;
+	align-items: baseline;
+}
