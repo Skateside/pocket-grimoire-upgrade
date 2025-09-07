@@ -4,83 +4,97 @@
 @use "./functions" as func;
 
 @mixin create-font-vars($map) {
-	@each $base, $font-map in $map {
-		@each $lang-list, $map in $font-map {
-			@if $lang-list == "_" {
-				@each $key, $value in $map {
-					--#{$base}-#{$key}: #{$value};
-				}
-			} @else {
-				&:where(:lang(#{$lang-list})) {
-					@each $key, $value in $map {
-						--#{$base}-#{$key}: #{$value};
-					}
-				}
-			}
-		}
-	}
+    @each $base, $font-map in $map {
+        @each $lang-list, $map in $font-map {
+            @if $lang-list == "_" {
+                @each $key, $value in $map {
+                    --#{$base}-#{$key}: #{$value};
+                }
+            } @else {
+                &:where(:lang(#{$lang-list})) {
+                    @each $key, $value in $map {
+                        --#{$base}-#{$key}: #{$value};
+                    }
+                }
+            }
+        }
+    }
 }
 
 @mixin create-sizing-vars($map) {
-	--sizing-unit: #{map.get($map, "unit")};
-	--sizing-ratio: #{map.get($map, "ratio")};
+    & {
+        --sizing-unit: #{map.get($map, "unit")};
+        --sizing-ratio: #{map.get($map, "ratio")};
+    }
 
-	$sizes: map.get($map, "sizes");
-	@each $size in $sizes {
-		$index: list.index($sizes, $size);
-		$index-md: list.index($sizes, "md");
-		@if $index == $index-md {
-			--sizing-#{$size}: var(--sizing-unit);
-		} @else if $index < $index-md {
-			--sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index + 1)}) / var(--sizing-ratio));
-		} @else if $index > $index-md {
-			--sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index - 1)}) * var(--sizing-ratio));
-		}
-	}
+    $sizes: map.get($map, "sizes");
+    @each $size in $sizes {
+        $index: list.index($sizes, $size);
+        $index-md: list.index($sizes, "md");
+        @if $index == $index-md {
+            & {
+                --sizing-#{$size}: var(--sizing-unit);
+            }
+        } @else if $index < $index-md {
+            & {
+                --sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index + 1)}) / var(--sizing-ratio));
+            }
+        } @else if $index > $index-md {
+            & {
+                --sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index - 1)}) * var(--sizing-ratio));
+            }
+        }
+    }
 }
 
 @mixin create-colour-vars($map) {
-	@each $key, $value in $map {
-		@each $key2, $value2 in $value {
-			--#{$key}-#{$key2}: #{$value2};
-		}
-	}
+    @each $key, $value in $map {
+        @each $key2, $value2 in $value {
+            & {
+                --#{$key}-#{$key2}: #{$value2};
+            }
+        }
+    }
 }
 
 @mixin create-flat-vars($map) {
-	@each $key, $value in $map {
-		--#{$key}: #{$value};
-	}
+    @each $key, $value in $map {
+        & {
+            --#{$key}: #{$value};
+        }
+    }
 }
 
 @mixin create-value-vars($map) {
-	@each $key, $value in $map {
-		--#{$key}: #{map.get($value, "value")};
-	}
+    @each $key, $value in $map {
+        & {
+            --#{$key}: #{map.get($value, "value")};
+        }
+    }
 }
 
 @mixin create-definitions($map) {
-	@each $key, $value in $map {
-		$inherits: true;
-		@if map.has-key($value, "inherits") {
-			$inherits: map.get($value, "inherits");
-		}
-		@property --#{$key} {
-			syntax: "#{map.get($value, "syntax")}";
-			initial-value: #{map.get($value, "initial-value")};
-			inherits: #{$inherits};
-		}
-	}
-  }
+    @each $key, $value in $map {
+        $inherits: true;
+        @if map.has-key($value, "inherits") {
+            $inherits: map.get($value, "inherits");
+        }
+        @property --#{$key} {
+            syntax: "#{map.get($value, "syntax")}";
+            initial-value: #{map.get($value, "initial-value")};
+            inherits: #{$inherits};
+        }
+    }
+}
 
 // A mixin that will allow for a browser-specific outline to be added.
 @mixin outline($width: var(--outline-width), $style: var(--outline-style), $colour: null) {
-	outline-width: $width;
-	outline-style: $style;
-	@if $colour == null {
-		outline-color: Highlight;
-		outline-color: -webkit-focus-ring-color;
-	} @else {
-		outline-color: $colour;
-	}
+    outline-width: $width;
+    outline-style: $style;
+    @if $colour == null {
+        outline-color: Highlight;
+        outline-color: -webkit-focus-ring-color;
+    } @else {
+        outline-color: $colour;
+    }
 }

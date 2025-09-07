@@ -69,14 +69,14 @@
 import type {
     IRole,
     ITokenRole,
-} from "./scripts/types/data";
-import useUiStore from "./scripts/store/ui";
-import useTokenStore from "./scripts/store/token";
-import SelectEdition from "./components/SelectEdition.vue";
-import Grimoire from "./components/Grimoire.vue";
-import SeatMenuDialog from "./components/SeatMenuDialog.vue";
-import RoleListDialog from "./components/RoleListDialog.vue";
-import RoleDialog from "./components/RoleDialog.vue";
+} from "../scripts/types/data";
+import useUiStore from "../scripts/store/ui";
+import useTokenStore from "../scripts/store/token";
+import SelectEdition from "./SelectEdition.vue";
+import Grimoire from "./Grimoire.vue";
+import SeatMenuDialog from "./SeatMenuDialog.vue";
+import RoleListDialog from "./RoleListDialog.vue";
+import RoleDialog from "./RoleDialog.vue";
 
 const uiStore = useUiStore();
 const tokenStore = useTokenStore();

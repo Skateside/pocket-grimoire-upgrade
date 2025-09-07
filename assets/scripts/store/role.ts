@@ -86,6 +86,35 @@ const useRoleStore = defineStore("role", () => {
         ...storage.get<IRoleScript>(STORAGE_KEY, []),
     ]);
 
+//     const nightOrder = computed(() => {
+
+//         const order = {
+//             first: [],
+//             other: [],
+//         } as Record<"first" | "other", IRole["id"][]>;
+
+//         if (!script.value) {
+//             return order;
+//         }
+
+//         const roles = script.value.filter((role) => !innerIsMeta(role))
+
+//         order.first = roles
+//             .filter(({ firstNight }) => {
+//                 return typeof firstNight === "number" && firstNight > 0;
+//             })
+//             .sort((roleA, roleB) => Number(roleA.firstNight) - Number(roleB.firstNight))
+//             .map(({ id }) => id);
+//         order.other = roles
+//             .filter(({ otherNight }) => {
+//                 return typeof otherNight === "number" && otherNight > 0;
+//             })
+//             .sort((roleA, roleB) => Number(roleA.otherNight) - Number(roleB.otherNight))
+//             .map(({ id }) => id);
+// console.log({ order });
+
+//     });
+
     watch(script, (value) => {
         // When saving a script, remove each reminder's role to prevent a
         // circular reference.
@@ -234,6 +263,18 @@ const useRoleStore = defineStore("role", () => {
 
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
 
+    // const getNightOrder = computed(() => (id: IRole["id"], night: "first" | "other") => {
+
+    //     const index = nightOrder.value?.[night].indexOf(id);
+
+    //     if (typeof index === "number" && index > -1) {
+    //         return index;
+    //     }
+
+    //     return undefined;
+
+    // });
+
     const hasScript = computed(() => script.value.length > 0);
 
     const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
@@ -362,6 +403,7 @@ const useRoleStore = defineStore("role", () => {
         getScriptMeta,
         getIsValidScript,
         getScriptById,
+        // getNightOrder,
         // Actions.
         setScript,
         setScriptById,

@@ -14,6 +14,9 @@
 /public/build/
 ###< pentatrion/vite-bundle ###
 
+# IDE
+/.vscode/
+
 # Pocket Grimoire specific
 /assets/data/compiled/
 /ideas/
