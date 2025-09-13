@@ -2,7 +2,7 @@
 
     <SelectEdition />
     <!-- <RoleList /> -->
-    <Grimoire
+    <GrimoirePad
         @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
     />
 
@@ -73,7 +73,7 @@ import type {
 import useUiStore from "../scripts/store/ui";
 import useTokenStore from "../scripts/store/token";
 import SelectEdition from "./SelectEdition.vue";
-import Grimoire from "./Grimoire.vue";
+import GrimoirePad from "./GrimoirePad.vue";
 import SeatMenuDialog from "./SeatMenuDialog.vue";
 import RoleListDialog from "./RoleListDialog.vue";
 import RoleDialog from "./RoleDialog.vue";

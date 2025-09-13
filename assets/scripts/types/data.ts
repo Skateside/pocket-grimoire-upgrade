@@ -8,7 +8,10 @@ export type ICoordinates = {
 
 // The breakdown of role types.
 
-export type IGame = Record<number, Record<IRoleCoreTeam, number>>;
+// export type IGame = Record<number, Record<IRoleCoreTeam, number>>;
+export type IGameBreakdown = Record<IRoleCoreTeam, number>;
+export type IGameCounts = Record<number, IGameBreakdown>;
+export type IGameInPlay = Record<IRole["id"], number>;
 
 // Internationalisation information.
 

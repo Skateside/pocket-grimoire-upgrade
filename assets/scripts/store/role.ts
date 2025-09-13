@@ -86,6 +86,14 @@ const useRoleStore = defineStore("role", () => {
         ...storage.get<IRoleScript>(STORAGE_KEY, []),
     ]);
 
+    watch(script, (value) => {
+        // When saving a script, remove each reminder's role to prevent a
+        // circular reference.
+        storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
+    });
+
+    // const game = 
+
 //     const nightOrder = computed(() => {
 
 //         const order = {
@@ -114,12 +122,6 @@ const useRoleStore = defineStore("role", () => {
 // console.log({ order });
 
 //     });
-
-    watch(script, (value) => {
-        // When saving a script, remove each reminder's role to prevent a
-        // circular reference.
-        storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
-    });
 
     const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => role.id === "_meta";
     const innerIsUniversal = (role: IRole) => role.id === "universalinfo";
