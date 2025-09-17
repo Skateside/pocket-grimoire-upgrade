@@ -82,6 +82,7 @@ export type IRoleReminderRaw = {
 };
 
 export type IRoleReminder = IRoleReminderRaw & {
+    id: `${IRole["id"]}:${number}`,
     role: IRole, // A reference back to the role.
     image?: string, // Create a seperate image for universal reminders.
 };
@@ -215,6 +216,7 @@ export type ITokenRole = IToken & {
 
 export type ITokenReminder = IToken & {
     type: "reminder",
+    reminder: IRoleReminder["id"],
 };
 
 // BotC Scripts.

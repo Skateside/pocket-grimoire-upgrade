@@ -14,6 +14,11 @@
     border: 0.3ch solid #000;
 }
 
+.token--reminder {
+    width: 6em; // TODO: Remove magic number.
+    border: 0.3ch solid #000;
+}
+
 .is-dead > .token__contents {
     filter:
         grayscale(1)

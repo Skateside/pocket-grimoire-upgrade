@@ -28,6 +28,27 @@
             <span class="token__name" v-if="seat.name">{{ seat.name }}</span>
         </button>
 
+        <button
+            v-for="reminder in tokenStore.byType.reminder"
+            type="button"
+            class="token token--reminder movable__item"
+            :id="reminder.id"
+            :style='{
+                "--x": reminder.x,
+                "--y": reminder.y,
+                "--z": reminder.z,
+            }'
+        >
+            <span class="token__contents">
+                <ReminderToken
+                    v-if="reminder.reminder"
+                    :reminder="roleStore.getReminderById(reminder.reminder)"
+                />
+                <!-- :alignment="seat.alignment" -->
+                <!-- <template v-else>{{ seat.name || seat.index }}</template> -->
+            </span>
+        </button>
+
     </div>
 
     <!-- TODO: Remove this part from this component -->
@@ -36,9 +57,24 @@
         <label for="remove-dropdown">Remove</label>
         <select id="remove-dropdown" ref="removeDropdown">
             <option disabled value="">Please select</option>
-            <option v-for="seat in tokenStore.byType.seat">{{ seat.id }}</option>
+            <optgroup v-if="tokenStore.byType.seat?.length" label="Seats">
+                <option
+                    v-for="seat in tokenStore.byType.seat"
+                    :value="seat.id"
+                >
+                    {{ seat.name || seat.role }} ({{ seat.id }})
+                </option>
+            </optgroup>
+            <optgroup v-if="tokenStore.byType.reminder?.length" label="Reminders">
+                <option
+                    v-for="reminder in tokenStore.byType.reminder"
+                    :value="reminder.id"
+                >
+                    {{ reminder.reminder }} ({{ reminder.id }})
+                </option>
+            </optgroup>
         </select>
-        <button type="button" @click="removeByDropdown">Remove seat</button>
+        <button type="button" @click="removeByDropdown">Remove</button>
     </p>
 
 </template>
@@ -62,6 +98,7 @@ import {
     clamp,
 } from "../scripts/utilities/numbers";
 import RoleToken from "./RoleToken.vue";
+import ReminderToken from "./ReminderToken.vue";
 
 const emit = defineEmits<{
     (e: "seat-click", id: string): void,

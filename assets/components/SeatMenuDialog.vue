@@ -69,7 +69,7 @@
             </Tab>
             <Tab title="Reminder" :disabled="!roleStore.hasScript">
                 <menu>
-                    <li><button type="button">Add</button></li>
+                    <li><button type="button" @click="addReminder">Add</button></li>
                 </menu>
                 <p>TODO: Recent reminders</p>
             </Tab>
@@ -114,6 +114,7 @@ const emit = defineEmits<IDialogEvents & {
     (e: "remove"): void,
     (e: "set-role"): void,
     (e: "show-role", id: IRole): void,
+    (e: "add-reminder"): void,
 }>();
 const seatName = defineModel<string>('seat-name', { default: "" });
 const alignment = defineModel<IRoleAlignment>('alignment', { default: 0 });
@@ -192,6 +193,10 @@ const removePlayer = () => {
 
 const setRole = () => {
     emit("set-role");
+};
+
+const addReminder = () => {
+    emit("add-reminder");
 };
 
 const unsetRole = () => {

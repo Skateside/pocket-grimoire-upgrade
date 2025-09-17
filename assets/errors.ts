@@ -50,3 +50,11 @@ export class UnrecognisedScriptError extends PocketGrimoireError {
         this.name = "UnrecognisedScriptError";
     }
 }
+
+// The requested reminder hasn't been recognised.
+export class UnrecognisedReminderError extends PocketGrimoireError {
+    constructor(message: string) {
+        super(message);
+        this.name = "UnrecognisedReminderError";
+    }
+}

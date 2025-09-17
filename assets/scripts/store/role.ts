@@ -26,6 +26,7 @@ import {
 } from "vue";
 import {
     UnrecognisedRoleError,
+    UnrecognisedReminderError,
 } from "../../errors";
 
 const useRoleStore = defineStore("role", () => {
@@ -36,12 +37,16 @@ const useRoleStore = defineStore("role", () => {
     // TODO: Add functionality for augments.
     // TODO: Work out how to augment the reminders.
 
+    const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => role.id === "_meta";
+    const innerIsUniversal = (role: IRole) => role.id === "universalinfo";
+
     const innerSetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
 
-        if (typeof role === "object") {
+        if (!innerIsMeta(role)) {
 
-            (role as IRole).reminders?.forEach((reminder) => {
-                reminder.role = role as IRole;
+            role.reminders?.forEach((reminder, index) => {
+                reminder.role = role;
+                reminder.id = `${role.id}:${index}`;
             });
 
         }
@@ -54,9 +59,9 @@ const useRoleStore = defineStore("role", () => {
 
         // This should never happen because the script should always be a role
         // or the meta information, since `setScript` sorts that out.
-        if (typeof role === "string") {
-            return role;
-        }
+        // if (typeof role === "string") {
+        //     return role;
+        // }
 
         const clone = { ...role } as IRole;
 
@@ -83,7 +88,7 @@ const useRoleStore = defineStore("role", () => {
         structuredClone(window.PG.scripts)
     );
     const script = ref<IRoleScript>([
-        ...storage.get<IRoleScript>(STORAGE_KEY, []),
+        ...storage.get<IRoleScript>(STORAGE_KEY, []).map(innerSetRemindersRole),
     ]);
 
     watch(script, (value) => {
@@ -122,9 +127,6 @@ const useRoleStore = defineStore("role", () => {
 // console.log({ order });
 
 //     });
-
-    const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => role.id === "_meta";
-    const innerIsUniversal = (role: IRole) => role.id === "universalinfo";
 
     const innerAsRoleObject = (roleOrId: IRoleScriptImport[0]) => {
         return (
@@ -265,6 +267,20 @@ const useRoleStore = defineStore("role", () => {
 
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
 
+    const getReminderById = computed(() => (id: IRoleReminder["id"]) => {
+
+        const [roleId, index] = id.split(":");
+        const role = getById.value(roleId);
+        const reminder = role.reminders?.[Number(index)];
+
+        if (!reminder) {
+            throw new UnrecognisedReminderError(id);
+        }
+
+        return reminder;
+
+    });
+
     // const getNightOrder = computed(() => (id: IRole["id"], night: "first" | "other") => {
 
     //     const index = nightOrder.value?.[night].indexOf(id);
@@ -287,7 +303,7 @@ const useRoleStore = defineStore("role", () => {
             return role;
         }
 
-        role.reminders?.forEach((reminder) => {
+        role.reminders?.forEach((reminder, index) => {
 
             if (typeof reminder === "object") {
                 reminders.push(reminder);
@@ -301,6 +317,7 @@ const useRoleStore = defineStore("role", () => {
             } else {
                 
                 const newReminder: IRoleReminder = {
+                    id: `${role.id}:${index}`,
                     role, // needed for TypeScript, gets set again in the next step.
                     name: reminder as string,
                 };
@@ -310,7 +327,9 @@ const useRoleStore = defineStore("role", () => {
 
         });
 
-        (role as IRoleDeprecatedReminders).remindersGlobal?.forEach((reminder) => {
+        const reminderCount = role.reminders?.length || 0;
+
+        (role as IRoleDeprecatedReminders).remindersGlobal?.forEach((reminder, index) => {
 
             const found = reminders.find(({ name }) => name === reminder);
 
@@ -319,6 +338,7 @@ const useRoleStore = defineStore("role", () => {
             } else {
                 
                 const newReminder: IRoleReminder = {
+                    id: `${role.id}:${reminderCount + index}`,
                     role, // needed for TypeScript, gets set again in the next step.
                     name: reminder as string,
                     flags: ["global"],
@@ -405,6 +425,7 @@ const useRoleStore = defineStore("role", () => {
         getScriptMeta,
         getIsValidScript,
         getScriptById,
+        getReminderById,
         // getNightOrder,
         // Actions.
         setScript,

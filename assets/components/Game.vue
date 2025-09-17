@@ -13,6 +13,7 @@
         @remove="() => uiStore.hidePopover('seat-menu', true)"
         @set-role="() => uiStore.nextPopover('role-list-dialog')"
         @show-role="handleShowRole"
+        @add-reminder="handleShowReminderDialog"
     />
 
     <RoleListDialog
@@ -26,6 +27,11 @@
         :role="uiStore.roleDialog.role!"
         :alignment="uiStore.roleDialog.alignment"
         @hide="handleRoleDialogHide"
+    />
+
+    <ReminderListDialog
+        v-if="uiStore.isPopoverOpen('reminder-list-dialog')"
+        @reminder-click="handleReminderListClick"
     />
 
     <!-- <div class="list">
@@ -68,7 +74,9 @@
 <script lang="ts" setup>
 import type {
     IRole,
+    IRoleReminder,
     ITokenRole,
+    // ITokenReminder,
 } from "../scripts/types/data";
 import useUiStore from "../scripts/store/ui";
 import useTokenStore from "../scripts/store/token";
@@ -76,6 +84,7 @@ import SelectEdition from "./SelectEdition.vue";
 import GrimoirePad from "./GrimoirePad.vue";
 import SeatMenuDialog from "./SeatMenuDialog.vue";
 import RoleListDialog from "./RoleListDialog.vue";
+import ReminderListDialog from "./ReminderListDialog.vue";
 import RoleDialog from "./RoleDialog.vue";
 
 const uiStore = useUiStore();
@@ -115,6 +124,21 @@ const handleRoleDialogHide = () => {
     uiStore.roleDialog.role = undefined;
     uiStore.roleDialog.alignment = undefined;
     uiStore.clearPopoverList();
+
+};
+
+const handleShowReminderDialog = () => {
+
+    uiStore.nextPopover("reminder-list-dialog");
+
+};
+
+const handleReminderListClick = (id: IRoleReminder["id"]) => {
+
+    tokenStore.createReminder({
+        reminder: id,
+    });
+    uiStore.previousPopover();
 
 };
 

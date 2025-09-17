@@ -94,8 +94,8 @@ const useTokenStore = defineStore("token", () => {
 
     };
 
-    const createSeat = (settings: Partial<IToken> = {}) => create(settings, "seat");
-    const createReminder = (settings: Partial<IToken> = {}) => create(settings, "reminder");
+    const createSeat = (settings: Partial<ITokenSeat> = {}) => create(settings, "seat");
+    const createReminder = (settings: Partial<ITokenReminder> = {}) => create(settings, "reminder");
 
     const update = <TToken extends IToken = IToken>(id: IToken["id"], settings: Partial<TToken>) => {
 
