@@ -39,6 +39,24 @@
     background-position: center;
 }
 
+.role-token--reminder {
+    --role-token-background-colour: #bec0fb;
+    --role-token-edge-colour: #454a99;
+    background-image:
+        radial-gradient(
+            ellipse at center,
+            var(--role-token-background-colour) 50%,
+            var(--role-token-edge-colour) 100%,
+        ),
+        url("/assets/images/role-noise.webp");
+    background-repeat:
+        no-repeat,
+        repeat;
+    background-size:
+        100%,
+        auto;
+}
+
 .role-token__image {
     display: flex;
     align-items: center;
@@ -56,6 +74,12 @@
 .role-token__text {
     font-family: var(--font-family-serif);
     letter-spacing: 0.1em;
+
+    @at-root {
+        .role-token--reminder & {
+            font-family: var(--font-family-sans-serif);
+        }
+    }
 }
 
 /*

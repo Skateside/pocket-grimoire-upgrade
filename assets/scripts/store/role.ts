@@ -9,9 +9,6 @@ import type {
     IRoleTeam,
     IRoleAlignment,
 } from "../types/data";
-// import type {
-//     RequireOnly,
-// } from "../types/lib";
 import type {
     IStorage,
 } from "../classes/Storage";
@@ -57,12 +54,6 @@ const useRoleStore = defineStore("role", () => {
 
     const innerUnsetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
 
-        // This should never happen because the script should always be a role
-        // or the meta information, since `setScript` sorts that out.
-        // if (typeof role === "string") {
-        //     return role;
-        // }
-
         const clone = { ...role } as IRole;
 
         if (!clone.reminders) {
@@ -96,37 +87,6 @@ const useRoleStore = defineStore("role", () => {
         // circular reference.
         storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
     });
-
-    // const game = 
-
-//     const nightOrder = computed(() => {
-
-//         const order = {
-//             first: [],
-//             other: [],
-//         } as Record<"first" | "other", IRole["id"][]>;
-
-//         if (!script.value) {
-//             return order;
-//         }
-
-//         const roles = script.value.filter((role) => !innerIsMeta(role))
-
-//         order.first = roles
-//             .filter(({ firstNight }) => {
-//                 return typeof firstNight === "number" && firstNight > 0;
-//             })
-//             .sort((roleA, roleB) => Number(roleA.firstNight) - Number(roleB.firstNight))
-//             .map(({ id }) => id);
-//         order.other = roles
-//             .filter(({ otherNight }) => {
-//                 return typeof otherNight === "number" && otherNight > 0;
-//             })
-//             .sort((roleA, roleB) => Number(roleA.otherNight) - Number(roleB.otherNight))
-//             .map(({ id }) => id);
-// console.log({ order });
-
-//     });
 
     const innerAsRoleObject = (roleOrId: IRoleScriptImport[0]) => {
         return (
@@ -281,17 +241,29 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    // const getNightOrder = computed(() => (id: IRole["id"], night: "first" | "other") => {
+    const getReminders = computed(() => () => {
 
-    //     const index = nightOrder.value?.[night].indexOf(id);
+        // TODO: filters
+        const reminders: IRoleReminder[] = [];
 
-    //     if (typeof index === "number" && index > -1) {
-    //         return index;
-    //     }
+        reminders.push(
+            ...(roles.value.find(innerIsUniversal)?.reminders || [])
+        );
 
-    //     return undefined;
+        script.value.forEach((role) => {
+            reminders.push(...((role as IRole).reminders || []));
+        });
 
-    // });
+        roles.value.filter(({ team }) => team === "fabled").forEach((role) => {
+            reminders.push(...((role as IRole).reminders || []));
+        });
+
+        // TODO: add any reminders for roles that have been added to the page
+        // but not in the script (such as orphan roles or added travellers).
+
+        return reminders;
+
+    });
 
     const hasScript = computed(() => script.value.length > 0);
 
@@ -426,7 +398,7 @@ const useRoleStore = defineStore("role", () => {
         getIsValidScript,
         getScriptById,
         getReminderById,
-        // getNightOrder,
+        getReminders,
         // Actions.
         setScript,
         setScriptById,
