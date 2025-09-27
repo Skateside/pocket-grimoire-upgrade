@@ -8,6 +8,7 @@ import type {
     IRoleDeprecatedReminders,
     IRoleTeam,
     IRoleAlignment,
+    IRoleNightOrder,
 } from "../types/data";
 import type {
     IStorage,
@@ -81,6 +82,50 @@ const useRoleStore = defineStore("role", () => {
     const script = ref<IRoleScript>([
         ...storage.get<IRoleScript>(STORAGE_KEY, []).map(innerSetRemindersRole),
     ]);
+    const hasScript = computed(() => script.value.length > 0);
+    const nightOrder = computed(() => {
+
+        const nightOrder: IRoleNightOrder = {
+            first: [],
+            other: [],
+        };
+
+        script.value.forEach((role) => {
+
+            if (innerIsMeta(role)) {
+                return;
+            }
+
+            const { firstNight, otherNight } = role;
+
+            if (firstNight) {
+
+                nightOrder.first.push({
+                    role,
+                    inPlay: 0,
+                    order: firstNight,
+                });
+
+            }
+
+            if (otherNight) {
+
+                nightOrder.other.push({
+                    role,
+                    inPlay: 0,
+                    order: otherNight,
+                });
+
+            }
+
+        });
+
+        nightOrder.first.sort((roleA, roleB) => roleA.order - roleB.order);
+        nightOrder.other.sort((roleA, roleB) => roleA.order - roleB.order);
+
+        return nightOrder;
+
+    });
 
     watch(script, (value) => {
         // When saving a script, remove each reminder's role to prevent a
@@ -265,8 +310,6 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const hasScript = computed(() => script.value.length > 0);
-
     const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
 
         const reminders: IRoleReminder[] = [];
@@ -382,12 +425,15 @@ const useRoleStore = defineStore("role", () => {
         setScript(scripts.value[id] || []);
     };
 
+    // TODO: which roles have been added & how many?
+
     return {
         // State.
         roles,
         script,
         scripts,
         hasScript,
+        nightOrder,
         // Getters.
         getById,
         getImage,

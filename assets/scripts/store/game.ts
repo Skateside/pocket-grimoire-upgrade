@@ -20,6 +20,7 @@ import {
 
 const useGameStore = defineStore("gameStore", () => {
 
+    // TODO: Integrate this with tokenStore?
     const numbers = computed<IGameCounts>(() => ({
          5: { townsfolk: 3, outsider: 0, minion: 1, demon: 1 },
          6: { townsfolk: 3, outsider: 1, minion: 1, demon: 1 },
@@ -56,7 +57,7 @@ const useGameStore = defineStore("gameStore", () => {
 
     const addInPlay = (id: IRole["id"]) => {
 
-        if (!Object.hasOwn(inPlay, id)) { // TODO: test - reactive() might break this.
+        if (!Object.hasOwn(inPlay, id)) {
             inPlay[id] = 0;
         }
 
@@ -66,7 +67,7 @@ const useGameStore = defineStore("gameStore", () => {
 
     const removeInPlay = (id: IRole["id"]) => {
 
-        if (!Object.hasOwn(inPlay, id)) { // TODO: test - reactive() might break this.
+        if (!Object.hasOwn(inPlay, id)) {
             return;
         }
 

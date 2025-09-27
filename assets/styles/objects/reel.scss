@@ -27,3 +27,15 @@
 	@extend %p-scroll-shadow-h;
 	--p-scroll-shadow-colour: rgb(from currentColor r g b / 20%);
 }
+
+.o-reel--carousel,
+%o-reel--carousel {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    > * {
+        width: 100%;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+    }
+}

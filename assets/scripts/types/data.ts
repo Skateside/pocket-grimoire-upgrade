@@ -190,6 +190,12 @@ export type IRoleSpecial = {
 export type IRoleScript = (IRoleMeta | IRole)[];
 export type IRoleScriptImport = (IRoleMeta | IRole | IRole["id"] | Pick<IRole, "id">)[];
 
+export type IRoleNightOrder = Record<"first" | "other", {
+    role: IRole,
+    inPlay: number,
+    order: number,
+}[]>;
+
 // Tokens.
 
 export type IToken = Required<ICoordinates> & {
