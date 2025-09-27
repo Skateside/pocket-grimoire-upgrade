@@ -1,0 +1,32 @@
+@use "../objects/reel";
+
+.night-order {
+    @extend %o-reel;
+    @extend %o-reel--carousel;
+}
+
+.night-order__entry {
+    margin-inline-start: 0;
+    display: grid;
+    grid-template-areas:
+        "icon name"
+        "icon ability";
+    grid-template-columns: 10ch auto;
+    grid-template-rows: auto 100%;
+}
+
+.night-order__name {
+    grid-area: name;
+    margin: 0;
+}
+
+.night-order__icon {
+    grid-area: icon;
+    width: 100%;
+    height: auto;
+}
+
+.night-order__ability {
+    grid-area: ability;
+    margin: 0;
+}
