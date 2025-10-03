@@ -54,9 +54,29 @@ const useTokenStore = defineStore("token", () => {
         return tokens.value.find(({ id: tokenId }) => tokenId === id);
     };
 
+    const innerGetToken = (tokenOrId: IToken | IToken["id"]) => {
+
+        const token = (
+            typeof tokenOrId === "string"
+            ? innerGetById(tokenOrId)
+            : tokenOrId
+        );
+
+        if (!token) {
+            throw new Error(); // TODO
+        }
+
+        return token;
+
+    };
     const innerIsSeat = (token: IToken): token is ITokenSeat => token.type === "seat";
+    const innerIsReminder = (token: IToken): token is ITokenReminder => token.type === "reminder";
+    const innerIsRole = (token: IToken): token is ITokenRole => token.type === "role";
 
     const getById = computed(() => innerGetById);
+    const isSeat = computed(() => (tokenOrId: IToken | IToken["id"]) => innerIsSeat(innerGetToken(tokenOrId)));
+    const isReminder = computed(() => (tokenOrId: IToken | IToken["id"]) => innerIsReminder(innerGetToken(tokenOrId)));
+    const isRole = computed(() => (tokenOrId: IToken | IToken["id"]) => innerIsRole(innerGetToken(tokenOrId)));
 
     const create = (settings: Partial<IToken> = {}, type: IToken["type"] = "seat") => {
 
@@ -135,8 +155,11 @@ const useTokenStore = defineStore("token", () => {
         // State.
         tokens,
         byType,
-        getById,
         // Getters.
+        getById,
+        isSeat,
+        isReminder,
+        isRole,
         nextZ,
         // Actions.
         create,

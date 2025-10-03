@@ -81,6 +81,7 @@ import type {
 } from "../scripts/types/data";
 import useUiStore from "../scripts/store/ui";
 import useTokenStore from "../scripts/store/token";
+import useGameStore from "../scripts/store/game";
 import SelectEdition from "./SelectEdition.vue";
 import GrimoirePad from "./GrimoirePad.vue";
 import SeatMenuDialog from "./SeatMenuDialog.vue";
@@ -91,6 +92,7 @@ import NightOrder from "./NightOrder.vue";
 
 const uiStore = useUiStore();
 const tokenStore = useTokenStore();
+const gameStore = useGameStore();;
 
 const handleRoleListClick = (id: IRole["id"]) => {
 
@@ -101,7 +103,7 @@ const handleRoleListClick = (id: IRole["id"]) => {
     tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
         role: id,
     });
-
+    gameStore.addInPlay(id);
     uiStore.previousPopover();
 
 };

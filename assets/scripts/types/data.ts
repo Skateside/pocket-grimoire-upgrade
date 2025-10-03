@@ -61,7 +61,7 @@ export type IRoleRaw = {
 export type IRole = Omit<IRoleRaw, "reminders" | "jinxes"> & {
     // TODO: anything that the Pocket Grimoire needs to manage the role.
     reminders?: IRoleReminder[],
-    jinxes?: IRoleJinx[],    
+    jinxes?: IRoleJinx[],
 };
 
 export type IRoleDeprecatedReminders = IRole & {
