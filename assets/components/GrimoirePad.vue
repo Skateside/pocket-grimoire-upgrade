@@ -82,7 +82,6 @@
 <script lang="ts" setup>
 import type {
     ICoordinates,
-    ITokenRole,
 } from "../scripts/types/data";
 import {
     onMounted,
@@ -91,7 +90,6 @@ import {
 } from "vue";
 import useTokenStore from "../scripts/store/token";
 import useRoleStore from "../scripts/store/role";
-import useGameStore from "../scripts/store/game";
 import {
     debounce,
     noop,
@@ -115,7 +113,6 @@ type IPad = {
 
 const tokenStore = useTokenStore();
 const roleStore = useRoleStore();
-const gameStore = useGameStore();
 const grimoire = ref<HTMLElement | null>(null);
 const isDragging = ref<boolean>(false);
 const pad = ref<IPad>({
@@ -149,13 +146,7 @@ const removeByDropdown = () => {
 };
 
 const remove = (id: string) => {
-
     tokenStore.destroy(id);
-
-    if (tokenStore.isRole(id)) {
-        gameStore.removeInPlay((tokenStore.getById(id) as ITokenRole)?.role);
-    }
-
 };
 
 const getMovableItem = (target: Element) => {

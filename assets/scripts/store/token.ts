@@ -1,4 +1,5 @@
 import type {
+    IRole,
     IToken,
     ITokenSeat,
     ITokenRole,
@@ -17,8 +18,14 @@ import {
     watch,
 } from "vue";
 import {
+    unique,
+} from "../utilities/arrays";
+import {
     randomId,
 } from "../utilities/strings";
+import {
+    UnrecognisedTokenError,
+} from "../../errors";
 
 const useTokenStore = defineStore("token", () => {
 
@@ -46,6 +53,38 @@ const useTokenStore = defineStore("token", () => {
         : 0
     ) + 1);
 
+    const inPlay = computed(() => tokens.value
+        .filter((token) => innerIsSeat(token) || innerIsRole(token))
+        .reduce((inPlay, token) => {
+
+            const { role } = token;
+
+            if (!role) {
+                return inPlay;
+            }
+
+            if (!Object.hasOwn(inPlay, role)) {
+                inPlay[role] = 0;
+            }
+
+            inPlay[role] += 1;
+
+            return inPlay;
+
+        }, {} as Record<IRole["id"], number>)
+    );
+
+    const alive = computed(() => unique(tokens.value
+        .filter(innerIsSeat)
+        .filter(({ dead }) => !dead)
+        .map((token) => token.role)
+        .filter((id) => typeof id === "string"))
+    );
+
+    const active = computed(() => Object.keys(inPlay.value)
+        .filter((id) => alive.value.includes(id))
+    );
+
     const innerGetIndexById = (id: IToken["id"]) => {
         return tokens.value.findIndex(({ id: tokenId }) => tokenId === id);
     };
@@ -63,20 +102,40 @@ const useTokenStore = defineStore("token", () => {
         );
 
         if (!token) {
-            throw new Error(); // TODO
+
+            const id = (
+                typeof tokenOrId === "string"
+                ? tokenOrId
+                : `{ id: "${tokenOrId.id}" }`
+            );
+
+            throw new UnrecognisedTokenError(id);
+
         }
 
         return token;
 
     };
-    const innerIsSeat = (token: IToken): token is ITokenSeat => token.type === "seat";
-    const innerIsReminder = (token: IToken): token is ITokenReminder => token.type === "reminder";
-    const innerIsRole = (token: IToken): token is ITokenRole => token.type === "role";
+    const innerIsSeat = (token: IToken): token is ITokenSeat => (
+        token.type === "seat"
+    );
+    const innerIsReminder = (token: IToken): token is ITokenReminder => (
+        token.type === "reminder"
+    );
+    const innerIsRole = (token: IToken): token is ITokenRole => (
+        token.type === "role"
+    );
 
     const getById = computed(() => innerGetById);
-    const isSeat = computed(() => (tokenOrId: IToken | IToken["id"]) => innerIsSeat(innerGetToken(tokenOrId)));
-    const isReminder = computed(() => (tokenOrId: IToken | IToken["id"]) => innerIsReminder(innerGetToken(tokenOrId)));
-    const isRole = computed(() => (tokenOrId: IToken | IToken["id"]) => innerIsRole(innerGetToken(tokenOrId)));
+    const isSeat = computed(() => (tokenOrId: IToken | IToken["id"]) => (
+        innerIsSeat(innerGetToken(tokenOrId))
+    ));
+    const isReminder = computed(() => (tokenOrId: IToken | IToken["id"]) => (
+        innerIsReminder(innerGetToken(tokenOrId))
+    ));
+    const isRole = computed(() => (tokenOrId: IToken | IToken["id"]) => (
+        innerIsRole(innerGetToken(tokenOrId))
+    ));
 
     const create = (settings: Partial<IToken> = {}, type: IToken["type"] = "seat") => {
 
@@ -114,10 +173,17 @@ const useTokenStore = defineStore("token", () => {
 
     };
 
-    const createSeat = (settings: Partial<ITokenSeat> = {}) => create(settings, "seat");
-    const createReminder = (settings: Partial<ITokenReminder> = {}) => create(settings, "reminder");
+    const createSeat = (settings: Partial<ITokenSeat> = {}) => (
+        create(settings, "seat")
+    );
+    const createReminder = (settings: Partial<ITokenReminder> = {}) => (
+        create(settings, "reminder")
+    );
 
-    const update = <TToken extends IToken = IToken>(id: IToken["id"], settings: Partial<TToken>) => {
+    const update = <TToken extends IToken = IToken>(
+        id: IToken["id"],
+        settings: Partial<TToken>,
+    ) => {
 
         const token = innerGetById(id);
 
@@ -155,6 +221,9 @@ const useTokenStore = defineStore("token", () => {
         // State.
         tokens,
         byType,
+        inPlay,
+        alive,
+        active,
         // Getters.
         getById,
         isSeat,

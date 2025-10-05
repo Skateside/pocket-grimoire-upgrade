@@ -102,7 +102,6 @@ const useRoleStore = defineStore("role", () => {
 
                 nightOrder.first.push({
                     role,
-                    inPlay: 0,
                     order: firstNight,
                 });
 
@@ -112,7 +111,6 @@ const useRoleStore = defineStore("role", () => {
 
                 nightOrder.other.push({
                     role,
-                    inPlay: 0,
                     order: otherNight,
                 });
 
@@ -424,8 +422,6 @@ const useRoleStore = defineStore("role", () => {
     const setScriptById = (id: string) => {
         setScript(scripts.value[id] || []);
     };
-
-    // TODO: which roles have been added & how many?
 
     return {
         // State.

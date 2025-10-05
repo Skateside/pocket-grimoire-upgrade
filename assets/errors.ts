@@ -58,3 +58,15 @@ export class UnrecognisedReminderError extends PocketGrimoireError {
         this.name = "UnrecognisedReminderError";
     }
 }
+
+/**
+ * Token Store
+ */
+
+// The requested token hasn't been recognised.
+export class UnrecognisedTokenError extends PocketGrimoireError {
+    constructor(message: string) {
+        super(message);
+        this.name = "UnrecognisedTokenError";
+    }
+}

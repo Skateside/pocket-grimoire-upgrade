@@ -1,18 +1,18 @@
 import type {
-    // IGameBreakdown,
     IGameCounts,
-    IGameInPlay,
-    IRole,
 } from "../types/data";
+import type {
+    IStorage,
+} from "../classes/Storage";
 import {
     defineStore,
 } from "pinia"
 import {
     computed,
-    // inject,
-    reactive,
+    inject,
+    // reactive,
     ref,
-    // watch,
+    watch,
 } from "vue";
 import {
     clamp,
@@ -20,7 +20,9 @@ import {
 
 const useGameStore = defineStore("gameStore", () => {
 
-    // TODO: Integrate this with tokenStore?
+    const storage = inject<IStorage>("storage")!;
+    const STORAGE_KEY = "game";
+
     const numbers = computed<IGameCounts>(() => ({
          5: { townsfolk: 3, outsider: 0, minion: 1, demon: 1 },
          6: { townsfolk: 3, outsider: 1, minion: 1, demon: 1 },
@@ -34,63 +36,29 @@ const useGameStore = defineStore("gameStore", () => {
         14: { townsfolk: 9, outsider: 1, minion: 3, demon: 1 },
         15: { townsfolk: 9, outsider: 2, minion: 3, demon: 1 },
     }));
-    const playerCount = ref<number>(10);
-    const breakdown = computed(() => {
-        return numbers.value[Math.min(15, playerCount.value) as keyof IGameCounts];
+    const count = ref<number>(
+        storage.get(STORAGE_KEY, 10)
+    );
+
+    watch(count, (value) => {
+        storage.set(STORAGE_KEY, value);
     });
-    const inPlay = reactive<IGameInPlay>({});
-    const totalInPlay = computed(() => Object.keys(inPlay).reduce((count, id) => {
 
-        const number = Number(id);
-
-        if (!Number.isNaN(number)) {
-            count += number;
-        }
-
-        return count;
-
-    }, 0));
+    const breakdown = computed(() => {
+        return numbers.value[Math.min(15, count.value) as keyof IGameCounts];
+    });
 
     const setCount = (number: number) => {
-        playerCount.value = clamp(5, Math.floor(number), 20);
-    };
-
-    const addInPlay = (id: IRole["id"]) => {
-
-        if (!Object.hasOwn(inPlay, id)) {
-            inPlay[id] = 0;
-        }
-
-        inPlay[id] += 1;
-
-    };
-
-    const removeInPlay = (id: IRole["id"]) => {
-
-        if (!Object.hasOwn(inPlay, id)) {
-            return;
-        }
-
-        inPlay[id] -= 1;
-
-        if (inPlay[id] <= 0) {
-            delete inPlay[id];
-        }
-
+        count.value = clamp(5, Math.floor(number), 20);
     };
 
     return {
         // State.
         breakdown,
+        count,
         numbers,
-        inPlay,
-        playerCount,
-        totalInPlay,
         // Getters.
-        // Actions.
         setCount,
-        addInPlay,
-        removeInPlay,
     };
 
 });
