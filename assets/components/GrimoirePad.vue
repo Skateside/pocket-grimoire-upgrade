@@ -25,6 +25,14 @@
                 />
                 <template v-else>{{ seat.name || seat.index }}</template>
             </span>
+            <span
+                v-for="(number, key) in roleStore.getNightOrderById(seat.role, Object.keys(tokenStore.inPlay))"
+                :key="key"
+                class="token__night"
+                :class="`token__night--${key}`"
+            >
+                {{ number }}
+            </span>
             <span class="token__name" v-if="seat.name">{{ seat.name }}</span>
         </button>
 

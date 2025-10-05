@@ -19,7 +19,37 @@
     border: 0.3ch solid #000;
 }
 
-.is-dead > .token__contents {
+.token__night {
+    @extend %o-centre-contents;
+    @extend %o-circle;
+
+    --offset-distance: 0;
+
+    aspect-ratio: 1;
+    width: 25%;
+    line-height: 1;
+    font-weight: bold;
+    color: white;
+    position: absolute;
+    z-index: 1;
+    offset-path: circle();
+    offset-distance: var(--offset-distance);
+    offset-rotate: 0deg;
+    border: 0.25ch solid #000;
+}
+
+.token__night--first {
+    --offset-distance: 60%;
+    background-color: blue;
+}
+
+.token__night--other {
+    --offset-distance: 90%;
+    background-color: red;
+}
+
+.is-dead > .token__contents,
+.is-dead > .token__night {
     filter:
         grayscale(1)
         brightness(0.8);

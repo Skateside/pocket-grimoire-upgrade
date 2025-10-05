@@ -308,6 +308,46 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
+    const innerGetActiveNightOrder = (active: IRole["id"][]) => {
+
+        return {
+            first: nightOrder.value.first
+                .filter(({ role }) => active.includes(role.id))
+                .map(({ role }) => role.id),
+            other: nightOrder.value.other
+                .filter(({ role }) => active.includes(role.id))
+                .map(({ role }) => role.id),
+        } as Record<keyof IRoleNightOrder, IRole["id"][]>;
+
+    };
+
+    const getNightOrderById = computed(() => (
+        roleId?: IRole["id"],
+        active: IRole["id"][] = [],
+    ) => {
+
+        const myNightOrder: Partial<Record<"first" | "other", number>> = {};
+
+        if (!roleId) {
+            return myNightOrder;
+        }
+
+        const activeNightOrder = innerGetActiveNightOrder(active);
+        const firstIndex = activeNightOrder.first.indexOf(roleId);
+        const otherIndex = activeNightOrder.other.indexOf(roleId);
+
+        if (firstIndex > -1) {
+            myNightOrder.first = firstIndex + 1;
+        }
+
+        if (otherIndex > -1) {
+            myNightOrder.other = otherIndex + 1;
+        }
+
+        return myNightOrder;
+
+    });
+
     const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
 
         const reminders: IRoleReminder[] = [];
@@ -441,6 +481,7 @@ const useRoleStore = defineStore("role", () => {
         getScriptById,
         getReminderById,
         getReminders,
+        getNightOrderById,
         // Actions.
         setScript,
         setScriptById,

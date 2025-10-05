@@ -81,6 +81,10 @@ const useTokenStore = defineStore("token", () => {
         .filter((id) => typeof id === "string"))
     );
 
+    const dead = computed(() => Object.keys(inPlay.value)
+        .filter((id) => !alive.value.includes(id))
+    );
+
     const active = computed(() => Object.keys(inPlay.value)
         .filter((id) => alive.value.includes(id))
     );
@@ -89,8 +93,8 @@ const useTokenStore = defineStore("token", () => {
         return tokens.value.findIndex(({ id: tokenId }) => tokenId === id);
     };
 
-    const innerGetById = (id: IToken["id"]) => {
-        return tokens.value.find(({ id: tokenId }) => tokenId === id);
+    const innerGetById = (id: IToken["id"]): IToken | undefined => {
+        return tokens.value[innerGetIndexById(id)];
     };
 
     const innerGetToken = (tokenOrId: IToken | IToken["id"]) => {
@@ -185,7 +189,8 @@ const useTokenStore = defineStore("token", () => {
         settings: Partial<TToken>,
     ) => {
 
-        const token = innerGetById(id);
+        const index = innerGetIndexById(id);
+        const token = tokens.value[index];
 
         if (!token) {
             return false;
@@ -197,9 +202,18 @@ const useTokenStore = defineStore("token", () => {
         // Don't let the type be changed - things might get weird.
         delete updatables.type;
 
-        Object.assign(token, updatables);
+        if (Object.keys(updatables).length) {
 
-        return true;
+            // Update and then re-assign to trigger Vue's reactivity updating.
+            Object.assign(token, updatables);
+            tokens.value[index] = token;
+
+            // Only return true if we actually updated something.
+            return true;
+
+        }
+
+        return false;
 
     };
 
@@ -223,6 +237,7 @@ const useTokenStore = defineStore("token", () => {
         byType,
         inPlay,
         alive,
+        dead,
         active,
         // Getters.
         getById,

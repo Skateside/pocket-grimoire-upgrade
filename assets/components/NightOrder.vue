@@ -7,7 +7,8 @@
                 :key="role.id"
                 class="night-order__entry"
                 :class="{
-                    'is-in-play': tokenStore.active.includes(role.id),
+                    'is-in-play': Object.hasOwn(tokenStore.inPlay, role.id),
+                    'is-dead': tokenStore.dead.includes(role.id),
                 }"
             >
                 <p class="night-order__name"><strong>{{ role.name }}</strong></p>
@@ -30,9 +31,3 @@ const nights = computed(() => ({
     other: "Other Nights",
 }));
 </script>
-
-<style lang="scss" scoped>
-.night-order__entry:not(.is-in-play) {
-    opacity: 0.4;
-}
-</style>

@@ -4,8 +4,8 @@
         class="role-token"
         :class="props.class"
         :data-top="top"
-        :data-first="firstNight"
-        :data-other="otherNight"
+        :data-first="first"
+        :data-other="other"
         :data-setup="setup"
     >
         <span class="role-token__image" :class="`role-token__image--${role.team ?? ''}`">
@@ -33,11 +33,11 @@ const props = defineProps<{
     class?: HTMLAttributes
 }>();
 const store = useRoleStore();
-const role = computed<RequireOnly<IRole, 'name' | 'image'>>(() => {
+const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
 
-    const role: RequireOnly<IRole, 'name' | 'image'> = {
-        name: 'norole', // TODO: i18n
-        image: '/icons/norole.svg',
+    const role: RequireOnly<IRole, "name" | "image"> = {
+        name: "norole", // TODO: i18n
+        image: "/icons/norole.svg",
     };
 
     if (!role) {
@@ -47,7 +47,7 @@ const role = computed<RequireOnly<IRole, 'name' | 'image'>>(() => {
     if (role.id === "_meta") {
 
         role.name = "rolemeta"; // TODO: i18n
-        role.image = '/icons/metarole.svg';
+        role.image = "/icons/metarole.svg";
 
         return role;
 
@@ -63,23 +63,7 @@ const top = computed(() => {
     }
     return Math.min(role.value.reminders.length, 6);
 });
-const firstNight = computed(() => {
-    // TODO: get the position of the role within the IN PLAY roles rather than
-    // the global position. 
-    // store.getNightOrder(role.id, "first");
-    if ((role.value?.firstNight ?? 0) === 0) {
-        return;
-    }
-    return role.value.firstNight;
-});
-const otherNight = computed(() => {
-    // TODO: get the position of the role within the IN PLAY roles rather than
-    // the global position. 
-    // store.getNightOrder(role.id, "other");
-    if ((role.value?.otherNight ?? 0) === 0) {
-        return;
-    }
-    return role.value.otherNight;
-});
+const first = computed(() => (role.value?.firstNight ?? 0) > 0);
+const other = computed(() => (role.value?.otherNight ?? 0) > 0);
 const setup = computed(() => Boolean(role.value?.setup));
 </script>
