@@ -6,7 +6,11 @@
     >
         <span class="role-token__leaves">
             <span v-if="top > 0" class="role-token__reminders">
-                <span v-for="index in top" class="role-token__leaf role-token__leaf--reminder" :class="`role-token__leaf--reminder-${index}`"></span>
+                <span
+                    v-for="index in top"
+                    class="role-token__leaf role-token__leaf--reminder"
+                    :class="`role-token__leaf--reminder-${index}`"
+                ></span>
             </span>
             <span v-if="first" class="role-token__leaf role-token__leaf--first"></span>
             <span v-if="other" class="role-token__leaf role-token__leaf--other"></span>
