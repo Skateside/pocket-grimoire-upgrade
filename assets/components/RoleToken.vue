@@ -3,11 +3,15 @@
     <div
         class="role-token"
         :class="props.class"
-        :data-top="top"
-        :data-first="first"
-        :data-other="other"
-        :data-setup="setup"
     >
+        <span class="role-token__leaves">
+            <span v-if="top > 0" class="role-token__reminders">
+                <span v-for="index in top" class="role-token__leaf role-token__leaf--reminder" :class="`role-token__leaf--reminder-${index}`"></span>
+            </span>
+            <span v-if="first" class="role-token__leaf role-token__leaf--first"></span>
+            <span v-if="other" class="role-token__leaf role-token__leaf--other"></span>
+            <span v-if="setup" class="role-token__leaf role-token__leaf--setup"></span>
+        </span>
         <span class="role-token__image" :class="`role-token__image--${role.team ?? ''}`">
             <img :src="image" alt="" class="role-token__icon" width="150" height="150" loading="lazy">
         </span>
@@ -59,7 +63,7 @@ const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
 const image = computed(() => store.getImage(role.value as IRole, props.alignment));
 const top = computed(() => {
     if (!role.value?.reminders) {
-        return;
+        return 0;
     }
     return Math.min(role.value.reminders.length, 6);
 });

@@ -82,6 +82,109 @@
     }
 }
 
+.role-token__leaves {
+    @extend %o-circle;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.role-token__leaf {
+    background-image: url("/assets/images/role-leaf.svg");
+    background-repeat: no-repeat;
+    background-size: contain;
+    offset-distance: calc(75% + (var(--rotation-value, 0) * 5%));
+    offset-path: circle(45% at center);
+    offset-rotate: 0deg;
+    position: absolute;
+    aspect-ratio: 1;
+    width: 25%;
+    transform: rotate(calc(180deg + (var(--rotation-value, 0) * 18deg)))
+}
+
+.role-token__reminders {
+    &:where(:has(> :last-child:nth-child(2))),
+    &:where(:has(> :last-child:nth-child(4))),
+    &:where(:has(> :last-child:nth-child(6))) {
+        --rotation-offset: 0.5;
+    }
+}
+
+.role-token__leaf--first { --rotation-value: -5; }
+.role-token__leaf--other { --rotation-value: 5; }
+.role-token__leaf--reminder-1 { --rotation-value: calc( 0 + var(--rotation-offset, 0)); }
+.role-token__leaf--reminder-2 { --rotation-value: calc(-1 + var(--rotation-offset, 0)); }
+.role-token__leaf--reminder-3 { --rotation-value: calc( 1 + var(--rotation-offset, 0)); }
+.role-token__leaf--reminder-4 { --rotation-value: calc(-2 + var(--rotation-offset, 0)); }
+.role-token__leaf--reminder-5 { --rotation-value: calc( 2 + var(--rotation-offset, 0)); }
+.role-token__leaf--reminder-6 { --rotation-value: calc(-3 + var(--rotation-offset, 0)); }
+.role-token__leaf--setup {
+    --rotation-value: 8;
+    background-image: url("/assets/images/role-setup.svg");
+    width: 30%;
+}
+
+/*
+.role-token__first,
+.role-token__other,
+.role-token__reminder,
+.role-token__setup {
+    background-repeat: no-repeat;
+    background-size: contain;
+    offset-path: circle(45% at center);
+    offset-rotate: 0deg;
+    position: absolute;
+    aspect-ratio: 1;
+}
+
+.role-token__first,
+.role-token__other,
+.role-token__reminder {
+    background-image: url("/assets/images/role-leaf.svg");
+    width: 25%;
+}
+
+.role-token__first {
+    offset-distance: 250%;
+    transform: rotate(90deg);
+}
+
+.role-token__other {
+    offset-distance: 0%;
+    transform: rotate(-90deg);
+}
+
+.role-token__reminders {
+    &:where(:has(> :last-child:nth-child(2))),
+    &:where(:has(> :last-child:nth-child(4))),
+    &:where(:has(> :last-child:nth-child(6))) {
+        --rotation-offset: 0.5;
+    }
+}
+
+.role-token__reminder {
+    --rotation-value: 0;
+    offset-distance: calc(75% + (var(--rotation-value, 0) * 5%));
+    transform: rotate(calc(180deg + (var(--rotation-value, 0) * 18deg)))
+}
+
+.role-token__reminder--1 { --rotation-value: calc( 0 + var(--rotation-offset, 0)); }
+.role-token__reminder--2 { --rotation-value: calc(-1 + var(--rotation-offset, 0)); }
+.role-token__reminder--3 { --rotation-value: calc( 1 + var(--rotation-offset, 0)); }
+.role-token__reminder--4 { --rotation-value: calc(-2 + var(--rotation-offset, 0)); }
+.role-token__reminder--5 { --rotation-value: calc( 2 + var(--rotation-offset, 0)); }
+.role-token__reminder--6 { --rotation-value: calc(-3 + var(--rotation-offset, 0)); }
+
+// --rotation-value: first = -5, other = 5
+
+.role-token__setup {
+    background-image: url("/assets/images/role-setup.svg");
+    offset-distance: 12.5%;
+    transform: rotate(-45deg);
+    width: 30%;
+}
+    */
+
 /*
 
 .role-token {

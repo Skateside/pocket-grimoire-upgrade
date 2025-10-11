@@ -1,6 +1,6 @@
 <template>
 
-    <!-- <RoleList /> -->
+    <RoleList />
     <SelectEdition />
     <GrimoirePad
         @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts" setup>
-// import RoleList from "./RoleList.vue";
+import RoleList from "./RoleList.vue";
 import type {
     IRole,
     IRoleReminder,
