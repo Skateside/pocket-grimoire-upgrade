@@ -114,6 +114,20 @@ const useUiStore = defineStore("ui", () => {
 
     };
 
+    const hideAllPopovers = async () => {
+
+        if (currentPopover) {
+            hidePopover(...currentPopover);
+            await nextTick();
+        }
+
+        while (popoverList.length) {
+            hidePopover(...(popoverList.pop()!));
+            await nextTick();
+        }
+
+    };
+
     const clearPopoverList = () => {
         popoverList.length = 0;
     };
@@ -154,6 +168,7 @@ const useUiStore = defineStore("ui", () => {
         hidePopover,
         nextPopover,
         previousPopover,
+        hideAllPopovers,
         clearPopoverList,
     };
 

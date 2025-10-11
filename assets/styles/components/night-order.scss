@@ -13,6 +13,20 @@
         "icon ability";
     grid-template-columns: 10ch auto;
     grid-template-rows: auto 100%;
+
+    &:not(.is-in-play) {
+        opacity: 0.6;
+    }
+
+    &.is-dead {
+        filter: grayscale(1);
+        opacity: 0.8;
+    }
+
+    & + & {
+        border-top: 0.2ch solid #0006;
+        padding-top: var(--base-sizing);
+    }
 }
 
 .night-order__name {

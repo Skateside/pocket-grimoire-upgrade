@@ -1,7 +1,7 @@
 <template>
 
-    <SelectEdition />
     <!-- <RoleList /> -->
+    <SelectEdition />
     <GrimoirePad
         @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
     />
@@ -73,6 +73,7 @@
 </template>
 
 <script lang="ts" setup>
+// import RoleList from "./RoleList.vue";
 import type {
     IRole,
     IRoleReminder,
@@ -101,7 +102,7 @@ const handleRoleListClick = (id: IRole["id"]) => {
     tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
         role: id,
     });
-    uiStore.previousPopover();
+    uiStore.hideAllPopovers();
 
 };
 
