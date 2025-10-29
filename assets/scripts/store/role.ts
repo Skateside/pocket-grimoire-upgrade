@@ -439,6 +439,13 @@ const useRoleStore = defineStore("role", () => {
 
     };
 
+    const innerIsOldScript = (script: unknown): script is Pick<IRole, "id"> => (
+        script !== null
+        && typeof script === "object"
+        && Object.hasOwn(script, "id")
+        && Object.keys(script).length === 1
+    );
+
     const setScript = (scriptData: IRoleScriptImport) => {
 
         script.value = innerSortRoles(scriptData.map((data) => {
@@ -446,7 +453,11 @@ const useRoleStore = defineStore("role", () => {
             const role = (
                 typeof data === "string"
                 ? innerGetRole(data)
-                : data
+                : (
+                    innerIsOldScript(data)
+                    ? innerGetRole(data.id)
+                    : data
+                )
             );
 
             if (!role) {

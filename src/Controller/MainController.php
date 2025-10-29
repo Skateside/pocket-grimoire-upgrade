@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Model\BotcScriptModel;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -48,7 +50,7 @@ class MainController extends AbstractController
     }
 
     #[Route('/get-botc', name: 'get_botc', methods: ['POST'])]
-    public function getBotcAction(Request $request): JsonResponse
+    public function getBotcAction(Request $request, BotcScriptModel $model): JsonResponse
     {
         $payload = $request->getPayload();
         $query = [
@@ -71,13 +73,19 @@ class MainController extends AbstractController
             return $this->jsonError('error.cannot_access');
         }
 
-        $json = json_decode($contents);
+        $json = json_decode($contents, true);
 
         if ($json === null) {
             return $this->jsonError('error.invalid_json');
         }
 
-        return $this->jsonSuccess($json);
+        $converted = $model->convert($json);
+
+        if (!$converted['success']) {
+            return $this->jsonError($converted['body']);
+        }
+
+        return $this->jsonSuccess($converted['body']);
     }
 
     protected function jsonResponse(mixed $body, bool $success = true): JsonResponse

@@ -253,10 +253,10 @@
             ?.value || "";
 
         getBotcScripts(value, type)
-            .then(({ results }) => {
+            .then((results) => {
                 const { value } = botcScripts;
                 Object.keys(value).forEach((key) => delete value[key]);
-                results.forEach(({ content, name }) => value[name] = content);
+                Object.entries(results).forEach(([name, script]) => value[name] = script);
             }, () => {})
             .then(() => isLoading.value = false);
 
