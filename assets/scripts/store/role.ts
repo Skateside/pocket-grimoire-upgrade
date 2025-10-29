@@ -76,6 +76,9 @@ const useRoleStore = defineStore("role", () => {
         // access it.
         structuredClone(window.PG.roles).map(innerSetRemindersRole)
     );
+    const specialRoles = computed(() => {
+        return roles.value.filter(({ edition }) => edition === "special");
+    });
     const scripts = ref<Record<string, IRoleScriptImport>>(
         structuredClone(window.PG.scripts)
     );
@@ -261,6 +264,10 @@ const useRoleStore = defineStore("role", () => {
     const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
     const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role));
     const getScriptMeta = computed(() => innerGetMeta);
+    const getIsSpecial = computed(() => (id: IRole["id"]) => {
+        const role = innerGetRole(id);
+        return role?.edition === "special";
+    });
 
     const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
         // TODO: Actually validate the script.
@@ -448,7 +455,12 @@ const useRoleStore = defineStore("role", () => {
 
     const setScript = (scriptData: IRoleScriptImport) => {
 
-        script.value = innerSortRoles(scriptData.map((data) => {
+        const fullScript = [
+            ...scriptData,
+            ...specialRoles.value,
+        ];
+
+        script.value = innerSortRoles(fullScript.map((data) => {
 
             const role = (
                 typeof data === "string"
@@ -486,6 +498,7 @@ const useRoleStore = defineStore("role", () => {
         getImage,
         getReminderImage,
         getIsMeta,
+        getIsSpecial,
         getIsUniversal,
         getScriptMeta,
         getIsValidScript,
