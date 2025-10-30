@@ -62,11 +62,11 @@ const nights = {
 };
 
 const isDead = (id: IRole["id"]) => (
-    !roleStore.getIsSpecial(id)
+    !roleStore.getIsSpecialById(id)
     && tokenStore.dead.includes(id)
 );
 const isInPlay = (id: IRole["id"]) => (
-    roleStore.getIsSpecial(id)
+    roleStore.getIsSpecialById(id)
     || Object.hasOwn(tokenStore.inPlay, id)
 );
 const showRole = (id: IRole["id"]) => (

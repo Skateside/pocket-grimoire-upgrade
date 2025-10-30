@@ -33,6 +33,8 @@ const emit = defineEmits<IDialogEvents & {
 
 const store = useRoleStore();
 const roles = computed(() => {
-    return store.script.filter((role) => !store.getIsMeta(role)) as IRole[];
+    return store.script.filter((role) => {
+        return !store.getIsMeta(role) && !store.getIsSpecial(role);
+    }) as IRole[];
 });
 </script>

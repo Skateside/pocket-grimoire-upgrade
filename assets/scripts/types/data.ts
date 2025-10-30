@@ -69,7 +69,7 @@ export type IRoleDeprecatedReminders = IRole & {
 
 export type IRoleCoreTeam = "townsfolk" | "outsider" | "minion" | "demon";
 export type IRolePlayTeam = IRoleCoreTeam | "traveller";
-export type IRoleTeam = IRolePlayTeam | "fabled";
+export type IRoleTeam = IRolePlayTeam | "fabled" | "loric";
 
 export type IRoleReminderFlag = "global" | "public" | "kill" | "dead" | "role";
 

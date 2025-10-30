@@ -261,13 +261,16 @@ const useRoleStore = defineStore("role", () => {
         return reminder.image || innerGetImage(reminder.role, index);
     });
 
+    const innerGetIsSpecialById = (id: IRole["id"]) => {
+        const role = innerGetRole(id);
+        return role?.edition === "special";
+    };
+
     const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
     const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role));
     const getScriptMeta = computed(() => innerGetMeta);
-    const getIsSpecial = computed(() => (id: IRole["id"]) => {
-        const role = innerGetRole(id);
-        return role?.edition === "special";
-    });
+    const getIsSpecialById = computed(() => innerGetIsSpecialById);
+    const getIsSpecial = computed(() => ({ id }: IRole) => innerGetIsSpecialById(id));
 
     const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
         // TODO: Actually validate the script.
@@ -499,6 +502,7 @@ const useRoleStore = defineStore("role", () => {
         getReminderImage,
         getIsMeta,
         getIsSpecial,
+        getIsSpecialById,
         getIsUniversal,
         getScriptMeta,
         getIsValidScript,
