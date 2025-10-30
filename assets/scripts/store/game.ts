@@ -1,5 +1,6 @@
 import type {
     IGameCounts,
+    IRoleCoreTeam,
 } from "../types/data";
 import type {
     IStorage,
@@ -48,6 +49,30 @@ const useGameStore = defineStore("gameStore", () => {
         return numbers.value[Math.min(15, count.value) as keyof IGameCounts];
     });
 
+    const table = computed(() => {
+
+        const table = {} as Record<IRoleCoreTeam, Record<number, number>>;
+
+        Object.entries(numbers.value).forEach(([count, breakdown]) => {
+
+            Object.entries(breakdown).forEach(([team, number]) => {
+
+                const coreTeam = team as IRoleCoreTeam;
+
+                if (!table[coreTeam]) {
+                    table[coreTeam] = {};
+                }
+
+                table[coreTeam][Number(count)] = number;
+
+            });
+
+        });
+
+        return table;
+
+    });
+
     const setCount = (number: number) => {
         count.value = clamp(5, Math.floor(number), 20);
     };
@@ -57,6 +82,7 @@ const useGameStore = defineStore("gameStore", () => {
         breakdown,
         count,
         numbers,
+        table,
         // Getters.
         setCount,
     };
