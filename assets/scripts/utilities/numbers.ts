@@ -1,4 +1,15 @@
 /**
+ * Converts the given number into a positive integer, by removing the sign and
+ * any decimal.
+ * 
+ * @param number Number to convert into a positive integer.
+ * @returns Positive integer.
+ */
+export function toPosInt(number: number|`${number}`) {
+    return Math.floor(Math.abs(number as number));
+}
+
+/**
  * Generates a cryptographically random number between 0 and 1.
  *
  * @returns Random number.

@@ -3,7 +3,7 @@
         title="Roles"
         v-on="bubbleEvents(emit)"
     >
-        <div class="role-list">
+        <GridLayout gap="var(--sizing-sm)" max-width="10ch">
             <button
                 v-for="role in roles"
                 type="button"
@@ -12,20 +12,21 @@
             >
                 <RoleToken :role="role" />
             </button>
-        </div>
+        </GridLayout>
     </Dialog>
 </template>
 
 <script setup lang="ts">
 import type { IRole } from "../scripts/types/data";
-import useRoleStore from "../scripts/store/role";
 import { computed } from "vue";
-import RoleToken from "./RoleToken.vue";
+import useRoleStore from "../scripts/store/role";
 import {
     type IDialogEvents,
     Dialog,
     bubbleEvents,
 } from "./ui/dialog";
+import GridLayout from "./layouts/GridLayout.vue";
+import RoleToken from "./RoleToken.vue";
 
 const emit = defineEmits<IDialogEvents & {
     (e: "role-click", id: IRole["id"]): void,

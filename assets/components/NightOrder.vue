@@ -1,5 +1,5 @@
 <template>
-    <dl class="night-order">
+    <ReelLayout class="night-order" node="dl" :carousel="true" :shadows="true">
         <div v-for="(title, key) in nights" class="night-order__night">
             <dt class="night-order__heading">{{ title }}</dt>
             <template v-for="{ role } in roleStore.nightOrder[key]" :key="role.id">
@@ -17,7 +17,7 @@
                 </dd>
             </template>
         </div>
-    </dl>
+    </ReelLayout>
 
     <ul>
         <li>
@@ -50,6 +50,7 @@ import type { IRole } from "../scripts/types/data";
 import { useId } from "vue";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
+import ReelLayout from "./layouts/ReelLayout.vue";
 
 const suffix = useId();
 const showDead = defineModel<boolean>("dead", { default: true });

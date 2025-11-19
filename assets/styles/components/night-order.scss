@@ -1,10 +1,3 @@
-@use "../objects/reel";
-
-.night-order {
-    @extend %o-reel;
-    @extend %o-reel--carousel;
-}
-
 .night-order__entry {
     margin-inline-start: 0;
     display: grid;

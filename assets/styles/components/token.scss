@@ -1,8 +1,6 @@
-@use "../objects/centre";
 @use "../objects/circle";
 
 .token {
-    @extend %o-centre-contents;
     @extend %o-circle;
 
     background-color: #ddd;
@@ -20,7 +18,6 @@
 }
 
 .token__night {
-    @extend %o-centre-contents;
     @extend %o-circle;
 
     --offset-distance: 0;

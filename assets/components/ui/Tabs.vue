@@ -1,23 +1,25 @@
 <template>
     <div class="tabs" :class="props.class">
-        <menu class="tabs__tablist" :class="props.listClass" role="tablist" ref="tablist">
-            <li v-for="{ disabled, title } in tabProps">
-                <button
-                    type="button"
-                    class="tabs__tab"
-                    :class="props.tabClass"
-                    role="tab"
-                    :aria-selected="isTabSelected(title)"
-                    :aria-controls="makeId(title)"
-                    :tabindex="isTabSelected(title) ? 0 : -1"
-                    :disabled="disabled"
-                    @click="setTabByTitle(title)"
-                    @keydown="moveTabByKey"
-                >
-                    {{ title }}
-                </button>
-            </li>
-        </menu>
+        <div ref="tablist">
+            <ClusterLayout node="menu" role="tablist" class="no-list">
+                <li v-for="{ disabled, title } in tabProps">
+                    <button
+                        type="button"
+                        class="tabs__tab"
+                        :class="props.tabClass"
+                        role="tab"
+                        :aria-selected="isTabSelected(title)"
+                        :aria-controls="makeId(title)"
+                        :tabindex="isTabSelected(title) ? 0 : -1"
+                        :disabled="disabled"
+                        @click="setTabByTitle(title)"
+                        @keydown="moveTabByKey"
+                    >
+                        {{ title }}
+                    </button>
+                </li>
+            </ClusterLayout>
+        </div>
         <div class="tabs__contents" :class="props.contentsClass" ref="tabpanels">
             <slot></slot>
         </div>
@@ -40,6 +42,7 @@ import {
     useSlots,
     watch,
 } from "vue";
+import ClusterLayout from "../layouts/ClusterLayout.vue";
 import { words } from "../../scripts/utilities/strings";
 import { clamp } from "../../scripts/utilities/numbers";
 
