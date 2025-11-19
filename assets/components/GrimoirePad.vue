@@ -17,27 +17,25 @@
             }'
             @movable-click="() => emit('seat-click', seat.id)"
         >
-            <CentreLayout node="span" type="contents">
-                <span class="token__contents">
-                    <RoleToken
-                        v-if="seat.role"
-                        :role="roleStore.getById(seat.role)"
-                        :alignment="seat.alignment"
-                    />
-                    <template v-else>{{ seat.name || seat.index }}</template>
-                </span>
-                <CentreLayout
-                    node="span"
-                    type="contents"
-                    v-for="(number, key) in roleStore.getNightOrderById(seat.role, Object.keys(tokenStore.inPlay))"
-                    :key="key"
-                    class="token__night"
-                    :class="`token__night--${key}`"
-                >
-                    {{ number }}
-                </CentreLayout>
-                <span class="token__name" v-if="seat.name">{{ seat.name }}</span>
+            <span class="token__contents">
+                <RoleToken
+                    v-if="seat.role"
+                    :role="roleStore.getById(seat.role)"
+                    :alignment="seat.alignment"
+                />
+                <template v-else>{{ seat.name || seat.index }}</template>
+            </span>
+            <CentreLayout
+                node="span"
+                type="contents"
+                v-for="(number, key) in roleStore.getNightOrderById(seat.role, Object.keys(tokenStore.inPlay))"
+                :key="key"
+                class="token__night"
+                :class="`token__night--${key}`"
+            >
+                {{ number }}
             </CentreLayout>
+            <span class="token__name" v-if="seat.name">{{ seat.name }}</span>
         </button>
 
         <button
