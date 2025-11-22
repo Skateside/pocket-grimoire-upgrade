@@ -1,11 +1,11 @@
 @use "../objects/circle";
 @use "../objects/tower";
 
-@property --role-token-background-colour { syntax: '<color>'; initial-value: #fff; inherits: true; }
-@property --role-token-edge-colour { syntax: '<color>'; initial-value: #666; inherits: true; }
-@property --role-token-rotation-value { syntax: '<number>'; initial-value: 0; inherits: true; }
-@property --role-token-rotation-offset { syntax: '<number>'; initial-value: 0; inherits: true; }
-@property --role-token-rotation-points { syntax: '<number>'; initial-value: 40; inherits: true; }
+@property --role-token-background-colour { syntax: "<color>"; initial-value: #fff; inherits: true; }
+@property --role-token-edge-colour { syntax: "<color>"; initial-value: #666; inherits: true; }
+@property --role-token-rotation-value { syntax: "<number>"; initial-value: 0; inherits: true; }
+@property --role-token-rotation-offset { syntax: "<number>"; initial-value: 0; inherits: true; }
+@property --role-token-rotation-points { syntax: "<number>"; initial-value: 40; inherits: true; }
 
 .role-token {
     @extend %o-circle;
