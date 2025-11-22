@@ -1,83 +1,78 @@
 $colour: (
-	"white",
-	"black",
-	"primary",
-	"blue",
-	"orange",
-	"red",
-	"dark-orange",
-	"green",
-	"dark-purple",
-	"purple",
-	"grey",
-	// Group Colours
-	"good-team",
-	"evil-team",
+    "white",
+    "black",
+    "primary",
+    "blue",
+    "orange",
+    "red",
+    "dark-orange",
+    "green",
+    "dark-purple",
+    "purple",
+    "grey",
+    // Group Colours
+    "good-team",
+    "evil-team",
 );
 $sizing: (
-	"unit": 1rem,
-	"ratio": 1.618, // Golden Ratio
-	"sizes": ("xxxxs", "xxxs", "xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl", "xxxxl"),
+    "unit": 1rem,
+    "ratio": 1.618, // Golden Ratio
+    "sizes": ("xxxxs", "xxxs", "xxs", "xs", "sm", "md", "lg", "xl", "xxl", "xxxl", "xxxxl"),
 );
 $theme: (
-	"font-family": (
-		"_": (
-			"serif": "\"Goudy Mediaeval\", Georgia, \"Times New Roman\", Times, serif",
-			"sans-serif": "Helvetica, Arial, sans-serif",
-			"mono": "ui-monospace, SFMono-Regular, Consolas, \"Liberation Mono\", Menlo, monospace",
-		),
-		// Goudy Mediaeval doesn't support cyrillic characters and Vietnamese
-		// diacritics. Vinque is one of the few serif fonts that does, but I got
-		// comments that it can be difficult to read. Use Vinque only when we
-		// need to.
-		"kv, pl, ru, tr, uk, vi": (
-			"serif": "Vinque, Georgia, \"Times New Roman\", Times, serif",
-		),
-		// Hebrew serif font stack is the same as the default one, except that
-		// Vinque is not included. This is because Vinque does not include
-		// Hebrew characters so the user would have to download 17 - 43 kB
-		// unnecessarily.
-		"he": (
-			"serif": "Georgia, \"Times New Roman\", Times, serif",
-		),
-		// Chinese font stacks found here:
-		// https://tech.busuu.com/handling-css-font-stacks-for-multi-language-websites-cf852e321f06
-		// We have to split up the languages into Simplified and Traditional
-		// because otherwise someone might have to download both fonts (15MB+)
-		// to render a single character.
-		"zh-CN": (
-			"serif": "Georgia, \"Times New Roman\", \"Noto Serif Simplified Chinese\", \"FangSong\", \"仿宋\", STFangSong, \"华文仿宋\", serif",
-			"sans": "Helvetica, Arial, \"华文细黑\", \"STXihei\", \"PingFang TC\", \"微软雅黑体\", \"Microsoft YaHei New\", \"微软雅黑\", \"Microsoft Yahei\", \"宋体\", \"SimSun\", sans-serif",
-		),
-		"zh-TW": (
-			"serif": "Georgia, \"Times New Roman\", \"Noto Serif Traditional Chinese\", \"FangSong\", \"仿宋\", STFangSong, \"华文仿宋\", serif",
-			"sans": "Helvetica, Arial, \"华文细黑\", \"STXihei\", \"PingFang TC\", \"微软雅黑体\", \"Microsoft YaHei New\", \"微软雅黑\", \"Microsoft Yahei\", \"宋体\", \"SimSun\", sans-serif",
-		),
-		// Japanese font stack found here:
-		// Serif:
-		// https://readium.org/readium-css/docs/CSS08-defaults.html#default-font-stacks-for-japanese-publications
-		// Sans-serif:
-		// https://gist.github.com/prantlf/fbd12acc69a022edd589dea48dafe3f8
-		"ja": (
-			"serif": "Georgia, \"Times New Roman\", \"Noto Serif Japanese\", \"ＭＳ Ｐ明朝\", \"MS PMincho\", \"Hiragino Mincho Pro\", \"ヒラギノ明朝 Pro W3\", \"游明朝\", \"YuMincho\", \"ＭＳ 明朝\", \"MS Mincho\", \"Hiragino Mincho ProN\", serif ",
-			"sans": "Helvetica, Arial, \"ヒラギノ角ゴ Pro W3\", \"Hiragino Kaku Gothic Pro\", Osaka, メイリオ, Meiryo, \"ＭＳ Ｐゴシック\", \"MS PGothic\", \"ＭＳ ゴシック\", \"MS Gothic\", \"Noto Sans CJK JP\", TakaoPGothic, sans-serif",
-		),
-		// Apple devices don't render Thai diacritics correctly in an SVG. This
-		// should correct that.
-		"th": (
-			"serif": "\"Noto Serif Thai\", \"Times New Roman\", Georgia, Times, serif",
-			"sans": "\"Sarabun Thai\", Helvetica, Arial, sans-serif",
-		),
-		// Korean needs it own serif font.
-		// I couldn't find a good recommendation for a font stack online so I've
-		// assumed that it's the same as the Thai stack.
-		"ko": (
-			"serif": "\"Noto Serif Korean\", \"Times New Roman\", Georgia, Times, serif",
-		),
-	),
+    "font-family": (
+        "_": (
+            "serif": "\"Goudy Mediaeval\", Georgia, \"Times New Roman\", Times, serif",
+            "sans-serif": "Helvetica, Arial, sans-serif",
+            "mono": "ui-monospace, SFMono-Regular, Consolas, \"Liberation Mono\", Menlo, monospace",
+        ),
+        // Goudy Mediaeval doesn't support cyrillic characters and Vietnamese
+        // diacritics. Vinque is one of the few serif fonts that does, but I got
+        // comments that it can be difficult to read. Use Vinque only when we
+        // need to.
+        "kv, pl, ru, tr, uk, vi": (
+            "serif": "Vinque, Georgia, \"Times New Roman\", Times, serif",
+        ),
+        // Hebrew serif font stack is the same as the default one, except that
+        // Vinque is not included. This is because Vinque does not include
+        // Hebrew characters so the user would have to download 17 - 43 kB
+        // unnecessarily.
+        "he": (
+            "serif": "Georgia, \"Times New Roman\", Times, serif",
+        ),
+        // Chinese font stacks found here:
+        // https://tech.busuu.com/handling-css-font-stacks-for-multi-language-websites-cf852e321f06
+        // We have to split up the languages into Simplified and Traditional
+        // because otherwise someone might have to download both fonts (15MB+)
+        // to render a single character.
+        "zh-CN": (
+            "serif": "Georgia, \"Times New Roman\", \"Noto Serif Simplified Chinese\", \"FangSong\", \"仿宋\", STFangSong, \"华文仿宋\", serif",
+            "sans": "Helvetica, Arial, \"华文细黑\", \"STXihei\", \"PingFang TC\", \"微软雅黑体\", \"Microsoft YaHei New\", \"微软雅黑\", \"Microsoft Yahei\", \"宋体\", \"SimSun\", sans-serif",
+        ),
+        "zh-TW": (
+            "serif": "Georgia, \"Times New Roman\", \"Noto Serif Traditional Chinese\", \"FangSong\", \"仿宋\", STFangSong, \"华文仿宋\", serif",
+            "sans": "Helvetica, Arial, \"华文细黑\", \"STXihei\", \"PingFang TC\", \"微软雅黑体\", \"Microsoft YaHei New\", \"微软雅黑\", \"Microsoft Yahei\", \"宋体\", \"SimSun\", sans-serif",
+        ),
+        // Japanese font stack found here:
+        // Serif:
+        // https://readium.org/readium-css/docs/CSS08-defaults.html#default-font-stacks-for-japanese-publications
+        // Sans-serif:
+        // https://gist.github.com/prantlf/fbd12acc69a022edd589dea48dafe3f8
+        "ja": (
+            "serif": "Georgia, \"Times New Roman\", \"Noto Serif Japanese\", \"ＭＳ Ｐ明朝\", \"MS PMincho\", \"Hiragino Mincho Pro\", \"ヒラギノ明朝 Pro W3\", \"游明朝\", \"YuMincho\", \"ＭＳ 明朝\", \"MS Mincho\", \"Hiragino Mincho ProN\", serif ",
+            "sans": "Helvetica, Arial, \"ヒラギノ角ゴ Pro W3\", \"Hiragino Kaku Gothic Pro\", Osaka, メイリオ, Meiryo, \"ＭＳ Ｐゴシック\", \"MS PGothic\", \"ＭＳ ゴシック\", \"MS Gothic\", \"Noto Sans CJK JP\", TakaoPGothic, sans-serif",
+        ),
+        // Apple devices don't render Thai diacritics correctly in an SVG. This
+        // should correct that.
+        "th": (
+            "serif": "\"Noto Serif Thai\", \"Times New Roman\", Georgia, Times, serif",
+            "sans": "\"Sarabun Thai\", Helvetica, Arial, sans-serif",
+        ),
+        // Korean needs it own serif font.
+        // I couldn't find a good recommendation for a font stack online so I've
+        // assumed that it's the same as the Thai stack.
+        "ko": (
+            "serif": "\"Noto Serif Korean\", \"Times New Roman\", Georgia, Times, serif",
+        ),
+    ),
 );
-
-
-
-
-

@@ -1,20 +1,20 @@
 import type {
-    ITabsChange,
-    ITabsInterface,
-    ITabsProps,
-    ITabProps,
+    ITabsUIChange,
+    ITabsUIInterface,
+    ITabsUIProps,
+    ITabUIProps,
 } from "./tabTypes";
-import Tab from "./Tab.vue";
-import Tabs from "./Tabs.vue";
+import TabUI from "./TabUI.vue";
+import TabsUI from "./TabsUI.vue";
 
 export type {
-    ITabsChange,
-    ITabsInterface,
-    ITabsProps,
-    ITabProps,
+    ITabsUIChange,
+    ITabsUIInterface,
+    ITabsUIProps,
+    ITabUIProps,
 };
 
 export {
-    Tab,
-    Tabs,
+    TabUI,
+    TabsUI,
 };

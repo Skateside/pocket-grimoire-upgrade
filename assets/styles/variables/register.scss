@@ -1,40 +1,40 @@
-@use 'sass:map';
-@use '../base/functions' as func;
-@use '../base/mixins' as mx;
-@use '../themes/general' as gen;
-@use '../themes/light' as light;
+@use "sass:map";
+@use "../base/functions" as func;
+@use "../base/mixins" as mx;
+@use "../themes/general" as gen;
+@use "../themes/light" as light;
 
 @property --sizing-unit {
-	syntax: '<length>';
-	initial-value: #{func.get-pixels-unit(map.get(gen.$sizing, 'unit'))};
-	inherits: true;
+    syntax: "<length>";
+    initial-value: #{func.get-pixels-unit(map.get(gen.$sizing, "unit"))};
+    inherits: true;
 }
 
 @property --sizing-ratio {
-	syntax: '<number>';
-	initial-value: #{map.get(gen.$sizing, 'ratio')};
-	inherits: true;
+    syntax: "<number>";
+    initial-value: #{map.get(gen.$sizing, "ratio")};
+    inherits: true;
 }
 
-@each $size in map.get(gen.$sizing, 'sizes') {
-	@property --sizing-#{$size} {
-		syntax: '<length>';
-		initial-value: #{func.get-sizing-pixels-unit($size)};
-		inherits: true;
-	}
+@each $size in map.get(gen.$sizing, "sizes") {
+    @property --sizing-#{$size} {
+        syntax: "<length>";
+        initial-value: #{func.get-sizing-pixels-unit($size)};
+        inherits: true;
+    }
 }
 
 @each $colour in gen.$colour {
-	@property --colour-#{$colour} {
-		syntax: '<color>';
-		initial-value: #{
-			func.get-colour-value(
-				map.get(light.$theme, 'colour', $colour),
-				map.get(light.$theme, 'colour')
-			)
-		};
-		inherits: true;
-	}
+    @property --colour-#{$colour} {
+        syntax: "<color>";
+        initial-value: #{
+            func.get-colour-value(
+                map.get(light.$theme, "colour", $colour),
+                map.get(light.$theme, "colour")
+            )
+        };
+        inherits: true;
+    }
 }
 
 @include mx.create-definitions(light.$layout);

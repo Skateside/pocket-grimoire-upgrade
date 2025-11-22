@@ -1,9 +1,9 @@
-@property --p-derived-luma-r { syntax: '<number>'; initial-value: 0.299; inherits: true; }
-@property --p-derived-luma-b { syntax: '<number>'; initial-value: 0.587; inherits: true; }
-@property --p-derived-luma-g { syntax: '<number>'; initial-value: 0.114; inherits: true; }
-@property --p-derived-threshold { syntax: '<number>'; initial-value: 0.5; inherits: true; }
-@property --p-derived-background { syntax: '<color>'; initial-value: #000; inherits: true; }
-@property --p-derived-colour { syntax: '<color>'; initial-value: #fff; inherits: true; }
+@property --p-derived-luma-r { syntax: "<number>"; initial-value: 0.299; inherits: true; }
+@property --p-derived-luma-b { syntax: "<number>"; initial-value: 0.587; inherits: true; }
+@property --p-derived-luma-g { syntax: "<number>"; initial-value: 0.114; inherits: true; }
+@property --p-derived-threshold { syntax: "<number>"; initial-value: 0.5; inherits: true; }
+@property --p-derived-background { syntax: "<color>"; initial-value: #000; inherits: true; }
+@property --p-derived-colour { syntax: "<color>"; initial-value: #fff; inherits: true; }
 
 /**
  * Change the text colour from black to white, depending on how dark the
@@ -61,15 +61,15 @@
 
 %p-derived,
 .p-derived {
-	--p-derived-luma-r: 0.299;
-	--p-derived-luma-g: 0.587;
-	--p-derived-luma-b: 0.114;
-	--p-derived-threshold: 0.5;
-	--p-derived-background: #0000;
-	--p-derived-colour: rgb(
-		from var(--p-derived-background)
-		calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
-		calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
-		calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
-	);
+    --p-derived-luma-r: 0.299;
+    --p-derived-luma-g: 0.587;
+    --p-derived-luma-b: 0.114;
+    --p-derived-threshold: 0.5;
+    --p-derived-background: #0000;
+    --p-derived-colour: rgb(
+        from var(--p-derived-background)
+        calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
+        calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
+        calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
+    );
 }

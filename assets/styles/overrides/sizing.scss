@@ -1,40 +1,40 @@
-@use 'sass:map';
-@use '../themes/general' as gen;
+@use "sass:map";
+@use "../themes/general" as gen;
 
-$parts: ('m': 'margin', 'p': 'padding');
+$parts: ("m": "margin", "p": "padding");
 
 @each $prefix, $style in $parts {
-	.#{$prefix}-0 { #{$style}: 0 !important; }
-	.#{$prefix}bl-0 { #{$style}-block: 0 0 !important; }
-	.#{$prefix}be-0 { #{$style}-block-end: 0 !important; }
-	.#{$prefix}bs-0 { #{$style}-block-start: 0 !important; }
-	.#{$prefix}in-0 { #{$style}-inline: 0 0 !important; }
-	.#{$prefix}ie-0 { #{$style}-inline-end: 0 !important; }
-	.#{$prefix}is-0 { #{$style}-inline-start: 0 !important; }
-	// Deprecated: use the logical positions above.
-	// .#{$prefix}x-0 { #{$style}-left: 0; #{$style}-right: 0 !important; }
-	// .#{$prefix}y-0 { #{$style}-top: 0; #{$style}-bottom: 0 !important; }
-	// .#{$prefix}t-0 { #{$style}-top: 0 !important; }
-	// .#{$prefix}b-0 { #{$style}-bottom: 0 !important; }
-	// .#{$prefix}l-0 { #{$style}-left: 0 !important; }
-	// .#{$prefix}r-0 { #{$style}-right: 0 !important; }
+    .#{$prefix}-0 { #{$style}: 0 !important; }
+    .#{$prefix}bl-0 { #{$style}-block: 0 0 !important; }
+    .#{$prefix}be-0 { #{$style}-block-end: 0 !important; }
+    .#{$prefix}bs-0 { #{$style}-block-start: 0 !important; }
+    .#{$prefix}in-0 { #{$style}-inline: 0 0 !important; }
+    .#{$prefix}ie-0 { #{$style}-inline-end: 0 !important; }
+    .#{$prefix}is-0 { #{$style}-inline-start: 0 !important; }
+    // Deprecated: use the logical positions above.
+    // .#{$prefix}x-0 { #{$style}-left: 0; #{$style}-right: 0 !important; }
+    // .#{$prefix}y-0 { #{$style}-top: 0; #{$style}-bottom: 0 !important; }
+    // .#{$prefix}t-0 { #{$style}-top: 0 !important; }
+    // .#{$prefix}b-0 { #{$style}-bottom: 0 !important; }
+    // .#{$prefix}l-0 { #{$style}-left: 0 !important; }
+    // .#{$prefix}r-0 { #{$style}-right: 0 !important; }
 }
 
-@each $size in map.get(gen.$sizing, 'sizes') {
-	@each $prefix, $style in $parts {
-		.#{$prefix}-#{$size} { #{$style}: var(--sizing-#{$size}) !important; }
-		.#{$prefix}bl-#{$size} { #{$style}-block: var(--sizing-#{$size}) var(--sizing-#{$size}) !important; }
-		.#{$prefix}be-#{$size} { #{$style}-block-end: var(--sizing-#{$size}) !important; }
-		.#{$prefix}bs-#{$size} { #{$style}-block-start: var(--sizing-#{$size}) !important; }
-		.#{$prefix}in-#{$size} { #{$style}-inline: var(--sizing-#{$size}) var(--sizing-#{$size}) !important; }
-		.#{$prefix}ie-#{$size} { #{$style}-inline-end: var(--sizing-#{$size}) !important; }
-		.#{$prefix}is-#{$size} { #{$style}-inline-start: var(--sizing-#{$size}) !important; }
-		// Deprecated: use the logical positions above.
-		// .#{$prefix}x-#{$size} { #{$style}-left: var(--sizing-#{$size}); #{$style}-right: var(--sizing-#{$size}) !important; }
-		// .#{$prefix}y-#{$size} { #{$style}-top: var(--sizing-#{$size}); #{$style}-bottom: var(--sizing-#{$size}) !important; }
-		// .#{$prefix}t-#{$size} { #{$style}-top: var(--sizing-#{$size}) !important; }
-		// .#{$prefix}b-#{$size} { #{$style}-bottom: var(--sizing-#{$size}) !important; }
-		// .#{$prefix}l-#{$size} { #{$style}-left: var(--sizing-#{$size}) !important; }
-		// .#{$prefix}r-#{$size} { #{$style}-right: var(--sizing-#{$size}) !important; }
-	}
+@each $size in map.get(gen.$sizing, "sizes") {
+    @each $prefix, $style in $parts {
+        .#{$prefix}-#{$size} { #{$style}: var(--sizing-#{$size}) !important; }
+        .#{$prefix}bl-#{$size} { #{$style}-block: var(--sizing-#{$size}) var(--sizing-#{$size}) !important; }
+        .#{$prefix}be-#{$size} { #{$style}-block-end: var(--sizing-#{$size}) !important; }
+        .#{$prefix}bs-#{$size} { #{$style}-block-start: var(--sizing-#{$size}) !important; }
+        .#{$prefix}in-#{$size} { #{$style}-inline: var(--sizing-#{$size}) var(--sizing-#{$size}) !important; }
+        .#{$prefix}ie-#{$size} { #{$style}-inline-end: var(--sizing-#{$size}) !important; }
+        .#{$prefix}is-#{$size} { #{$style}-inline-start: var(--sizing-#{$size}) !important; }
+        // Deprecated: use the logical positions above.
+        // .#{$prefix}x-#{$size} { #{$style}-left: var(--sizing-#{$size}); #{$style}-right: var(--sizing-#{$size}) !important; }
+        // .#{$prefix}y-#{$size} { #{$style}-top: var(--sizing-#{$size}); #{$style}-bottom: var(--sizing-#{$size}) !important; }
+        // .#{$prefix}t-#{$size} { #{$style}-top: var(--sizing-#{$size}) !important; }
+        // .#{$prefix}b-#{$size} { #{$style}-bottom: var(--sizing-#{$size}) !important; }
+        // .#{$prefix}l-#{$size} { #{$style}-left: var(--sizing-#{$size}) !important; }
+        // .#{$prefix}r-#{$size} { #{$style}-right: var(--sizing-#{$size}) !important; }
+    }
 }

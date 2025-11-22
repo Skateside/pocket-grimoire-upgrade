@@ -8,8 +8,8 @@
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <Tabs @tabchange="handleTabchange">
-            <Tab title="Official scripts">
+        <TabsUI @tabchange="handleTabchange">
+            <TabUI title="Official scripts">
                 <fieldset>
                     <legend>Official scripts</legend>
                     <ul>
@@ -21,40 +21,46 @@
                         </li>
                     </ul>
                 </fieldset>
-            </Tab>
+            </TabUI>
 
-            <Tab title="Upload a custom script">
+            <TabUI title="Upload a custom script">
                 <label :for="`upload-${inputId}`">Upload a custom script</label>
                 <input type="file" name="upload" :id="`upload-${inputId}`" accept="application/json" disabled>
                 <p v-if="isLoading">Please wait ...</p>
-            </Tab>
+            </TabUI>
 
-            <Tab title="Enter a URL">
+            <TabUI title="Enter a URL">
                 <label :for="`url-${inputId}`">Enter a URL</label>
                 <input type="url" name="url" :id="`script-${inputId}`" class="input" placeholder="https://www.example.com/script.json" disabled>
                 <p v-if="isLoading">Please wait ...</p>
-            </Tab>
+            </TabUI>
 
-            <Tab title="Paste from clipboard">
+            <TabUI title="Paste from clipboard">
                 <label :for="`paste-${inputId}`">Paste from clipboard</label>
                 <textarea name="paste" :id="`paste-${inputId}`" placeholder='["washerwoman","investigator","librarian","chef"]' disabled></textarea>
-            </Tab>
+            </TabUI>
     
-            <Tab title="Search BotC Scripts">
+            <TabUI title="Search BotC Scripts">
                 <fieldset>
                     <legend>Script type</legend>
                     <ul>
                         <li>
-                            <label :for="`botc-type-any-${inputId}`">Any</label>
-                            <input type="radio" name="botc-type" value="" :id="`botc-type-any-${inputId}`" checked disabled>
+                            <label :for="`botc-type-any-${inputId}`">
+                                <input type="radio" name="botc-type" value="" :id="`botc-type-any-${inputId}`" checked disabled>
+                                Any
+                            </label>
                         </li>
                         <li>
-                            <label :for="`botc-type-full-${inputId}`">Full</label>
-                            <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${inputId}`" disabled>
+                            <label :for="`botc-type-full-${inputId}`">
+                                <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${inputId}`" disabled>
+                                Full
+                            </label>
                         </li>
                         <li>
-                            <label :for="`botc-type-teensyville-${inputId}`">Teensyville</label>
-                            <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${inputId}`" disabled>
+                            <label :for="`botc-type-teensyville-${inputId}`">
+                                <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${inputId}`" disabled>
+                                Teensyville
+                            </label>
                         </li>
                     </ul>
                 </fieldset>
@@ -66,8 +72,8 @@
                     </datalist>
                 </p>
                 <p v-if="isLoading">Please wait ...</p>
-            </Tab>
-        </Tabs>
+            </TabUI>
+        </TabsUI>
 
         <p><button type="submit">Submit</button></p>
 
@@ -92,9 +98,9 @@
         memoise,
     } from "../scripts/utilities/functions";
     import {
-        type ITabsChange,
-        Tabs,
-        Tab,
+        type ITabsUIChange,
+        TabsUI,
+        TabUI,
     } from "./ui/tabs";
 
     const store = useRoleStore();
@@ -105,7 +111,7 @@
     const botcLookup = defineModel<string>();
     const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
 
-    const handleTabchange = ({ tab, oldTab }: ITabsChange) => {
+    const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
 
         tab
             ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
@@ -168,7 +174,7 @@
             return { error: "Unable to parse script." }  // TODO: i18n
         }
 
-        if (!store.getIsValidScript(script)) {
+        if (!store.getIsValidImport(script)) {
             return { error: "Script is not valid." }  // TODO: i18n
         }
 

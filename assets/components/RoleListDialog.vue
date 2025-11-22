@@ -1,5 +1,5 @@
 <template>
-    <Dialog
+    <DialogUI
         title="Roles"
         v-on="bubbleEvents(emit)"
     >
@@ -13,7 +13,7 @@
                 <RoleToken :role="role" />
             </button>
         </GridLayout>
-    </Dialog>
+    </DialogUI>
 </template>
 
 <script setup lang="ts">
@@ -21,14 +21,14 @@ import type { IRole } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 import {
-    type IDialogEvents,
-    Dialog,
+    type IDialogUIEvents,
+    DialogUI,
     bubbleEvents,
 } from "./ui/dialog";
 import GridLayout from "./layouts/GridLayout.vue";
 import RoleToken from "./RoleToken.vue";
 
-const emit = defineEmits<IDialogEvents & {
+const emit = defineEmits<IDialogUIEvents & {
     (e: "role-click", id: IRole["id"]): void,
 }>();
 

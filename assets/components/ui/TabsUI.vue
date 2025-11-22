@@ -28,10 +28,10 @@
 
 <script setup lang="ts">
 import type {
-    ITabsChange,
-    ITabsInterface,
-    ITabsProps,
-    ITabProps,
+    ITabsUIChange,
+    ITabsUIInterface,
+    ITabsUIProps,
+    ITabUIProps,
 } from "./tabTypes";
 import {
     computed,
@@ -46,15 +46,15 @@ import ClusterLayout from "../layouts/ClusterLayout.vue";
 import { words } from "../../scripts/utilities/strings";
 import { clamp } from "../../scripts/utilities/numbers";
 
-const props = defineProps<ITabsProps>();
+const props = defineProps<ITabsUIProps>();
 const emit = defineEmits<{
-    (e: "tabchange", tab: ITabsChange): void,
+    (e: "tabchange", tab: ITabsUIChange): void,
 }>();
 const suffix = useId();
 const slots = useSlots();
 const tablist = ref<HTMLElement | null>(null);
 const tabpanels = ref<HTMLElement | null>(null);
-const tabProps = ref<ITabProps[]>(
+const tabProps = ref<ITabUIProps[]>(
     slots.default?.().map(({ props }) => ({
         title: props?.title || "",
         disabled: props?.disabled || false,
@@ -63,11 +63,11 @@ const tabProps = ref<ITabProps[]>(
 const selectedIndex = ref<number>(0);
 const selectedTitle = computed(() => tabProps.value[selectedIndex.value]?.title || "");
 
-const makeId: ITabsInterface["makeId"] = (title: string) => {
+const makeId: ITabsUIInterface["makeId"] = (title: string) => {
     return `tab-${words(title.replace(/\W/g, "").toLowerCase()).join("-")}-${suffix}`;
 };
 
-const isTabSelected: ITabsInterface["isTabSelected"] = (
+const isTabSelected: ITabsUIInterface["isTabSelected"] = (
     indexOrTitle: number | string,
 ) => (
     typeof indexOrTitle === "string"
@@ -123,7 +123,7 @@ const focusOnSelectedTab = () => {
 
 };
 
-const tabsInterface: ITabsInterface = {
+const tabsInterface: ITabsUIInterface = {
     isTabSelected,
     makeId,
 };

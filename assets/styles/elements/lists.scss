@@ -5,19 +5,19 @@ li,
 dd,
 dt,
 dd {
-	margin-block: var(--base-sizing);
+    margin-block: var(--base-sizing);
 }
 
 menu,
 ul,
 ol {
-	padding-inline-start: var(--base-sizing-large);
+    padding-inline-start: var(--base-sizing-large);
 }
 
 dt {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 dd {
-	margin-inline-start: var(--base-sizing-large);
+    margin-inline-start: var(--base-sizing-large);
 }

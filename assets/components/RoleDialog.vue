@@ -1,5 +1,5 @@
 <template>
-    <Dialog
+    <DialogUI
         :title="props.role.name"
         :manual="true"
         :hide="true"
@@ -7,7 +7,7 @@
     >
         <RoleToken :role="props.role" :alignment="props.alignment" />
         <p>{{ props.role.ability }}</p>
-    </Dialog>
+    </DialogUI>
 </template>
 
 <script setup lang="ts">
@@ -16,8 +16,8 @@ import type {
     IRoleAlignment,
 } from "../scripts/types/data";
 import {
-    type IDialogEvents,
-    Dialog,
+    type IDialogUIEvents,
+    DialogUI,
     bubbleEvents,
 } from "./ui/dialog";
 import RoleToken from "./RoleToken.vue";
@@ -26,5 +26,5 @@ const props = defineProps<{
     role: IRole,
     alignment?: IRoleAlignment,
 }>();
-const emit = defineEmits<IDialogEvents>();
+const emit = defineEmits<IDialogUIEvents>();
 </script>

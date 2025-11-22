@@ -25,22 +25,16 @@
     & {
         --sizing-unit: #{map.get($map, "unit")};
         --sizing-ratio: #{map.get($map, "ratio")};
-    }
 
-    $sizes: map.get($map, "sizes");
-    @each $size in $sizes {
-        $index: list.index($sizes, $size);
-        $index-md: list.index($sizes, "md");
-        @if $index == $index-md {
-            & {
+        $sizes: map.get($map, "sizes");
+        @each $size in $sizes {
+            $index: list.index($sizes, $size);
+            $index-md: list.index($sizes, "md");
+            @if $index == $index-md {
                 --sizing-#{$size}: var(--sizing-unit);
-            }
-        } @else if $index < $index-md {
-            & {
+            } @else if $index < $index-md {
                 --sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index + 1)}) / var(--sizing-ratio));
-            }
-        } @else if $index > $index-md {
-            & {
+            } @else if $index > $index-md {
                 --sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index - 1)}) * var(--sizing-ratio));
             }
         }
@@ -48,9 +42,9 @@
 }
 
 @mixin create-colour-vars($map) {
-    @each $key, $value in $map {
-        @each $key2, $value2 in $value {
-            & {
+    & {
+        @each $key, $value in $map {
+            @each $key2, $value2 in $value {
                 --#{$key}-#{$key2}: #{$value2};
             }
         }
@@ -58,16 +52,16 @@
 }
 
 @mixin create-flat-vars($map) {
-    @each $key, $value in $map {
-        & {
+    & {
+        @each $key, $value in $map {
             --#{$key}: #{$value};
         }
     }
 }
 
 @mixin create-value-vars($map) {
-    @each $key, $value in $map {
-        & {
+    & {
+        @each $key, $value in $map {
             --#{$key}: #{map.get($value, "value")};
         }
     }

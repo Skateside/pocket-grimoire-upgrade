@@ -1,5 +1,5 @@
 <template>
-    <Dialog
+    <DialogUI
         :title="name"
         v-on="bubbleEvents(emit)"
     >
@@ -29,8 +29,8 @@
             </tbody>
         </table>
 
-        <Tabs>
-            <Tab title="Player">
+        <TabsUI>
+            <TabUI title="Player">
                 <menu>
                     <li><button type="button" @click="removePlayer">Remove</button></li>
                 </menu>
@@ -45,8 +45,8 @@
                     >
                     <button type="submit">Set player name</button>
                 </form>
-            </Tab>
-            <Tab title="Role" :disabled="!roleStore.hasScript">
+            </TabUI>
+            <TabUI title="Role" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button" @click="setRole">Set</button></li>
                     <li v-if="roleToken"><button type="button" @click="unsetRole">Remove</button></li>
@@ -66,16 +66,16 @@
                         </li>
                     </ul>
                 </fieldset>
-            </Tab>
-            <Tab title="Reminder" :disabled="!roleStore.hasScript">
+            </TabUI>
+            <TabUI title="Reminder" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button" @click="addReminder">Add</button></li>
                 </menu>
                 <p>TODO: Recent reminders</p>
-            </Tab>
-        </Tabs>
+            </TabUI>
+        </TabsUI>
 
-    </Dialog>
+    </DialogUI>
 </template>
 
 <script setup lang="ts">
@@ -95,12 +95,12 @@ import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 // import useUiStore from "../scripts/store/ui";
 import {
-    Tabs,
-    Tab,
+    TabsUI,
+    TabUI,
 } from "./ui/tabs";
 import {
-    type IDialogEvents,
-    Dialog,
+    type IDialogUIEvents,
+    DialogUI,
     bubbleEvents,
 } from "./ui/dialog";
 import {
@@ -110,7 +110,7 @@ import {
 const props = defineProps<{
     tokenId: string,
 }>();
-const emit = defineEmits<IDialogEvents & {
+const emit = defineEmits<IDialogUIEvents & {
     (e: "remove"): void,
     (e: "set-role"): void,
     (e: "show-role", id: IRole): void,

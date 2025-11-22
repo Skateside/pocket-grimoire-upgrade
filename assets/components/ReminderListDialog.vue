@@ -1,5 +1,5 @@
 <template>
-    <Dialog
+    <DialogUI
         title="Reminders"
         v-on="bubbleEvents(emit)"
     >
@@ -13,7 +13,7 @@
                 <ReminderToken :reminder="reminder" />
             </button>
         </GridLayout>
-    </Dialog>
+    </DialogUI>
 </template>
 
 <script setup lang="ts">
@@ -21,13 +21,13 @@ import type { IRoleReminder } from "../scripts/types/data";
 import useRoleStore from "../scripts/store/role";
 import ReminderToken from "./ReminderToken.vue";
 import {
-    type IDialogEvents,
-    Dialog,
+    type IDialogUIEvents,
+    DialogUI,
     bubbleEvents,
 } from "./ui/dialog";
 import GridLayout from "./layouts/GridLayout.vue";
 
-const emit = defineEmits<IDialogEvents & {
+const emit = defineEmits<IDialogUIEvents & {
     (e: "reminder-click", id: IRoleReminder["id"]): void,
 }>();
 

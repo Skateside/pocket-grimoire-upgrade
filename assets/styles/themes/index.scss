@@ -1,9 +1,9 @@
-@use './light' as light;
-@use './general' as general;
+@use "./light" as light;
+@use "./general" as general;
 
 $themes: (
-	general: general.$theme,
-	colour: general.$colour,
-	shade: general.$shade,
-	light: light,
+    general: general.$theme,
+    colour: general.$colour,
+    shade: general.$shade,
+    light: light,
 );

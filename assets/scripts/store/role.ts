@@ -272,10 +272,18 @@ const useRoleStore = defineStore("role", () => {
     const getIsSpecialById = computed(() => innerGetIsSpecialById);
     const getIsSpecial = computed(() => ({ id }: IRole) => innerGetIsSpecialById(id));
 
-    const getIsValidScript = computed(() => (value: any): value is IRoleScript => {
-        // TODO: Actually validate the script.
-        console.log({ value });
-        return true;
+    const getIsValidImport = computed(() => (value: any): value is IRoleScriptImport => {
+
+        return Array.isArray(value) && value.every((entry) => (
+            typeof entry === "string"
+            || (
+                typeof entry === "object"
+                && entry !== null
+                && Object.hasOwn(entry, "id")
+                && typeof entry.id === "string"
+            )
+        ));
+
     });
 
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
@@ -308,6 +316,10 @@ const useRoleStore = defineStore("role", () => {
         });
 
         roles.value.filter(({ team }) => team === "fabled").forEach((role) => {
+            reminders.push(...((role as IRole).reminders || []));
+        });
+
+        roles.value.filter(({ team }) => team === "loric").forEach((role) => {
             reminders.push(...((role as IRole).reminders || []));
         });
 
@@ -435,6 +447,7 @@ const useRoleStore = defineStore("role", () => {
                 ["demon", []],
                 ["traveller", []],
                 ["fabled", []],
+                ["loric", []],
             ] as [IRoleTeam, IRole[]][])
             .map(([_team, roles]) => roles)
             .flat();
@@ -505,7 +518,7 @@ const useRoleStore = defineStore("role", () => {
         getIsSpecialById,
         getIsUniversal,
         getScriptMeta,
-        getIsValidScript,
+        getIsValidImport,
         getScriptById,
         getReminderById,
         getReminders,

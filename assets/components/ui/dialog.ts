@@ -1,4 +1,4 @@
-import Dialog from "./Dialog.vue";
+import DialogUI from "./DialogUI.vue";
 
 // TODO: beforeToggle events
 
@@ -14,13 +14,13 @@ const bubbleEvents = (emit: any) => ({
     },
 });
 
-export type IDialogEvents = {
+export type IDialogUIEvents = {
     (e: "show"): void,
     (e: "hide"): void,
     (e: "toggle", visible: boolean): void,
 };
 
 export {
-    Dialog,
+    DialogUI,
     bubbleEvents,
 };

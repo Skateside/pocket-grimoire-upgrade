@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IDialogEvents } from './dialog';
+import type { IDialogUIEvents } from './dialog';
 import {
     type HTMLAttributes,
     computed,
@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<{
     manual: false,
 });
 
-const emit = defineEmits<IDialogEvents>();
+const emit = defineEmits<IDialogUIEvents>();
 
 const dialog = ref<HTMLElement | null>(null);
 

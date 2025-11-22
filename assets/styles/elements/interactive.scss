@@ -1,5 +1,5 @@
 details {
-	margin-block: var(--base-sizing);
+    margin-block: var(--base-sizing);
 }
 
 /*
@@ -7,16 +7,16 @@ Add the correct display in Chrome and Safari.
 */
 
 summary {
-	display: list-item;
+    display: list-item;
 
-	// @at-root {
-	// 	:where(details[open]) > & {
-	// 		margin-bottom: var(--base-sizing);
-	// 	}
-	// }
+    // @at-root {
+    //     :where(details[open]) > & {
+    //         margin-bottom: var(--base-sizing);
+    //     }
+    // }
 }
 
 dialog {
-	border-width: var(--border-width);
-	padding: var(--base-sizing);
+    border-width: var(--border-width);
+    padding: var(--base-sizing);
 }

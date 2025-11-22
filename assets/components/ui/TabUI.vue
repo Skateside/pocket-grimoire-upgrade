@@ -13,15 +13,15 @@
 
 <script setup lang="ts">
 import type {
-    ITabsInterface,
-    ITabProps,
+    ITabsUIInterface,
+    ITabUIProps,
 } from './tabTypes';
 import {
     computed,
     inject,
 } from "vue";
 
-const props = defineProps<ITabProps>();
+const props = defineProps<ITabUIProps>();
 const tabindex = computed(() => (
     props.disabled
     ? undefined
@@ -30,5 +30,5 @@ const tabindex = computed(() => (
 const {
     isTabSelected,
     makeId,
-} = inject<ITabsInterface>("tabs")!;
+} = inject<ITabsUIInterface>("tabs")!;
 </script>
