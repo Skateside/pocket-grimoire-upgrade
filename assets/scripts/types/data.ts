@@ -6,6 +6,18 @@ export type ICoordinates = {
     z?: number,
 };
 
+// Demon Bluffs.
+
+export type IDemonBluffId = IRole["id"]|null;
+
+export type IDemonBluffGroup = {
+    id: string,
+    name: string,
+    roles: [IDemonBluffId, IDemonBluffId, IDemonBluffId]
+};
+
+export type IDemonBluffs = IDemonBluffGroup[];
+
 // The breakdown of role types.
 
 export type IGameBreakdown = Record<IRoleCoreTeam, number>;
@@ -192,6 +204,13 @@ export type IRoleNightOrder = Record<"first" | "other", {
     role: IRole,
     order: number,
 }[]>;
+
+// export type IRoleDemonBluffGroup = {
+//     name: string,
+//     roles: IRole["id"][],
+// };
+
+// export type IRoleDemonBluffs = IRoleDemonBluffGroup[];
 
 // Tokens.
 

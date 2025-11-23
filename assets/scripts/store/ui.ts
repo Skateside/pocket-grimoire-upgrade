@@ -2,21 +2,15 @@ import type {
     IRole,
     IRoleAlignment,
     IToken,
-    // ITokenSeat,
-    // ITokenRole,
-    // ITokenReminder,
 } from "../types/data";
-// import type { AnyFunction } from "../types/lib";
 import {
     defineStore,
 } from "pinia";
 import {
     computed,
     nextTick,
-    // reactive,
     ref,
     shallowReactive,
-    // watch,
 } from "vue";
 
 const useUiStore = defineStore("ui", () => {

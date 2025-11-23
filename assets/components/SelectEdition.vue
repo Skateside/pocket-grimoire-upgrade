@@ -4,7 +4,7 @@
         @submit.prevent="handleSubmit"
     >
 
-        <div aria-live="assertive">
+        <div aria-live="polite">
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
@@ -147,7 +147,10 @@
 
         promiseMaker(data.get(name))
             .then((script) => store.setScript(script))
-            .catch((error) => errorMessage.value = error)
+            .catch((error) => {
+                console.error(error);
+                errorMessage.value = error;
+            })
             .then(() => isLoading.value = false);
 
     };

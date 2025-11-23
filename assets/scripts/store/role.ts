@@ -9,6 +9,8 @@ import type {
     IRoleTeam,
     IRoleAlignment,
     IRoleNightOrder,
+    // IRoleDemonBluffGroup,
+    // IRoleDemonBluffs,
 } from "../types/data";
 import type {
     IStorage,
@@ -483,6 +485,7 @@ const useRoleStore = defineStore("role", () => {
             ...scriptData,
             ...specialRoles.value,
         ];
+        let error = "";
 
         script.value = innerSortRoles(fullScript.map((data) => {
 
@@ -496,13 +499,22 @@ const useRoleStore = defineStore("role", () => {
                 )
             );
 
-            if (!role) {
-                throw new UnrecognisedRoleError(String(data));
+            if (role) {
+                return innerSetRemindersRole(innerUpdateReminders(role as IRole));
             }
 
-            return innerSetRemindersRole(innerUpdateReminders(role as IRole));
+            error = JSON.stringify(data);
+
+            // TODO: test to make sure this doesn't cause serious errors.
+            // Intention is to allow a script containing a role that hasn't been
+            // added to the data yet without the entire system crashing.
+            return { id: "__no_role__" } as IRole;
 
         }));
+
+        if (error) {
+            throw new UnrecognisedReminderError(error);
+        }
 
     }
 

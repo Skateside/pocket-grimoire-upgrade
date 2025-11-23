@@ -5,6 +5,7 @@
     <GrimoirePad
         @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
     />
+    <DemonBluffs />
     <NightOrder />
     <PlayerCount />
     <PlayerCountSet />
@@ -93,6 +94,7 @@ import RoleDialog from "./RoleDialog.vue";
 import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
 import PlayerCountSet from "./PlayerCountSet.vue";
+import DemonBluffs from "./DemonBluffs.vue";
 
 const uiStore = useUiStore();
 const tokenStore = useTokenStore();
