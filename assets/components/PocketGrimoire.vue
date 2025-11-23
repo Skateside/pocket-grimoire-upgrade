@@ -7,6 +7,7 @@
     />
     <NightOrder />
     <PlayerCount />
+    <PlayerCountSet />
 
     <SeatMenuDialog
         v-if="uiStore.isPopoverOpen('seat-menu')"
@@ -91,6 +92,7 @@ import ReminderListDialog from "./ReminderListDialog.vue";
 import RoleDialog from "./RoleDialog.vue";
 import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
+import PlayerCountSet from "./PlayerCountSet.vue";
 
 const uiStore = useUiStore();
 const tokenStore = useTokenStore();

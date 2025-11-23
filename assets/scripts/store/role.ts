@@ -370,6 +370,10 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
+    const getIsOrphan = computed(() => (roleId: IRole["id"]) => (
+        !script.value.some(({ id }) => id === roleId)
+    ));
+
     const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
 
         const reminders: IRoleReminder[] = [];
@@ -523,6 +527,7 @@ const useRoleStore = defineStore("role", () => {
         getReminderById,
         getReminders,
         getNightOrderById,
+        getIsOrphan,
         // Actions.
         setScript,
         setScriptById,

@@ -7,6 +7,12 @@
 @property --role-token-rotation-offset { syntax: "<number>"; initial-value: 0; inherits: true; }
 @property --role-token-rotation-points { syntax: "<number>"; initial-value: 40; inherits: true; }
 
+@keyframes role-is-orphan {
+    100% {
+        box-shadow: 0 0 0 var(--colour-evil-team);
+    }
+}
+
 .role-token {
     @extend %o-circle;
     @extend %o-tower;
@@ -34,6 +40,14 @@
         75%,
         auto;
     background-position: center;
+
+    &.is-orphan {
+        box-shadow: 0 0 var(--sizing-md) var(--colour-evil-team);
+
+        @media (prefers-reduced-motion: no-preference) {
+            animation: role-is-orphan 1s infinite alternate;
+        }
+    }
 }
 
 .role-token--reminder {
@@ -124,5 +138,4 @@
     --role-token-rotation-value: calc(var(--role-token-rotation-points) / 2.5);
     background-image: url("/assets/images/role-setup.svg");
     width: 30%;
-    opacity: 0.5;
 }

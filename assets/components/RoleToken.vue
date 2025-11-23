@@ -2,7 +2,9 @@
 
     <div
         class="role-token"
-        :class="props.class"
+        :class="{
+            'is-orphan': props.orphan,
+        }"
     >
         <span class="role-token__leaves">
             <span v-if="top > 0" class="role-token__reminders">
@@ -32,13 +34,13 @@
 <script lang="ts" setup>
 import type { IRole, IRoleAlignment } from "../scripts/types/data";
 import type { RequireOnly } from "../scripts/types/lib";
-import { type HTMLAttributes, computed } from "vue";
+import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
     role?: IRole,
     alignment?: IRoleAlignment,
-    class?: HTMLAttributes
+    orphan?: boolean,
 }>();
 const store = useRoleStore();
 const role = computed<RequireOnly<IRole, "name" | "image">>(() => {

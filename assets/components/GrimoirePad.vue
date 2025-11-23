@@ -22,6 +22,7 @@
                     v-if="seat.role"
                     :role="roleStore.getById(seat.role)"
                     :alignment="seat.alignment"
+                    :orphan="roleStore.getIsOrphan(seat.role)"
                 />
                 <template v-else>{{ seat.name || seat.index }}</template>
             </span>
