@@ -1,6 +1,6 @@
 <template>
 
-    <div class="role-token role-token--reminder">
+    <div class="role-token role-token--reminder" :class="{ 'is-orphan': props.orphan }">
         <span class="role-token__image" :class="`role-token__image--${reminder.role.team}`">
             <img :src="image" alt="" class="role-token__icon" width="150" height="150" loading="lazy">
         </span>
@@ -28,6 +28,7 @@ import useRoleStore from "../scripts/store/role";
 const props = defineProps<{
     reminder: IRoleReminder,
     alignment?: IRoleAlignment,
+    orphan?: boolean,
 }>();
 
 const store = useRoleStore();

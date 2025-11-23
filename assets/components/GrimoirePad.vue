@@ -54,6 +54,7 @@
                 <ReminderToken
                     v-if="reminder.reminder"
                     :reminder="roleStore.getReminderById(reminder.reminder)"
+                    :orphan="roleStore.getIsOrphanReminder(reminder.reminder)"
                 />
                 <!-- :alignment="seat.alignment" -->
                 <!-- <template v-else>{{ seat.name || seat.index }}</template> -->
