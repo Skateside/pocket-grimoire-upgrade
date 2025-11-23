@@ -38,7 +38,7 @@ import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
-    role?: IRole,
+    role?: IRole|IRole["id"]|null,
     alignment?: IRoleAlignment,
     orphan?: boolean,
 }>();
@@ -63,7 +63,14 @@ const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
 
     }
 
-    return Object.assign(role, props.role || {});
+    return Object.assign(
+        role,
+        (
+            typeof props.role === "string"
+            ? store.getById(props.role)
+            : props.role
+        ) || {},
+    );
 
 });
 const image = computed(() => store.getImage(role.value as IRole, props.alignment));

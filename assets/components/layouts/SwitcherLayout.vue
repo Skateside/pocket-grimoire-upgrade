@@ -45,16 +45,16 @@ onMounted(() => {
     const limit = toPosInt(props.limit);
     const style = document.createElement("style");
     style.id = dataI.value;
-    style.textContent += `:where(.l-switcher--${limit})>:where(:nth-last-child(n + ${limit})),`;
-    style.textContent += `:where(.l-switcher--${limit})>:where(:nth-last-child(n + ${limit})~*){flex-basis: 100%}`;
+    style.textContent += `:where(.l-switcher--${limit})>:where(:nth-last-child(n+${limit})),`;
+    style.textContent += `:where(.l-switcher--${limit})>:where(:nth-last-child(n+${limit})~*){flex-basis: 100%}`;
     document.head.append(style);
 
 });
 </script>
 
 <style lang="scss">
-@property --l-switcher-gap { syntax: '<length>'; initial-value: 16px; inherits: true;  }
-@property --l-switcher-threshold { syntax: '<length>'; initial-value: 480px; inherits: true;  }
+@property --l-switcher-gap { syntax: "<length>"; initial-value: 16px; inherits: true;  }
+@property --l-switcher-threshold { syntax: "<length>"; initial-value: 480px; inherits: true;  }
 
 .l-switcher {
     --l-switcher-gap: var(--base-sizing);

@@ -10,7 +10,7 @@ import {
     defineStore,
 } from "pinia"
 import {
-    // computed,
+    computed,
     inject,
     ref,
     watch,
@@ -67,6 +67,8 @@ const useBluffsStore = defineStore("bluffs", () => {
 
     };
 
+    const getGroup = computed(() => innerGetGroup);
+
     const addGroup = (name = "") => {
         bluffs.value.push(innerMakeNewGroup(name));
     };
@@ -90,7 +92,7 @@ const useBluffsStore = defineStore("bluffs", () => {
 
     const setBluff = (
         groupId: IDemonBluffGroup["id"],
-        index: 0|1|2,
+        index: 0 | 1 | 2,
         role: IDemonBluffId,
     ) => {
         innerGetGroup(groupId).roles[index] = role;
@@ -100,6 +102,7 @@ const useBluffsStore = defineStore("bluffs", () => {
         // State.
         bluffs,
         // Getters.
+        getGroup,
         // Actions.
         setBluff,
         addGroup,
