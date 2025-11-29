@@ -11,7 +11,6 @@ export type ITabsUIInterface = {
 };
 
 export type ITabsUIProps = {
-    class?: HTMLAttributes["class"],
     listClass?: HTMLAttributes["class"],
     tabClass?: HTMLAttributes["class"],
     contentsClass?: HTMLAttributes["class"],
@@ -20,5 +19,4 @@ export type ITabsUIProps = {
 export type ITabUIProps = {
     title: string,
     disabled?: boolean,
-    class?: HTMLAttributes["class"],
 };

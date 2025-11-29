@@ -1,5 +1,5 @@
 <template>
-    <div class="tabs" :class="props.class">
+    <div class="tabs">
         <div ref="tablist">
             <ClusterLayout node="menu" role="tablist" class="no-list">
                 <li v-for="{ disabled, title } in tabProps">

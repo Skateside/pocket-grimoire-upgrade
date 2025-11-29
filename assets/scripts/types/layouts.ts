@@ -1,4 +1,8 @@
-export type ILayoutsNode = keyof HTMLElementTagNameMap;
+export type ILayoutsNode = (
+    keyof HTMLElementTagNameMap
+    | keyof SVGElementTagNameMap
+    | keyof MathMLElementTagNameMap
+);
 
 export type ILayoutsCalc = `calc(${string})`;
 export type ILayoutsVar = `var(--${string})`;

@@ -1,7 +1,6 @@
 <template>
     <div
         class="tabs__tab"
-        :class="props.class"
         role="tabpanel"
         :tabindex="tabindex"
         :id="makeId(props.title)"

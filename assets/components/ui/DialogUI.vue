@@ -2,9 +2,9 @@
     <article
         ref="dialog"
         class="dialog"
-        :class="[{
+        :class="{
             'dialog--hide': props.hide,
-        }, props.class]"
+        }"
         :popover="type"
     >
         <section class="dialog__header">
@@ -33,9 +33,8 @@
 </template>
 
 <script setup lang="ts">
-import type { IDialogUIEvents } from './dialog';
+import type { IDialogUIEvents } from "./dialog";
 import {
-    type HTMLAttributes,
     computed,
     onMounted,
     ref,
@@ -47,7 +46,6 @@ const props = withDefaults(defineProps<{
     open?: boolean,
     hide?: boolean,
     manual?: boolean,
-    class?: HTMLAttributes["class"],
 }>(), {
     heading: 3,
     open: true,
@@ -68,6 +66,7 @@ const type = computed(() => (
 onMounted(() => {
 
     if (props.open) {
+console.log({ dialog, "dialog.value": dialog.value });
         dialog.value?.showPopover();
     }
 
