@@ -12,6 +12,18 @@ export class PocketGrimoireError extends Error {
 }
 
 /**
+ * Demon Bluff Store
+ */
+
+// Trying to access a bluff group that doesn't exist.
+export class UnrecognisedBluffGroupError extends PocketGrimoireError {
+    constructor(message: string) {
+        super(message);
+        this.name = "UnrecognisedBluffGroupError";
+    }
+}
+
+/**
  * Info Token Store
  */
 

@@ -17,7 +17,7 @@ import type {
 } from "../classes/Storage";
 import {
     defineStore,
-} from "pinia"
+} from "pinia";
 import {
     computed,
     inject,

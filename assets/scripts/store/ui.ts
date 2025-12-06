@@ -3,14 +3,19 @@ import type {
     IRoleAlignment,
     IToken,
 } from "../types/data";
+import type {
+    IStorage,
+} from "../classes/Storage";
 import {
     defineStore,
 } from "pinia";
 import {
     computed,
+    inject,
     nextTick,
     ref,
     shallowReactive,
+    watch,
 } from "vue";
 
 const useUiStore = defineStore("ui", () => {
@@ -31,6 +36,16 @@ const useUiStore = defineStore("ui", () => {
         alignment?: IRoleAlignment,
     }>({});
 
+    const storage = inject<IStorage>("storage")!;
+    const STORAGE_KEY = "tabs";
+    const tabs = shallowReactive<Record<string, number>>(
+        Object.assign(Object.create(null), { ...storage.get(STORAGE_KEY, {}) })
+    );
+
+    watch(tabs, (value) => {
+        storage.set(STORAGE_KEY, value);
+    });
+
     const isPopoverOpen = computed(() => (id: string) => {
 
         if (!innerPopoverOpen[id]) {
@@ -44,6 +59,10 @@ const useUiStore = defineStore("ui", () => {
         return true;
 
     });
+
+    const getTabIndex = computed(() => (identifier: string) => (
+        tabs[identifier] ?? 0
+    ));
 
     let currentPopover: [string, ...any[]] | null = null;
     const popoverList: [string, ...any[]][] = [];
@@ -126,6 +145,10 @@ const useUiStore = defineStore("ui", () => {
         popoverList.length = 0;
     };
 
+    const setTabIndex = (identifier: string, index: number) => {
+        tabs[identifier] = index;
+    };
+
     // Register extra functionality for specific popovers.
 
     innerPopoverHandlers["seat-menu"] = {
@@ -154,8 +177,10 @@ const useUiStore = defineStore("ui", () => {
         // State.
         seatMenuToken,
         roleDialog,
+        tabs,
         // Getters.
         isPopoverOpen,
+        getTabIndex,
         // Actions.
         togglePopover,
         showPopover,
@@ -164,6 +189,7 @@ const useUiStore = defineStore("ui", () => {
         previousPopover,
         hideAllPopovers,
         clearPopoverList,
+        setTabIndex,
     };
 
 });

@@ -1,17 +1,27 @@
+import type { AnyObject } from "../types/lib";
+
 export default class Storage implements IStorage {
 
     protected key: string;
     protected defaultValue: string;
 
-    constructor(key: string, defaultValue = {}) {
+    constructor(key: string, defaultValue: AnyObject = {}) {
 
         this.key = key;
         this.defaultValue = JSON.stringify(defaultValue);
 
     }
 
-    protected getStored() {
+    protected getStored(): AnyObject {
         return JSON.parse(localStorage.getItem(this.key) || this.defaultValue);
+    }
+
+    protected store(stored: AnyObject) {
+        localStorage.setItem(this.key, JSON.stringify(stored));
+    }
+
+    has(key: string) {
+        return Object.hasOwn(this.getStored(), key);
     }
 
     get<T = any>(key: string, defaultValue?: T) {
@@ -23,15 +33,29 @@ export default class Storage implements IStorage {
         const stored = this.getStored();
 
         stored[key] = value;
-        localStorage.setItem(this.key, JSON.stringify(stored));
+        this.store(stored);
 
         return true;
+
+    }
+
+    remove(key: string) {
+
+        const stored = this.getStored();
+        const had = Object.hasOwn(stored, key);
+
+        delete stored[key];
+        this.store(stored);
+
+        return had;
 
     }
 
 }
 
 export type IStorage = {
+    has(key: string): boolean,
     get<T = any>(key: string, defaultValue?: T): T,
     set(key: string, value: any): boolean,
+    remove(key: string): boolean,
 };

@@ -2,7 +2,7 @@
     <div class="tabs">
         <div ref="tablist">
             <ClusterLayout node="menu" role="tablist" class="no-list">
-                <li v-for="{ disabled, title } in tabProps">
+                <li v-for="{ disabled, tab, title } in tabProps">
                     <button
                         type="button"
                         class="tabs__tab"
@@ -15,7 +15,8 @@
                         @click="setTabByTitle(title)"
                         @keydown="moveTabByKey"
                     >
-                        {{ title }}
+                        <component v-if="tab" :is="tab" />
+                        <template v-else>{{ title }}</template>
                     </button>
                 </li>
             </ClusterLayout>
@@ -34,14 +35,17 @@ import type {
     ITabUIProps,
 } from "./tabTypes";
 import {
+    type Slot,
     computed,
     nextTick,
+    onMounted,
     provide,
     ref,
     useId,
     useSlots,
     watch,
 } from "vue";
+import useUiStore from "../../scripts/store/ui";
 import ClusterLayout from "../layouts/ClusterLayout.vue";
 import { words } from "../../scripts/utilities/strings";
 import { clamp } from "../../scripts/utilities/numbers";
@@ -52,12 +56,14 @@ const emit = defineEmits<{
 }>();
 const suffix = useId();
 const slots = useSlots();
+const store = useUiStore();
 const tablist = ref<HTMLElement | null>(null);
 const tabpanels = ref<HTMLElement | null>(null);
 const tabProps = ref<ITabUIProps[]>(
-    slots.default?.().map(({ props }) => ({
-        title: props?.title || "",
-        disabled: props?.disabled || false,
+    slots.default?.().map((slot) => ({
+        disabled: slot.props?.disabled || false,
+        tab: (slot.children as Record<string, Slot>|null)?.tab,
+        title: slot.props?.title || "",
     })) || []
 );
 const selectedIndex = ref<number>(0);
@@ -76,12 +82,25 @@ const isTabSelected: ITabsUIInterface["isTabSelected"] = (
 );
 
 const setTabByIndex = (index: number) => {
-    selectedIndex.value = clamp(0, index, tabProps.value.length - 1);
+
+    const floor = Math.floor(index);
+    const clamped = clamp(0, floor, tabProps.value.length - 1);
+
+    selectedIndex.value = clamped;
+
+    return clamped === floor;
+
 };
 
-const setTabByTitle = (title: string) => {
-    setTabByIndex(tabProps.value.findIndex(({ title: tabTitle }) => tabTitle === title));
-};
+const setTabByTitle = (title: string) => setTabByIndex(
+    tabProps.value.findIndex(({ title: tabTitle }) => tabTitle === title)
+);
+
+const setTab: ITabsUIInterface["setTab"] = (indexOrTitle: number | string) => (
+    typeof indexOrTitle === "number"
+    ? setTabByIndex(indexOrTitle)
+    : setTabByTitle(indexOrTitle)
+);
 
 const keyHandlers: Record<string, () => void> = {
     ArrowLeft() {
@@ -126,9 +145,11 @@ const focusOnSelectedTab = () => {
 const tabsInterface: ITabsUIInterface = {
     isTabSelected,
     makeId,
+    setTab,
 };
 
 provide("tabs", tabsInterface);
+defineExpose(tabsInterface);
 
 watch(selectedIndex, (index, oldIndex) => {
 
@@ -136,12 +157,26 @@ watch(selectedIndex, (index, oldIndex) => {
         return;
     }
 
+    if (props.identifier) {
+        store.setTabIndex(props.identifier, index);
+    }
+
     const panels = tabpanels.value?.querySelectorAll<HTMLElement>("[role=\"tabpanel\"]") || [];
 
     emit("tabchange", {
+        index,
+        oldIndex,
         tab: panels[index] ?? null,
         oldTab: panels[oldIndex] ?? null,
     });
+
+});
+
+onMounted(() => {
+
+    if (props.identifier) {
+        setTabByIndex(store.getTabIndex(props.identifier));
+    }
 
 });
 </script>

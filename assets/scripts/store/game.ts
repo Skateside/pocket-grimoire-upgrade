@@ -7,7 +7,7 @@ import type {
 } from "../classes/Storage";
 import {
     defineStore,
-} from "pinia"
+} from "pinia";
 import {
     computed,
     inject,
@@ -19,7 +19,7 @@ import {
     clamp,
 } from "../utilities/numbers";
 
-const useGameStore = defineStore("gameStore", () => {
+const useGameStore = defineStore("game", () => {
 
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "game";

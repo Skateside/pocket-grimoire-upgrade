@@ -1,14 +1,39 @@
 <template>
 
+    <TabsUI identifier="layout">
+        <TabUI title="Setup">
+            <SelectEdition />
+            <PlayerCount />
+            <PlayerCountSet />
+        </TabUI>
+        <TabUI title="Grimoire">
+            <GrimoirePad
+                @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
+            />
+            <DemonBluffs />
+        </TabUI>
+        <TabUI title="Info Tokens">
+            <p>Todo: Info tokens.</p>
+        </TabUI>
+        <TabUI title="Night Order">
+            <NightOrder />
+        </TabUI>
+        <TabUI title="Jinxes" :disabled="true">
+            <p>Todo: Jinxes (enabled if necessary)</p>
+        </TabUI>
+    </TabsUI>
+
+    <details>
+        <summary>Acknowledgements</summary>
+        <div>
+            <p><a href="https://bloodontheclocktower.com/">Blood on the Clocktower</a> is a trademark of Steven Medway and <a href="https://www.thepandemoniuminstitute.com/">The Pandemonium Institute</a>.</p>
+            <p>Role icons from <a href="https://github.com/tomozbot/botc-icons">bots-icons</a>.</p>
+            <p>Additional from <a href="https://game-icons.net/">Game-icons.net</a>.</p>
+            <p>Version 2</p>
+        </div>
+    </details>
+
     <!-- <RoleList /> -->
-    <SelectEdition />
-    <GrimoirePad
-        @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
-    />
-    <DemonBluffs />
-    <NightOrder />
-    <PlayerCount />
-    <PlayerCountSet />
 
     <SeatMenuDialog
         v-if="uiStore.isPopoverOpen('seat-menu')"
@@ -85,6 +110,11 @@ import type {
 } from "../scripts/types/data";
 import useUiStore from "../scripts/store/ui";
 import useTokenStore from "../scripts/store/token";
+import {
+    // type ITabsUIChange,
+    TabsUI,
+    TabUI,
+} from "./ui/tabs";
 import SelectEdition from "./SelectEdition.vue";
 import GrimoirePad from "./GrimoirePad.vue";
 import SeatMenuDialog from "./SeatMenuDialog.vue";

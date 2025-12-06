@@ -8,7 +8,7 @@ import type {
 } from "../classes/Storage";
 import {
     defineStore,
-} from "pinia"
+} from "pinia";
 import {
     computed,
     inject,
@@ -19,16 +19,8 @@ import {
     randomId,
 } from "../utilities/strings";
 import {
-    PocketGrimoireError,
+    UnrecognisedBluffGroupError,
 } from "../../errors";
-
-// Trying to access a bluff group that doesn't exist.
-class UnrecognisedBluffGroupError extends PocketGrimoireError {
-    constructor(message: string) {
-        super(message);
-        this.name = "UnrecognisedBluffGroupError";
-    }
-}
 
 const useBluffsStore = defineStore("bluffs", () => {
 

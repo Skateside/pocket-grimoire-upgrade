@@ -66,7 +66,6 @@ const type = computed(() => (
 onMounted(() => {
 
     if (props.open) {
-console.log({ dialog, "dialog.value": dialog.value });
         dialog.value?.showPopover();
     }
 

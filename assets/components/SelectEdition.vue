@@ -8,7 +8,7 @@
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <TabsUI @tabchange="handleTabchange">
+        <TabsUI identifier="edition" @tabchange="handleTabchange">
             <TabUI title="Official scripts">
                 <fieldset>
                     <legend>Official scripts</legend>
@@ -82,132 +82,116 @@
 </template>
 
 <script setup lang="ts">
-    import type {
-        IBotcScriptResponse,
-        IRoleScriptImport,
-    } from "../scripts/types/data";
-    import {
-        computed,
-        ref,
-        useId,
-        watch,
-    } from "vue";
-    import useRoleStore from "../scripts/store/role";
-    import {
-        debounce,
-        memoise,
-    } from "../scripts/utilities/functions";
-    import {
-        type ITabsUIChange,
-        TabsUI,
-        TabUI,
-    } from "./ui/tabs";
+import type {
+    IBotcScriptResponse,
+    IRoleScriptImport,
+} from "../scripts/types/data";
+import {
+    computed,
+    ref,
+    useId,
+    watch,
+} from "vue";
+import useRoleStore from "../scripts/store/role";
+import {
+    debounce,
+    memoise,
+} from "../scripts/utilities/functions";
+import {
+    type ITabsUIChange,
+    TabsUI,
+    TabUI,
+} from "./ui/tabs";
 
-    const store = useRoleStore();
-    const inputId = useId();
-    const isLoading = ref<boolean>(false);
-    const errorMessage = ref<string>("");
-    const botcScripts = ref<Record<string, IRoleScriptImport>>({});
-    const botcLookup = defineModel<string>();
-    const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
+const store = useRoleStore();
+const inputId = useId();
+const isLoading = ref<boolean>(false);
+const errorMessage = ref<string>("");
+const botcScripts = ref<Record<string, IRoleScriptImport>>({});
+const botcLookup = defineModel<string>();
+const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
 
-    const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
+const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
 
-        tab
-            ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
-            .forEach((input) => input.disabled = false);
+    tab
+        ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
+        .forEach((input) => input.disabled = false);
 
-        oldTab
-            ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
-            .forEach((input) => input.disabled = true);
+    oldTab
+        ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
+        .forEach((input) => input.disabled = true);
 
-    };
+};
 
-    const handleSubmit = (event: Event) => {
+const handleSubmit = (event: Event) => {
 
-        if (isLoading.value) {
-            return;
-        }
+    if (isLoading.value) {
+        return;
+    }
 
-        isLoading.value = true;
-        
-        const data = new FormData((event.target as HTMLFormElement));
-        const promises: [string, (_value: any) => Promise<IRoleScriptImport>][] = [
-            ["", () => Promise.reject("Empty form")], // TODO: i18n
-            ["script", processScriptId],
-            ["upload", processUploadedScript],
-            ["url", processURLScript],
-            ["paste", processPastedScript],
-            ["botc", processBotcScript],
-        ];
-        const [
-            name,
-            promiseMaker,
-        ] = promises.find(([name]) => data.has(name)) || promises[0];
+    isLoading.value = true;
+    
+    const data = new FormData((event.target as HTMLFormElement));
+    const promises: [string, (_value: any) => Promise<IRoleScriptImport>][] = [
+        ["", () => Promise.reject("Empty form")], // TODO: i18n
+        ["script", processScriptId],
+        ["upload", processUploadedScript],
+        ["url", processURLScript],
+        ["paste", processPastedScript],
+        ["botc", processBotcScript],
+    ];
+    const [
+        name,
+        promiseMaker,
+    ] = promises.find(([name]) => data.has(name)) || promises[0];
 
-        promiseMaker(data.get(name))
-            .then((script) => store.setScript(script))
-            .catch((error) => {
-                console.error(error);
-                errorMessage.value = error;
-            })
-            .then(() => isLoading.value = false);
+    promiseMaker(data.get(name))
+        .then((script) => store.setScript(script))
+        .catch((error) => {
+            console.error(error);
+            errorMessage.value = error;
+        })
+        .then(() => isLoading.value = false);
 
-    };
+};
 
-    const processScriptId = (id: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
+const processScriptId = (id: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
-        const script = store.getScriptById(id);
+    const script = store.getScriptById(id);
 
-        if (script) {
-            resolve(script);
-        } else {
-            reject(`Unrecognised script ID "${id}"`); // TODO: i18n
-        }
+    if (script) {
+        resolve(script);
+    } else {
+        reject(`Unrecognised script ID "${id}"`); // TODO: i18n
+    }
 
-    });
+});
 
-    const handleScript = (data: string): { script?: IRoleScriptImport, error?: string } => {
+const handleScript = (data: string): { script?: IRoleScriptImport, error?: string } => {
 
-        let script = [];
+    let script = [];
 
-        try {
-            script = JSON.parse(data);
-        } catch (error) {
-            return { error: "Unable to parse script." }  // TODO: i18n
-        }
+    try {
+        script = JSON.parse(data);
+    } catch (error) {
+        return { error: "Unable to parse script." }  // TODO: i18n
+    }
 
-        if (!store.getIsValidImport(script)) {
-            return { error: "Script is not valid." }  // TODO: i18n
-        }
+    if (!store.getIsValidImport(script)) {
+        return { error: "Script is not valid." }  // TODO: i18n
+    }
 
-        return { script };
+    return { script };
 
-    };
+};
 
-    const processUploadedScript = (file: File) => new Promise<IRoleScriptImport>((resolve, reject) => {
+const processUploadedScript = (file: File) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
-        const reader = new FileReader();
+    const reader = new FileReader();
 
-        reader.addEventListener("load", ({ target }) => {
+    reader.addEventListener("load", ({ target }) => {
 
-            const { script, error } = handleScript(target!.result as string);
-
-            if (script) {
-                resolve(script);
-            } else {
-                reject(error);
-            }
-
-        });
-
-        reader.readAsText(file);
-
-    });
-
-    const processPastedScript = (data: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
-
-        const { script, error } = handleScript(data);
+        const { script, error } = handleScript(target!.result as string);
 
         if (script) {
             resolve(script);
@@ -217,57 +201,73 @@
 
     });
 
-    const handleAjax = <TResponse = IRoleScriptImport>(url: string, data: Record<string, any>): Promise<TResponse> => fetch(url, {
-            method: "POST",
-            body: JSON.stringify(data),
-        })
-        .then((response) => response.json())
-        .then(({ success, body }) => {
-            if (success) {
-                return body;
-            }
-            throw body;
-        });
+    reader.readAsText(file);
 
-    const processURLScript = (url: string) => handleAjax("/get-url", { url });
+});
 
-    const processBotcScript = (name: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
+const processPastedScript = (data: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
-        if (!Object.hasOwn(botcScripts.value, name)) {
-            return reject(`Unrecognised script "${name}"`); // TODO: i18n
+    const { script, error } = handleScript(data);
+
+    if (script) {
+        resolve(script);
+    } else {
+        reject(error);
+    }
+
+});
+
+const handleAjax = <TResponse = IRoleScriptImport>(url: string, data: Record<string, any>): Promise<TResponse> => fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+    })
+    .then((response) => response.json())
+    .then(({ success, body }) => {
+        if (success) {
+            return body;
         }
-
-        resolve(botcScripts.value[name]);
-
+        throw body;
     });
 
-    const getBotcScripts = memoise(
-        (term: string, type: string) => handleAjax<IBotcScriptResponse>("/get-botc", {
-            term,
-            type,
-        }),
-        (term, type) => `${term}|${type}`,
-    );
+const processURLScript = (url: string) => handleAjax("/get-url", { url });
 
-    watch(botcLookup, () => isLoading.value = true);
-    watch(botcLookup, debounce((value) => {
+const processBotcScript = (name: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
-        if (!value?.trim()) {
-            isLoading.value = false;
-            return;
-        }
+    if (!Object.hasOwn(botcScripts.value, name)) {
+        return reject(`Unrecognised script "${name}"`); // TODO: i18n
+    }
 
-        const type = document
-            .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
-            ?.value || "";
+    resolve(botcScripts.value[name]);
 
-        getBotcScripts(value, type)
-            .then((results) => {
-                const { value } = botcScripts;
-                Object.keys(value).forEach((key) => delete value[key]);
-                Object.entries(results).forEach(([name, script]) => value[name] = script);
-            }, () => {})
-            .then(() => isLoading.value = false);
+});
 
-    }, 150));
+const getBotcScripts = memoise(
+    (term: string, type: string) => handleAjax<IBotcScriptResponse>("/get-botc", {
+        term,
+        type,
+    }),
+    (term, type) => `${term}|${type}`,
+);
+
+watch(botcLookup, () => isLoading.value = true);
+watch(botcLookup, debounce((value) => {
+
+    if (!value?.trim()) {
+        isLoading.value = false;
+        return;
+    }
+
+    const type = document
+        .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
+        ?.value || "";
+
+    getBotcScripts(value, type)
+        .then((results) => {
+            const { value } = botcScripts;
+            Object.keys(value).forEach((key) => delete value[key]);
+            Object.entries(results).forEach(([name, script]) => value[name] = script);
+        }, () => {})
+        .then(() => isLoading.value = false);
+
+}, 150));
 </script>
