@@ -1,0 +1,128 @@
+import type {
+    FieldElement,
+} from "../types/lib";
+import type {
+    IFields,
+} from "../types/data";
+import type {
+    IStorage,
+} from "../classes/Storage";
+import {
+    defineStore,
+} from "pinia";
+import {
+    inject,
+    ref,
+    watch,
+} from "vue";
+
+const useFieldsStore = defineStore("fields", () => {
+
+    const storage = inject<IStorage>("storage")!;
+    const STORAGE_KEY = "inputs";
+    const inputs = ref<IFields>({
+        ...storage.get<IFields>(STORAGE_KEY, {}),
+    });
+
+    watch(inputs, (value) => {
+        storage.set(STORAGE_KEY, value);
+    }, { deep: true });
+
+    const clear = () => {
+
+        Object.keys(inputs.value).forEach((key) => {
+            delete inputs.value[key];
+        });
+
+    };
+
+    const innerHasForm = (identifier: string) => (
+        Object.hasOwn(inputs.value, identifier)
+    );
+
+    const innerGetForm = (identifier: string) => {
+
+        if (!innerHasForm(identifier)) {
+            inputs.value[identifier] = Object.create(null);
+        }
+
+        return inputs.value[identifier];
+
+    };
+
+    const saveField = (identifier: string, field: FieldElement) => {
+
+        const { name, type } = field;
+
+        if (!name || type === "file") {
+            return false;
+        }
+
+        let selector = `${field.nodeName.toLowerCase()}[name="${name}"]`;
+
+        if (type === "checkbox" || type === "radio") {
+            selector += `[value="${field.value}"]`;
+        }
+
+        const value = (
+            type === "checkbox"
+            ? (field as HTMLInputElement).checked
+            : field.value
+        );
+
+        innerGetForm(identifier)[selector] = value;
+
+        return true;
+
+    };
+
+    const populateFields = (
+        form: HTMLFormElement,
+        identifier: string,
+    ) => {
+
+        if (!innerHasForm(identifier)) {
+            return false;
+        }
+
+        Object
+            .entries(innerGetForm(identifier))
+            .forEach(([selector, value]) => {
+
+                const input = form.querySelector<FieldElement>(selector);
+
+                if (!input) {
+                    return;
+                }
+
+                switch (input.type) {
+
+                case "radio":
+                    (input as HTMLInputElement).checked = true;
+                    break;
+
+                case "checkbox":
+                    (input as HTMLInputElement).checked = Boolean(value);
+                    break;
+
+                default:
+                    input.value = String(value);
+
+                }
+
+            });
+
+    };
+
+    return {
+        // State.
+        inputs,
+        // Action.
+        clear,
+        saveField,
+        populateFields,
+    };
+
+});
+
+export default useFieldsStore;

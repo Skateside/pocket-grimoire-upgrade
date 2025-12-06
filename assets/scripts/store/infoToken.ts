@@ -34,6 +34,10 @@ const useInfoTokenStore = defineStore("info-token", () => {
         storage.set(STORAGE_KEY, value.filter(({ isCustom }) => isCustom));
     }, { deep: true });
 
+    const clear = () => {
+        infoTokens.value = infoTokens.value.filter(({ isCustom }) => !isCustom);
+    };
+
     const getById = computed(() => (id: IInfoToken["id"]) => {
         return infoTokens.value.find(({ id: itId }) => itId === id);
     });
@@ -112,6 +116,7 @@ const useInfoTokenStore = defineStore("info-token", () => {
         getById,
         byType,
         // Actions.
+        clear,
         add,
         update,
         remove,

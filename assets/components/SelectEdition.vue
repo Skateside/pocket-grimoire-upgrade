@@ -1,6 +1,8 @@
 <template>
 
     <form
+        ref="form"
+        data-identifier="select-edition"
         @submit.prevent="handleSubmit"
     >
 
@@ -14,8 +16,8 @@
                     <legend>Official scripts</legend>
                     <ul>
                         <li v-for="(script, id) in store.scripts" :key="id">
-                            <label :for="`script-${id}-${inputId}`">
-                                <input type="radio" name="script" :value="id" :id="`script-${id}-${inputId}`">
+                            <label :for="`script-${id}-${suffix}`">
+                                <input type="radio" name="script" :value="id" :id="`script-${id}-${suffix}`">
                                 {{ store.getScriptMeta(script)?.name }}
                             </label>
                         </li>
@@ -24,20 +26,20 @@
             </TabUI>
 
             <TabUI title="Upload a custom script">
-                <label :for="`upload-${inputId}`">Upload a custom script</label>
-                <input type="file" name="upload" :id="`upload-${inputId}`" accept="application/json" disabled>
+                <label :for="`upload-${suffix}`">Upload a custom script</label>
+                <input type="file" name="upload" :id="`upload-${suffix}`" accept="application/json" disabled>
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI title="Enter a URL">
-                <label :for="`url-${inputId}`">Enter a URL</label>
-                <input type="url" name="url" :id="`script-${inputId}`" class="input" placeholder="https://www.example.com/script.json" disabled>
+                <label :for="`url-${suffix}`">Enter a URL</label>
+                <input type="url" name="url" :id="`script-${suffix}`" class="input" placeholder="https://www.example.com/script.json" disabled>
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI title="Paste from clipboard">
-                <label :for="`paste-${inputId}`">Paste from clipboard</label>
-                <textarea name="paste" :id="`paste-${inputId}`" placeholder='["washerwoman","investigator","librarian","chef"]' disabled></textarea>
+                <label :for="`paste-${suffix}`">Paste from clipboard</label>
+                <textarea name="paste" :id="`paste-${suffix}`" placeholder='["washerwoman","investigator","librarian","chef"]' disabled></textarea>
             </TabUI>
     
             <TabUI title="Search BotC Scripts">
@@ -45,20 +47,20 @@
                     <legend>Script type</legend>
                     <ul>
                         <li>
-                            <label :for="`botc-type-any-${inputId}`">
-                                <input type="radio" name="botc-type" value="" :id="`botc-type-any-${inputId}`" checked disabled>
+                            <label :for="`botc-type-any-${suffix}`">
+                                <input type="radio" name="botc-type" value="" :id="`botc-type-any-${suffix}`" checked disabled>
                                 Any
                             </label>
                         </li>
                         <li>
-                            <label :for="`botc-type-full-${inputId}`">
-                                <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${inputId}`" disabled>
+                            <label :for="`botc-type-full-${suffix}`">
+                                <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${suffix}`" disabled>
                                 Full
                             </label>
                         </li>
                         <li>
-                            <label :for="`botc-type-teensyville-${inputId}`">
-                                <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${inputId}`" disabled>
+                            <label :for="`botc-type-teensyville-${suffix}`">
+                                <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${suffix}`" disabled>
                                 Teensyville
                             </label>
                         </li>
@@ -83,11 +85,15 @@
 
 <script setup lang="ts">
 import type {
+    FieldElement,
+} from "../scripts/types/lib";
+import type {
     IBotcScriptResponse,
     IRoleScriptImport,
 } from "../scripts/types/data";
 import {
     computed,
+    onMounted,
     ref,
     useId,
     watch,
@@ -102,9 +108,11 @@ import {
     TabsUI,
     TabUI,
 } from "./ui/tabs";
+import useFieldSaver from "../composables/useFieldSaver";
 
 const store = useRoleStore();
-const inputId = useId();
+const suffix = useId();
+const form = ref<HTMLFormElement | null>(null);
 const isLoading = ref<boolean>(false);
 const errorMessage = ref<string>("");
 const botcScripts = ref<Record<string, IRoleScriptImport>>({});
@@ -114,11 +122,11 @@ const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
 const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
 
     tab
-        ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
+        ?.querySelectorAll<FieldElement>("input,select,textarea")
         .forEach((input) => input.disabled = false);
 
     oldTab
-        ?.querySelectorAll<HTMLInputElement>("input,select,textarea")
+        ?.querySelectorAll<FieldElement>("input,select,textarea")
         .forEach((input) => input.disabled = true);
 
 };
@@ -270,4 +278,6 @@ watch(botcLookup, debounce((value) => {
         .then(() => isLoading.value = false);
 
 }, 150));
+
+onMounted(() => useFieldSaver(form, true));
 </script>

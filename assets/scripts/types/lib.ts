@@ -17,3 +17,9 @@ export type Tail<List extends readonly unknown[]> = (
 export type AnyFunction = (...args: any[]) => any;
 
 export type AnyObject = Record<string, any>;
+
+export type FieldElement = (
+    HTMLInputElement
+    | HTMLSelectElement
+    | HTMLTextAreaElement
+);

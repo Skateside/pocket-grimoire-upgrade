@@ -136,6 +136,10 @@ const useRoleStore = defineStore("role", () => {
         storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
     });
 
+    const clear = () => {
+        script.value.length = 0;
+    };
+
     const innerAsRoleObject = (roleOrId: IRoleScriptImport[0]) => {
         return (
             typeof roleOrId === "string"
@@ -546,6 +550,7 @@ const useRoleStore = defineStore("role", () => {
         getIsOrphan,
         getIsOrphanReminder,
         // Actions.
+        clear,
         setScript,
         setScriptById,
     };

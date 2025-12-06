@@ -39,6 +39,10 @@ const useTokenStore = defineStore("token", () => {
         storage.set(STORAGE_KEY, value);
     }, { deep: true });
 
+    const clear = () => {
+        tokens.value.length = 0;
+    };
+
     const byType = computed(() => {
         return Object.groupBy(tokens.value, ({ type }) => type) as {
             seat?: ITokenSeat[],
@@ -246,6 +250,7 @@ const useTokenStore = defineStore("token", () => {
         isRole,
         nextZ,
         // Actions.
+        clear,
         create,
         createSeat,
         createReminder,

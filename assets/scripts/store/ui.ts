@@ -46,6 +46,14 @@ const useUiStore = defineStore("ui", () => {
         storage.set(STORAGE_KEY, value);
     });
 
+    const clear = () => {
+
+        for (const key of Object.keys(tabs)) {
+            delete tabs[key];
+        }
+
+    };
+
     const isPopoverOpen = computed(() => (id: string) => {
 
         if (!innerPopoverOpen[id]) {
@@ -182,6 +190,7 @@ const useUiStore = defineStore("ui", () => {
         isPopoverOpen,
         getTabIndex,
         // Actions.
+        clear,
         togglePopover,
         showPopover,
         hidePopover,

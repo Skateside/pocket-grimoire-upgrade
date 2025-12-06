@@ -47,6 +47,13 @@ const useBluffsStore = defineStore("bluffs", () => {
         storage.set(STORAGE_KEY, value);
     }, { deep: true });
 
+    const clear = () => {
+
+        bluffs.value.length = 0;
+        bluffs.value.push(innerMakeNewGroup());
+
+    };
+
     const innerGetGroup = (groupId: IDemonBluffGroup["id"]) => {
 
         const group = bluffs.value.find(({ id }) => id === groupId);
@@ -96,6 +103,7 @@ const useBluffsStore = defineStore("bluffs", () => {
         // Getters.
         getGroup,
         // Actions.
+        clear,
         setBluff,
         addGroup,
         removeGroup,

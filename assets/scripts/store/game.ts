@@ -45,6 +45,10 @@ const useGameStore = defineStore("game", () => {
         storage.set(STORAGE_KEY, value);
     });
 
+    const clear = () => {
+        count.value = 10;
+    };
+
     const breakdown = computed(() => {
         return numbers.value[Math.min(15, count.value) as keyof IGameCounts];
     });
@@ -85,6 +89,8 @@ const useGameStore = defineStore("game", () => {
         table,
         // Getters.
         setCount,
+        // Actions.
+        clear,
     };
 
 });

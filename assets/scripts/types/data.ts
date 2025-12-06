@@ -18,6 +18,10 @@ export type IDemonBluffGroup = {
 
 export type IDemonBluffs = IDemonBluffGroup[];
 
+// Input fields.
+
+export type IFields = Record<string, Record<string, boolean | string>>;
+
 // The breakdown of role types.
 
 export type IGameBreakdown = Record<IRoleCoreTeam, number>;
