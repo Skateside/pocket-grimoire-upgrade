@@ -51,6 +51,14 @@ export default class Storage implements IStorage {
 
     }
 
+    reset() {
+        this.store(JSON.parse(this.defaultValue));
+    }
+
+    kill() {
+        localStorage.removeItem(this.key);
+    }
+
 }
 
 export type IStorage = {
@@ -58,4 +66,6 @@ export type IStorage = {
     get<T = any>(key: string, defaultValue?: T): T,
     set(key: string, value: any): boolean,
     remove(key: string): boolean,
+    reset(): void,
+    kill(): void,
 };

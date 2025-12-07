@@ -80,10 +80,12 @@ const layouts: ILayouts = {
 
         const xIncrement = (width - tokenWidth) / total;
         const yIncrement = (height - tokenHeight) / total;
+        const tokenDeltaX = (tokenWidth / 2) / width;
+        const tokenDeltaY = (tokenHeight / 2) / height;
 
         return times(total, (index) => ({
-            x: (xIncrement * index) / width,
-            y: (yIncrement * index) / height,
+            x: (xIncrement * index) / width + tokenDeltaX,
+            y: (yIncrement * index) / height + tokenDeltaY,
         }));
 
     },
@@ -96,6 +98,8 @@ const layouts: ILayouts = {
         const radiusY = (height - tokenHeight) / 2;
         const precision = 0.001;
         const offset = Math.PI * -0.5;
+        const tokenDeltaX = (tokenWidth / 2) / width;
+        const tokenDeltaY = (tokenHeight / 2) / height;
 
         const dp = (radians: number) => Math.sqrt(
             (radiusX * Math.sin(radians)) ** 2
@@ -125,8 +129,14 @@ const layouts: ILayouts = {
 
                 nextPoint += 1;
                 coordinates.push({
-                    x: (radiusX + (Math.cos(radians) * radiusX)) / width,
-                    y: (radiusY + (Math.sin(radians) * radiusY)) / height,
+                    x: (
+                        ((radiusX + (Math.cos(radians) * radiusX)) / width)
+                        + tokenDeltaX
+                    ),
+                    y: (
+                        ((radiusY + (Math.sin(radians) * radiusY)) / height)
+                        + tokenDeltaY
+                    ),
                 });
 
             }

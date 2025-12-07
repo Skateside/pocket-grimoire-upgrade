@@ -91,7 +91,7 @@
     </p>
 
     <!-- TODO: Remove this part: trigger from export -->
-    <pre><code>{{ positioner }}</code></pre>
+    <p><button type="button" @click="setPositions">Position</button></p>
 
 </template>
 
@@ -137,6 +137,21 @@ const pad = shallowReactive<IPad>({
     bottom: 0,
 });
 const positioner = usePositioner(pad, seats);
+
+const setPositions = () => {
+
+    seats.value.forEach((seat, index) => {
+
+        const position = positioner.coordinates.value[index];
+
+        if (position) {
+            moveTo(seat, position);
+        }
+
+    });
+
+};
+
 //*
 const removeDropdown = ref<HTMLSelectElement | null>(null);
 
@@ -329,5 +344,9 @@ onUnmounted(() => {
     window.removeEventListener("resize", updatePadDimentions);
     window.removeEventListener("scroll", updatePadDimentions);
 
+});
+
+defineExpose({
+    setPositions,
 });
 </script>

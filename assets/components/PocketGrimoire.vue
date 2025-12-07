@@ -3,6 +3,7 @@
     <TabsUI ref="layout" identifier="layout">
         <TabUI title="Grimoire">
             <GrimoirePad
+                ref="grimoirePad"
                 @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
             />
             <DemonBluffs />
@@ -17,6 +18,9 @@
                 </TabUI>
                 <TabUI title="Select edition">
                     <SelectEdition />
+                </TabUI>
+                <TabUI title="Cache">
+                    <ClearCache />
                 </TabUI>
             </TabsUI>
         </TabUI>
@@ -135,6 +139,7 @@ import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
 import PlayerCountSet from "./PlayerCountSet.vue";
 import DemonBluffs from "./DemonBluffs.vue";
+import ClearCache from "./ClearCache.vue";
 import {
     times,
 } from "../scripts/utilities/numbers";
@@ -144,12 +149,19 @@ const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const uiStore = useUiStore();
 const layout = ref<typeof TabsUI | null>(null);
+const grimoirePad = ref<typeof GrimoirePad | null>(null);
 
-const handleCountConfirm = async () => {
+const handleCountConfirm = () => {
+
     (layout.value as any as ITabsUIInterface)?.setTab("Grimoire");
-    times(gameStore.count - tokenStore.tokens.length, () => tokenStore.create());
-    await nextTick();
-    // position the seats in a circle
+
+    times(
+        gameStore.count - tokenStore.tokens.length,
+        () => tokenStore.create(),
+    );
+
+    nextTick(() => grimoirePad.value?.setPositions());
+
 };
 
 const handleRoleListClick = (id: IRole["id"]) => {

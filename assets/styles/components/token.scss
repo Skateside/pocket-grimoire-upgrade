@@ -8,12 +8,12 @@
 }
 
 .token--seat {
-    width: 8em; // TODO: Remove magic number.
+    width: clamp(4em, 19vw, 8em);
     border: 0.3ch solid #000;
 }
 
 .token--reminder {
-    width: 6em; // TODO: Remove magic number.
+    width: clamp(3em, 15vw, 6em);
     border: 0.3ch solid #000;
 }
 
@@ -37,12 +37,12 @@
 
 .token__night--first {
     --offset-distance: 60%;
-    background-color: blue;
+    background-color: blue; // TODO: Remove magic colour.
 }
 
 .token__night--other {
     --offset-distance: 90%;
-    background-color: red;
+    background-color: red; // TODO: Remove magic colour.
 }
 
 .is-dead > .token__contents,
