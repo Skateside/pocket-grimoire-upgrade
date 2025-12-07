@@ -1,32 +1,45 @@
 <template>
-    <p>
-        <label :for="`player-count-${suffix}`">Player count</label>
-        <input
-            type="range"
-            :id="`player-count-${suffix}`"
-            min="5"
-            max="15"
-            step="1"
-            :value="store.count"
-            @input="setPlayerCount"
-            :list="`player-count-list-${suffix}`"
-        >
-        <datalist :id="`player-count-list-${suffix}`">
-            <option value="5" label="5"></option>
-            <option value="10" label="10"></option>
-            <option value="15" label="15"></option>
-        </datalist>
-        <output :value="store.count" aria-hidden="true"></output>
-    </p>
+    <form @submit.prevent="handleSubmit">
+        <StackLayout>
+            <ClusterLayout>
+                <label :for="`player-count-${suffix}`">Player count</label>
+                <input
+                    type="range"
+                    :id="`player-count-${suffix}`"
+                    min="5"
+                    max="15"
+                    step="1"
+                    :value="store.count"
+                    @input="setPlayerCount"
+                >
+                <output :value="store.count" aria-hidden="true"></output>
+            </ClusterLayout>
+            <div>
+                <button type="submit">Add seats</button>
+            </div>
+        </StackLayout>
+    </form>
 </template>
 
 <script setup lang="ts">
+import {
+    useId,
+} from "vue";
 import useGameStore from "../scripts/store/game";
-import { useId } from "vue";
+import ClusterLayout from "./layouts/ClusterLayout.vue";
+import StackLayout from "./layouts/StackLayout.vue";
 
 const store = useGameStore();
 const suffix = useId();
 const setPlayerCount = (event: Event) => {
     store.setCount(Number((event.target as HTMLInputElement).value));
+};
+
+const emit = defineEmits<{
+    (e: "count-confirm"): void,
+}>();
+
+const handleSubmit = () => {
+    emit("count-confirm");
 };
 </script>

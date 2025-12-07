@@ -88,6 +88,7 @@ const useRoleStore = defineStore("role", () => {
         ...storage.get<IRoleScript>(STORAGE_KEY, []).map(innerSetRemindersRole),
     ]);
     const hasScript = computed(() => script.value.length > 0);
+    // TODO: hasJinxes
     const nightOrder = computed(() => {
 
         const nightOrder: IRoleNightOrder = {

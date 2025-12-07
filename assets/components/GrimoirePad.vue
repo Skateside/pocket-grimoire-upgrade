@@ -3,6 +3,7 @@
 
         <button
             v-for="seat in tokenStore.byType.seat"
+            ref="seats"
             type="button"
             class="token token--seat movable__item"
             :class='{
@@ -89,6 +90,9 @@
         <button type="button" @click="removeByDropdown">Remove</button>
     </p>
 
+    <!-- TODO: Remove this part: trigger from export -->
+    <pre><code>{{ positioner }}</code></pre>
+
 </template>
 
 <script lang="ts" setup>
@@ -98,6 +102,7 @@ import type {
 import {
     onMounted,
     onUnmounted,
+    shallowReactive,
     ref,
 } from "vue";
 import useTokenStore from "../scripts/store/token";
@@ -112,28 +117,27 @@ import {
 import CentreLayout from "./layouts/CentreLayout.vue";
 import RoleToken from "./RoleToken.vue";
 import ReminderToken from "./ReminderToken.vue";
+import usePositioner from "../composables/usePositioner";
 
 const emit = defineEmits<{
     (e: "seat-click", id: string): void,
 }>();
 
-type IPad = {
-    x: number,
-    y: number,
-    r: number,
-    b: number,
-};
+type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 const tokenStore = useTokenStore();
 const roleStore = useRoleStore();
 const grimoire = ref<HTMLElement | null>(null);
+const seats = ref<HTMLElement[]>([]);
 const isDragging = ref<boolean>(false);
-const pad = ref<IPad>({
-    x: 0,
-    y: 0,
-    r: 0,
-    b: 0,
+const pad = shallowReactive<IPad>({
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
 });
+const positioner = usePositioner(pad, seats);
+//*
 const removeDropdown = ref<HTMLSelectElement | null>(null);
 
 const addSeat = () => {
@@ -161,6 +165,7 @@ const removeByDropdown = () => {
 const remove = (id: string) => {
     tokenStore.destroy(id);
 };
+//*/
 
 const getMovableItem = (target: Element) => {
     return (target as HTMLElement).closest<HTMLElement>(".movable__item");
@@ -209,15 +214,15 @@ const dragObject = (moveableItem: HTMLElement, event: MouseEvent | TouchEvent) =
     }
 
     const {
-        x,
-        y,
-        r,
-        b,
-    } = pad.value;
+        left,
+        top,
+        right,
+        bottom,
+    } = pad;
 
     moveTo(moveableItem, {
-        x: clamp(0, (clientX - x) / (r - x), 1),
-        y: clamp(0, (clientY - y) / (b - y), 1),
+        x: clamp(0, (clientX - left) / (right - left), 1),
+        y: clamp(0, (clientY - top) / (bottom - top), 1),
     });
 
 };
@@ -281,6 +286,8 @@ const updatePadDimentions = debounce(() => {
         return;
     }
 
+    // Destructure and then pass to Object.assign() because Vue doesn't seem to
+    // trigger watchEffect() if the function results are directly assigned.
     const {
         top,
         left,
@@ -288,11 +295,11 @@ const updatePadDimentions = debounce(() => {
         bottom,
     } = grimoire.value.getBoundingClientRect();
 
-    Object.assign(pad.value, {
-        y: top,
-        x: left,
-        r: right,
-        b: bottom,
+    Object.assign(pad, {
+        top,
+        left,
+        right,
+        bottom,
     });
 
 }, 150);

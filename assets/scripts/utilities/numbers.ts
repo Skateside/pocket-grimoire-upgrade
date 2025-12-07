@@ -29,3 +29,15 @@ export function random() {
 export function clamp(min: number, value: number, max: number) {
     return Math.max(min, Math.min(value, max));
 }
+
+/**
+ * Executes the given function a set number of times. The results of each
+ * handler's execution are returned.
+ * 
+ * @param count Number of times to execute the handler.
+ * @param handler Handler to execute.
+ * @returns Results from each handler's execution.
+ */
+export function times<T = any>(count: number, handler: (index: number) => T) {
+    return Array.from({ length: count }, (_ignore, index) => handler(index));
+}

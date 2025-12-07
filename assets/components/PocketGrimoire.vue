@@ -1,21 +1,29 @@
 <template>
 
-    <TabsUI identifier="layout">
-        <TabUI title="Setup">
-            <SelectEdition />
-            <PlayerCount />
-            <PlayerCountSet />
-        </TabUI>
+    <TabsUI ref="layout" identifier="layout">
         <TabUI title="Grimoire">
             <GrimoirePad
                 @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
             />
             <DemonBluffs />
         </TabUI>
+        <TabUI title="Setup">
+            <TabsUI identifier="setup">
+                <TabUI title="Set players">
+                    <PlayerCount />
+                    <PlayerCountSet
+                        @count-confirm="handleCountConfirm"
+                    />
+                </TabUI>
+                <TabUI title="Select edition">
+                    <SelectEdition />
+                </TabUI>
+            </TabsUI>
+        </TabUI>
         <TabUI title="Info Tokens">
             <p>Todo: Info tokens.</p>
         </TabUI>
-        <TabUI title="Night Order">
+        <TabUI title="Night Order" :disabled="!roleStore.hasScript">
             <NightOrder />
         </TabUI>
         <TabUI title="Jinxes" :disabled="true">
@@ -23,7 +31,7 @@
         </TabUI>
     </TabsUI>
 
-    <details>
+    <!-- <details>
         <summary>Acknowledgements</summary>
         <div>
             <p><a href="https://bloodontheclocktower.com/">Blood on the Clocktower</a> is a trademark of Steven Medway and <a href="https://www.thepandemoniuminstitute.com/">The Pandemonium Institute</a>.</p>
@@ -31,9 +39,7 @@
             <p>Additional from <a href="https://game-icons.net/">Game-icons.net</a>.</p>
             <p>Version 2</p>
         </div>
-    </details>
-
-    <!-- <RoleList /> -->
+    </details> -->
 
     <SeatMenuDialog
         v-if="uiStore.isPopoverOpen('seat-menu')"
@@ -101,17 +107,21 @@
 </template>
 
 <script lang="ts" setup>
-// import RoleList from "./RoleList.vue";
 import type {
     IRole,
     IRoleReminder,
     ITokenRole,
-    // ITokenReminder,
 } from "../scripts/types/data";
-import useUiStore from "../scripts/store/ui";
-import useTokenStore from "../scripts/store/token";
 import {
-    // type ITabsUIChange,
+    nextTick,
+    ref,
+} from "vue";
+import useGameStore from "../scripts/store/game";
+import useRoleStore from "../scripts/store/role";
+import useTokenStore from "../scripts/store/token";
+import useUiStore from "../scripts/store/ui";
+import {
+    type ITabsUIInterface,
     TabsUI,
     TabUI,
 } from "./ui/tabs";
@@ -125,9 +135,22 @@ import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
 import PlayerCountSet from "./PlayerCountSet.vue";
 import DemonBluffs from "./DemonBluffs.vue";
+import {
+    times,
+} from "../scripts/utilities/numbers";
 
-const uiStore = useUiStore();
+const gameStore = useGameStore();
+const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
+const uiStore = useUiStore();
+const layout = ref<typeof TabsUI | null>(null);
+
+const handleCountConfirm = async () => {
+    (layout.value as any as ITabsUIInterface)?.setTab("Grimoire");
+    times(gameStore.count - tokenStore.tokens.length, () => tokenStore.create());
+    await nextTick();
+    // position the seats in a circle
+};
 
 const handleRoleListClick = (id: IRole["id"]) => {
 

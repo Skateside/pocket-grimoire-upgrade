@@ -2,7 +2,7 @@
     <table class="count-table">
         <thead>
             <tr>
-                <th scope="row">Player Count</th>
+                <th scope="row">Players</th>
                 <th
                     v-for="count in counts"
                     :key="count"
