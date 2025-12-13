@@ -2,7 +2,7 @@ import type {
     Plugin,
 } from "vite";
 import type {
-    IInfoToken,
+    IInfoTokenRaw,
     IRoleRaw,
     IRoleReminderRaw,
     IRoleReminderFlag,
@@ -56,7 +56,7 @@ type ILocaleJinxes = {
     trick: IRoleJinxRaw["id"],
     reason: IRoleJinxRaw["reason"],
 }[];
-type ILocaleInfoTokens = Record<string, IInfoToken["text"]>;
+type ILocaleInfoTokens = Record<string, IInfoTokenRaw["markdown"]>;
 type ILocaleScripts = {
     author: string,
     scripts: Record<string, string>,
@@ -169,17 +169,17 @@ const processFiles = (fileNames: string[]) => Promise
 const createInfoTokens = (tokenFiles: string[]) => processFiles(tokenFiles).then(([
     rawInfo,
     localeInfo,
-]) => new Promise<IInfoToken[]>((resolve, reject) => {
+]) => new Promise<IInfoTokenRaw[]>((resolve, reject) => {
 
-    Object.entries(localeInfo as ILocaleInfoTokens).forEach(([id, text]) => {
+    Object.entries(localeInfo as ILocaleInfoTokens).forEach(([id, markdown]) => {
 
-        const token = (rawInfo as IInfoToken[]).find((token) => token.id === id);
+        const token = (rawInfo as IInfoTokenRaw[]).find((token) => token.id === id);
 
         if (!token) {
             return reject(new ReferenceError(`Cannot find token "${id}" in "${tokenFiles[1]}"`));
         }
 
-        token.text = text;
+        token.markdown = markdown;
 
     });
 

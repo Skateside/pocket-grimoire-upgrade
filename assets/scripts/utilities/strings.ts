@@ -154,3 +154,14 @@ export function supplant(
 export function words<TWord = string>(words: string) {
     return String(words).trim().split(/\s+/) as TWord[];
 }
+
+/**
+ * Removes any markup from the string and returns it.
+ * 
+ * @param string String containing potential markup.
+ * @returns String without the markup.
+ */
+export function removeMarkup(string: string) {
+    const doc = new DOMParser().parseFromString(string, "text/html");
+    return doc.body.textContent;
+};

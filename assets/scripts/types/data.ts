@@ -33,12 +33,18 @@ export type II18nData = Record<string, string>;
 
 // Info Tokens.
 
-export type IInfoToken = {
+export type IInfoTokenRaw = {
     id: string,
-    text: string,
+    markdown: string,
     colour: IInfoTokenColours,
     isCustom?: boolean,
-    roleIds?: string[],
+};
+
+export type IInfoToken = IInfoTokenRaw & {
+    text: string,
+    markup: string,
+    isCustom: boolean,
+    roleIds: IRole["id"][],
 };
 
 export type IInfoTokenColours = (

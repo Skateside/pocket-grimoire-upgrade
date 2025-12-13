@@ -1,4 +1,5 @@
 <template>
+    <!-- DEPRECATED -->
     <div class="info-token" :style="{ '--colour': `var(--${infoToken?.colour})` }">
         <button type="button" data-dialog="close" aria-label="Close">×</button>
         <div v-if="infoToken?.isCustom">
@@ -16,7 +17,7 @@ import useInfoTokenStore from "../scripts/store/infoToken";
 import { toHTML } from "../scripts/utilities/markdown";
 
 const props = defineProps<{
-    id: string,
+    id: IInfoToken["id"],
 }>();
 const emit = defineEmits<{
     (e: "update", id: IInfoToken["id"], text: IInfoToken["text"]): void,

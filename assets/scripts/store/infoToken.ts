@@ -1,5 +1,7 @@
 import type {
     IInfoToken,
+    IInfoTokenRaw,
+    IRole,
 } from "../types/data";
 import type {
     IStorage,
@@ -14,7 +16,12 @@ import {
     watch,
 } from "vue";
 import {
+    strip,
+    toHTML,
+} from "../utilities/markdown";
+import {
     randomId,
+    removeMarkup,
 } from "../utilities/strings";
 import {
     CannotChangeOfficialIntoTokenError,
@@ -25,22 +32,60 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "info-tokens";
+
+    const innerConvertFromRaw = (raw: IInfoToken | IInfoTokenRaw) => {
+
+        const infoToken = Object.assign({}, raw) as IInfoToken;
+
+        infoToken.text = strip(raw.markdown);
+        infoToken.markup = toHTML(removeMarkup(raw.markdown));
+        infoToken.isCustom = Boolean(raw.isCustom);
+        infoToken.roleIds = (raw as IInfoToken).roleIds ?? [];
+
+        return infoToken;
+
+    };
+
+    const innerReduceToRaw = (infoToken: IInfoToken) => {
+
+        const raw: IInfoTokenRaw = {
+            id: infoToken.id,
+            markdown: infoToken.markdown,
+            colour: infoToken.colour,
+        };
+
+        return raw;
+
+    };
+
     const infoTokens = ref<IInfoToken[]>([
-        ...structuredClone(window.PG.infoTokens),
-        ...storage.get<IInfoToken[]>(STORAGE_KEY, []),
+        ...structuredClone(window.PG.infoTokens).map(innerConvertFromRaw),
+        ...storage
+            .get<IInfoToken[]>(STORAGE_KEY, [])
+            .map(innerConvertFromRaw),
     ]);
+    const active = ref<IInfoToken | null>(null);
 
     watch(infoTokens, (value) => {
-        storage.set(STORAGE_KEY, value.filter(({ isCustom }) => isCustom));
+
+        storage.set(
+            STORAGE_KEY,
+            value
+                .filter(({ isCustom }) => isCustom)
+                .map(innerReduceToRaw),
+        );
+
     }, { deep: true });
 
     const clear = () => {
         infoTokens.value = infoTokens.value.filter(({ isCustom }) => !isCustom);
     };
 
-    const getById = computed(() => (id: IInfoToken["id"]) => {
-        return infoTokens.value.find(({ id: itId }) => itId === id);
-    });
+    const innerGetById = (id: IInfoToken["id"]) => {
+        return infoTokens.value.find(({ id: infoTokenId }) => infoTokenId === id);
+    };
+
+    const getById = computed(() => innerGetById);
 
     const byType = computed(() => {
         return Object.groupBy(infoTokens.value, ({ isCustom }) => (
@@ -77,31 +122,34 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     };
 
-    const add = (text: IInfoToken["text"]) => {
+    const addInfoToken = (markdown: IInfoTokenRaw["markdown"]) => {
 
-        const infoToken: IInfoToken = {
-            id: randomId("cit-"),
-            text,
+        const infoToken: IInfoToken = innerConvertFromRaw({
+            id: randomId("info-token-"),
+            markdown,
             colour: "grey",
             isCustom: true,
-        };
+        });
 
         infoTokens.value.push(infoToken);
 
     };
 
-    const update = (id: IInfoToken["id"], text: IInfoToken["text"]) => {
+    const updateInfoToken = (
+        id: IInfoToken["id"],
+        markdown: IInfoTokenRaw["markdown"],
+    ) => {
 
         const index = getCustomIndex(id);
 
-        infoTokens.value[index] = {
+        infoTokens.value[index] = innerConvertFromRaw({
             ...infoTokens.value[index],
-            text,
-        };
+            markdown,
+        });
 
     };
 
-    const remove = (id: IInfoToken["id"]) => {
+    const removeInfoToken = (id: IInfoToken["id"]) => {
 
         const index = getCustomIndex(id);
 
@@ -109,17 +157,78 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     };
 
+    const setActive = (id: IInfoToken["id"]) => {
+
+        active.value = innerGetById(id) ?? null;
+
+        return active.value !== null;
+
+    };
+
+    const clearActive = () => {
+
+        clearRoles();
+        active.value = null;
+
+    };
+
+    const addRole = (id: IRole["id"]) => {
+
+        const { roleIds } = active.value || {};
+
+        if (!roleIds) {
+            return;
+        }
+
+        if (!roleIds.includes(id)) {
+            roleIds.push(id);
+        }
+
+    };
+
+    const removeRole = (id: IRole["id"]) => {
+
+        const { roleIds } = active.value || {};
+
+        if (!roleIds) {
+            return;
+        }
+
+        const index = roleIds.indexOf(id);
+
+        if (index > -1) {
+            roleIds.splice(index, 1);
+        }
+
+    };
+
+    const clearRoles = () => {
+
+        if (!active.value) {
+            return;
+        }
+
+        active.value.roleIds.length = 0;
+
+    };
+
     return {
         // State.
+        active,
         infoTokens,
         // Getters.
         getById,
         byType,
         // Actions.
         clear,
-        add,
-        update,
-        remove,
+        addInfoToken,
+        updateInfoToken,
+        removeInfoToken,
+        setActive,
+        clearActive,
+        addRole,
+        removeRole,
+        clearRoles,
     };
 
 });

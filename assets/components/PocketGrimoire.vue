@@ -25,7 +25,7 @@
             </TabsUI>
         </TabUI>
         <TabUI title="Info Tokens">
-            <p>Todo: Info tokens.</p>
+            <InfoTokens />
         </TabUI>
         <TabUI title="Night Order" :disabled="!roleStore.hasScript">
             <NightOrder />
@@ -140,6 +140,7 @@ import PlayerCount from "./PlayerCount.vue";
 import PlayerCountSet from "./PlayerCountSet.vue";
 import DemonBluffs from "./DemonBluffs.vue";
 import ClearCache from "./ClearCache.vue";
+import InfoTokens from "./InfoTokens.vue";
 import {
     times,
 } from "../scripts/utilities/numbers";
