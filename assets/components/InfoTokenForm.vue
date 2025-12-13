@@ -1,5 +1,5 @@
 <template>
-
+    <!-- DEPRECATED -->
     <form
         ref="form"
         @submit.prevent="handleSubmit"

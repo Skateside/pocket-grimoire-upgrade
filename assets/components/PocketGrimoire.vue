@@ -1,5 +1,6 @@
 <template>
 
+    <h1>Pocket Grimoire</h1>
     <TabsUI ref="layout" identifier="layout">
         <TabUI title="Grimoire">
             <GrimoirePad
@@ -25,7 +26,10 @@
             </TabsUI>
         </TabUI>
         <TabUI title="Info Tokens">
-            <InfoTokens />
+            <InfoTokens
+                @info-token-click="handleInfoTokenClick"
+                @add-info-token="handleAddInfoToken"
+            />
         </TabUI>
         <TabUI title="Night Order" :disabled="!roleStore.hasScript">
             <NightOrder />
@@ -73,6 +77,20 @@
         @reminder-click="handleReminderListClick"
     />
 
+    <InfoTokenDialog
+        v-if="uiStore.isPopoverOpen('info-token-dialog')"
+        @hide="handleInfoTokenDialogHide"
+        @update=""
+        @delete=""
+    />
+
+    <InfoTokenFormDialog
+        v-if="uiStore.isPopoverOpen('info-token-form-dialog')"
+        @hide="handleInfoTokenFormDialogHide"
+        @reset="handleInfoTokenFormDialogHide"
+        @create="(markdown) => handleInfoTokenCreate(markdown)"
+    />
+
     <!-- <div class="list">
         <button
             v-for="infoToken in infoTokenStore.infoTokens"
@@ -112,6 +130,7 @@
 
 <script lang="ts" setup>
 import type {
+    IInfoToken,
     IRole,
     IRoleReminder,
     ITokenRole,
@@ -121,6 +140,7 @@ import {
     ref,
 } from "vue";
 import useGameStore from "../scripts/store/game";
+import useInfoTokenStore from "../scripts/store/infoToken";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import useUiStore from "../scripts/store/ui";
@@ -131,9 +151,6 @@ import {
 } from "./ui/tabs";
 import SelectEdition from "./SelectEdition.vue";
 import GrimoirePad from "./GrimoirePad.vue";
-import SeatMenuDialog from "./SeatMenuDialog.vue";
-import RoleListDialog from "./RoleListDialog.vue";
-import ReminderListDialog from "./ReminderListDialog.vue";
 import RoleDialog from "./RoleDialog.vue";
 import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
@@ -141,11 +158,17 @@ import PlayerCountSet from "./PlayerCountSet.vue";
 import DemonBluffs from "./DemonBluffs.vue";
 import ClearCache from "./ClearCache.vue";
 import InfoTokens from "./InfoTokens.vue";
+import SeatMenuDialog from "./SeatMenuDialog.vue";
+import RoleListDialog from "./RoleListDialog.vue";
+import ReminderListDialog from "./ReminderListDialog.vue";
+import InfoTokenDialog from "./InfoTokenDialog.vue";
+import InfoTokenFormDialog from "./InfoTokenFormDialog.vue";
 import {
     times,
 } from "../scripts/utilities/numbers";
 
 const gameStore = useGameStore();
+const infoTokenStore = useInfoTokenStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const uiStore = useUiStore();
@@ -213,6 +236,31 @@ const handleReminderListClick = (id: IRoleReminder["id"]) => {
         reminder: id,
     });
     uiStore.previousPopover();
+
+};
+
+const handleInfoTokenClick = (id: IInfoToken["id"]) => {
+
+    infoTokenStore.setActive(id);
+    uiStore.showPopover("info-token-dialog");
+
+};
+
+const handleInfoTokenDialogHide = () => {
+    uiStore.hidePopover("info-token-dialog");
+};
+
+const handleAddInfoToken = () => {
+    uiStore.showPopover("info-token-form-dialog");
+};
+
+const handleInfoTokenFormDialogHide = () => {
+    uiStore.previousPopover();
+};
+
+const handleInfoTokenCreate = (markdown: IInfoToken["markdown"]) => {
+
+    infoTokenStore.addInfoToken(markdown);
 
 };
 

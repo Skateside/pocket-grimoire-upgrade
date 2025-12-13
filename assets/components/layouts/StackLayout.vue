@@ -34,12 +34,8 @@ const props = withDefaults(defineProps<Partial<{
     justify-content: flex-start;
     gap: var(--l-stack-gap, var(--base-sizing));
 
-    > :where(:first-child) {
-        margin-block-start: 0;
-    }
-
-    > :where(:last-child) {
-        margin-block-end: 0;
+    > * {
+        margin-block: 0;
     }
 }
 </style>

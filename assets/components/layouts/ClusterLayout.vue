@@ -33,5 +33,9 @@ const props = withDefaults(defineProps<Partial<{
     display: flex;
     flex-wrap: wrap;
     gap: var(--l-cluster-gap);
+
+    > * {
+        margin-inline: 0;
+    }
 }
 </style>

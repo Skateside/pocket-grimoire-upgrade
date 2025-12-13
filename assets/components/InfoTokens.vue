@@ -1,44 +1,43 @@
 <template>
-    <GridLayout>
-        <div v-for="infoToken in store.infoTokens" :key="infoToken.id">
+    <StackLayout>
+        <h2>Info Tokens</h2>
+        <GridLayout>
+            <div v-for="infoToken in store.official" :key="infoToken.id">
+                <button
+                    type="button"
+                    @click="() => emit('info-token-click', infoToken.id)"
+                >{{ infoToken.text }}</button>
+            </div>
+        </GridLayout>
+        <h3>Custom Info Tokens</h3>
+        <GridLayout v-if="store.custom.length">
+            <div v-for="infoToken in store.custom" :key="infoToken.id">
+                <button
+                    type="button"
+                    @click="() => emit('info-token-click', infoToken.id)"
+                >{{ infoToken.text }}</button>
+            </div>
+        </GridLayout>
+        <div>
             <button
                 type="button"
-                @click="() => handleClick(infoToken.id)"
-            >{{ infoToken.text }}</button>
+                @click="() => emit('add-info-token')"
+            >Add info token</button>
         </div>
-    </GridLayout>
-    <!-- <InfoTokenForm /> -->
-    <!--
-    NOTE: This needs to be in the PocketGrimoire.vue file because we will need
-    to be able to switch between this and the list of roles when we add a role
-    to the info token.
-    -->
-    <InfoTokenDialog
-        v-if="isShow"
-        @hide="handleClose"
-        :info-token="store.active!"
-    />
+    </StackLayout>
 </template>
 
 <script setup lang="ts">
 import type {
     IInfoToken,
 } from "../scripts/types/data";
-import { ref } from "vue";
 import useInfoTokenStore from "../scripts/store/infoToken";
-// import InfoTokenForm from "./InfoTokenForm.vue";
 import GridLayout from "./layouts/GridLayout.vue";
-import InfoTokenDialog from "./InfoTokenDialog.vue";
+import StackLayout from "./layouts/StackLayout.vue";
 
+const emit = defineEmits<{
+    (e: "info-token-click", id: IInfoToken["id"]): void,
+    (e: "add-info-token"): void,
+}>();
 const store = useInfoTokenStore();
-const isShow = ref(false);
-
-const handleClick = (id: IInfoToken["id"]) => {
-    isShow.value = store.setActive(id);
-};
-
-const handleClose = () => {
-    isShow.value = false;
-    store.clearActive();
-};
 </script>

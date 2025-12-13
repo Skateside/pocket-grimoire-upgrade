@@ -65,6 +65,12 @@ const useInfoTokenStore = defineStore("info-token", () => {
             .map(innerConvertFromRaw),
     ]);
     const active = ref<IInfoToken | null>(null);
+    const official = computed(() => {
+        return infoTokens.value.filter(({ isCustom }) => !isCustom);
+    });
+    const custom = computed(() => {
+        return infoTokens.value.filter(({ isCustom }) => isCustom);
+    });
 
     watch(infoTokens, (value) => {
 
@@ -172,6 +178,27 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     };
 
+    const deleteActive = () => {
+
+        if (!active.value) {
+            return;
+        }
+
+        removeInfoToken(active.value.id);
+        clearActive();
+
+    };
+
+    const updateActive = (markdown: IInfoToken["markdown"]) => {
+
+        if (!active.value) {
+            return;
+        }
+
+        updateInfoToken(active.value.id, markdown);
+
+    };
+
     const addRole = (id: IRole["id"]) => {
 
         const { roleIds } = active.value || {};
@@ -215,7 +242,9 @@ const useInfoTokenStore = defineStore("info-token", () => {
     return {
         // State.
         active,
+        custom,
         infoTokens,
+        official,
         // Getters.
         getById,
         byType,
@@ -226,6 +255,8 @@ const useInfoTokenStore = defineStore("info-token", () => {
         removeInfoToken,
         setActive,
         clearActive,
+        deleteActive,
+        updateActive,
         addRole,
         removeRole,
         clearRoles,

@@ -5,27 +5,41 @@
         v-on="bubbleEvents(emit)"
         class="info-token"
         :style="{
-            '--colour': `var(--colour-${infoToken?.colour})`,
+            '--colour': `var(--colour-${infoToken.colour})`,
         }"
     >
         <div class="info-token__text" v-html="infoToken.markup"></div>
+        <div v-if="infoToken?.isCustom">
+            <button type="button" @click="handleUpdate">Update</button>
+            <button type="button" @click="handleDelete">Delete</button>
+        </div>
     </DialogUI>
 </template>
 
 <script setup lang="ts">
-import type {
-    IInfoToken,
-} from "../scripts/types/data";
+import type { IInfoToken } from "../scripts/types/data";
+import { computed } from "vue";
 import {
     type IDialogUIEvents,
     DialogUI,
     bubbleEvents,
 } from "./ui/dialog";
+import useInfoTokenStore from "../scripts/store/infoToken";
 
-const props = defineProps<{
-    infoToken: IInfoToken,
+const emit = defineEmits<IDialogUIEvents & {
+    (e: "update", id: IInfoToken["id"], text: IInfoToken["text"]): void,
+    (e: "delete", id: IInfoToken["id"]): void,
 }>();
-const emit = defineEmits<IDialogUIEvents>();
+const store = useInfoTokenStore();
+const infoToken = computed<IInfoToken>(() => store.active!);
+
+const handleUpdate = () => {
+    if (!infoToken.value) {
+        return;
+    }
+    emit("update", infoToken.value.id, infoToken.value.text);
+};
+const handleDelete = () => emit("delete", infoToken.value.id);
 </script>
 
 <style lang="scss" scoped>
@@ -38,7 +52,6 @@ const emit = defineEmits<IDialogUIEvents>();
     background-color: color-mix(in oklab, var(--colour) 40%, #000);
     width: min(80vw, 40rem);
     text-align: center;
-    position: relative;
     padding: 1em;
 
     &::after {
