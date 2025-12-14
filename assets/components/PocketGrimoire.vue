@@ -155,6 +155,68 @@ const handleCountConfirm = () => {
 
 };
 
+/*
+
+const roleListClickActions: Record<string, (id: IRole["id"]) => void> = {
+
+    setSeatTokenRole(id) {
+
+        if (!uiStore.seatMenuToken) {
+            return;
+        }
+
+        tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
+            role: id,
+        });
+        uiStore.hideAllPopovers();
+
+    },
+
+    addInfoTokenRole(id) {
+
+        if (!infoTokenStore.active) {
+            return;
+        }
+
+        infoTokenStore.addRole(id);
+        uiStore.previousPopover();
+
+    },
+
+};
+
+const roleListClickAction = ref("");
+
+const handleRoleListClick = (id: IRole["id"]) => {
+
+    const { value } = roleListClickAction;
+    const action = roleListClickActions[value];
+
+    if (!action) {
+
+        console.warn(`Unrecognised role list click action "${value}"`);
+        return;
+
+    }
+
+    action(id);
+    roleListClickAction.value = "";
+
+};
+
+const showRoleList = (action: string) => {
+
+    roleListClickAction.value = action;
+    uiStore.nextPopover("role-list-dialog");
+
+};
+
+const handleSeatMenuSetRole = () => {
+    showRoleList("setSeatTokenRole");
+};
+
+*/
+
 const handleRoleListClick = (id: IRole["id"]) => {
 
     if (!uiStore.seatMenuToken) {
