@@ -24,8 +24,8 @@ const props = defineProps<ITabUIProps>();
 const tabindex = computed(() => (
     props.disabled
     ? undefined
-    : 0)
-);
+    : 0
+));
 const {
     isTabSelected,
     makeId,
