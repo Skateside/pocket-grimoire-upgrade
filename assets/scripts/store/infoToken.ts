@@ -109,14 +109,6 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     const getById = computed(() => innerGetById);
 
-    const byType = computed(() => {
-        return Object.groupBy(infoTokens.value, ({ isCustom }) => (
-            isCustom
-            ? "custom"
-            : "official"
-        ));
-    });
-
     const getIndexOrDie = (id: IInfoToken["id"]) => {
 
         const index = infoTokens.value.findIndex(({ id: infoTokenId }) => {
@@ -234,17 +226,16 @@ const useInfoTokenStore = defineStore("info-token", () => {
         official,
         // Getters.
         getById,
-        byType,
         // Actions.
-        clear,
         addInfoToken,
-        updateInfoToken,
-        removeInfoToken,
-        setActive,
-        clearActive,
         addRole,
-        removeRole,
+        clear,
+        clearActive,
         clearRoles,
+        removeInfoToken,
+        removeRole,
+        setActive,
+        updateInfoToken,
     };
 
 });

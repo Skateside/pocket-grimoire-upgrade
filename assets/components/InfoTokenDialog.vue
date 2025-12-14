@@ -11,8 +11,14 @@
         <div class="info-token__text" v-html="infoToken.markup"></div>
         <div v-if="infoToken?.isCustom">
             <button type="button" @click="handleUpdate">Update</button>
-            <button type="button" @click="handleDelete">Delete</button>
+            <button type="button" @click="() => emit('delete')">Delete</button>
         </div>
+        <ClusterLayout
+            v-if="roles.length"
+        >
+            <RoleToken v-for="role in roles" :key="role.id" :role="role" />
+        </ClusterLayout>
+        <button type="button" @click="() => emit('add-role')">Add role(s)</button>
     </DialogUI>
 </template>
 
@@ -25,21 +31,29 @@ import {
     bubbleEvents,
 } from "./ui/dialog";
 import useInfoTokenStore from "../scripts/store/infoToken";
+import useRoleStore from "../scripts/store/role";
+import ClusterLayout from "./layouts/ClusterLayout.vue";
+import RoleToken from "./RoleToken.vue";
 
 const emit = defineEmits<IDialogUIEvents & {
     (e: "update"): void,
     (e: "delete"): void,
+    (e: "add-role"): void,
 }>();
-const store = useInfoTokenStore();
-const infoToken = computed<IInfoToken>(() => store.active!);
+const infoTokenStore = useInfoTokenStore();
+const roleStore = useRoleStore();
+const infoToken = computed<IInfoToken>(() => infoTokenStore.active!);
+const roles = computed(() => infoToken.value.roleIds.map(roleStore.getById));
 
 const handleUpdate = () => {
+
     if (!infoToken.value) {
         return;
     }
+
     emit("update");
+
 };
-const handleDelete = () => emit("delete");
 </script>
 
 <style lang="scss" scoped>

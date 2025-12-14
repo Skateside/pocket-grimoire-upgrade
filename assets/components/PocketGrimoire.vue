@@ -82,6 +82,7 @@
         @hide="handleInfoTokenDialogHide"
         @update="handleInfoTokenUpdateClick"
         @delete="handleInfoTokenDeleteClick"
+        @add-role="handleInfoTokenAddRoleClick"
     />
 
     <InfoTokenFormDialog
@@ -211,7 +212,10 @@ const handleInfoTokenClick = (id: IInfoToken["id"]) => {
 };
 
 const handleInfoTokenDialogHide = () => {
+
     uiStore.hidePopover("info-token-dialog");
+    infoTokenStore.clearActive();
+
 };
 
 const handleAddInfoToken = () => {
@@ -245,5 +249,9 @@ const handleInfoTokenUpdate = (
     infoTokenStore.updateInfoToken(id, markdown);
     uiStore.previousPopover();
 
+};
+
+const handleInfoTokenAddRoleClick = () => {
+    uiStore.nextPopover("role-list-dialog");
 };
 </script>
