@@ -20,6 +20,10 @@ import {
     toHTML,
 } from "../utilities/markdown";
 import {
+    removeAtIndex,
+    removeItem,
+} from "../utilities/arrays";
+import {
     randomId,
     removeMarkup,
 } from "../utilities/strings";
@@ -58,13 +62,25 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     };
 
+    const innerSetAsCustom = (infoToken: IInfoToken) => {
+        infoToken.isCustom = true;
+        return infoToken;
+    };
+
     const infoTokens = ref<IInfoToken[]>([
         ...structuredClone(window.PG.infoTokens).map(innerConvertFromRaw),
         ...storage
             .get<IInfoToken[]>(STORAGE_KEY, [])
-            .map(innerConvertFromRaw),
+            .map(innerConvertFromRaw)
+            .map(innerSetAsCustom),
     ]);
-    const active = ref<IInfoToken | null>(null);
+    const activeId = ref<IInfoToken["id"] | null>(null);
+    const active = computed<IInfoToken | null>(() => {
+        if (activeId.value) {
+            return innerGetById(activeId.value) ?? null;
+        }
+        return null;
+    });
     const official = computed(() => {
         return infoTokens.value.filter(({ isCustom }) => !isCustom);
     });
@@ -156,52 +172,27 @@ const useInfoTokenStore = defineStore("info-token", () => {
     };
 
     const removeInfoToken = (id: IInfoToken["id"]) => {
-
-        const index = getCustomIndex(id);
-
-        infoTokens.value.splice(index, 1);
-
+        removeAtIndex(infoTokens.value, getCustomIndex(id));
     };
 
     const setActive = (id: IInfoToken["id"]) => {
 
-        active.value = innerGetById(id) ?? null;
+        activeId.value = id;
 
-        return active.value !== null;
+        return Boolean(innerGetById(id));
 
     };
 
     const clearActive = () => {
 
         clearRoles();
-        active.value = null;
-
-    };
-
-    const deleteActive = () => {
-
-        if (!active.value) {
-            return;
-        }
-
-        removeInfoToken(active.value.id);
-        clearActive();
-
-    };
-
-    const updateActive = (markdown: IInfoToken["markdown"]) => {
-
-        if (!active.value) {
-            return;
-        }
-
-        updateInfoToken(active.value.id, markdown);
+        activeId.value = null;
 
     };
 
     const addRole = (id: IRole["id"]) => {
 
-        const { roleIds } = active.value || {};
+        const { roleIds } = innerGetById(activeId.value || "") || {};
 
         if (!roleIds) {
             return;
@@ -215,27 +206,23 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     const removeRole = (id: IRole["id"]) => {
 
-        const { roleIds } = active.value || {};
+        const { roleIds } = innerGetById(activeId.value || "") || {};
 
         if (!roleIds) {
             return;
         }
 
-        const index = roleIds.indexOf(id);
-
-        if (index > -1) {
-            roleIds.splice(index, 1);
-        }
+        removeItem(roleIds, id);
 
     };
 
     const clearRoles = () => {
 
-        if (!active.value) {
-            return;
-        }
+        const infoToken = innerGetById(activeId.value || "");
 
-        active.value.roleIds.length = 0;
+        if (infoToken) {
+            infoToken.roleIds.length = 0;
+        }
 
     };
 
@@ -255,8 +242,6 @@ const useInfoTokenStore = defineStore("info-token", () => {
         removeInfoToken,
         setActive,
         clearActive,
-        deleteActive,
-        updateActive,
         addRole,
         removeRole,
         clearRoles,

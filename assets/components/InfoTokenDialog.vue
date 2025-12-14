@@ -27,8 +27,8 @@ import {
 import useInfoTokenStore from "../scripts/store/infoToken";
 
 const emit = defineEmits<IDialogUIEvents & {
-    (e: "update", id: IInfoToken["id"], text: IInfoToken["text"]): void,
-    (e: "delete", id: IInfoToken["id"]): void,
+    (e: "update"): void,
+    (e: "delete"): void,
 }>();
 const store = useInfoTokenStore();
 const infoToken = computed<IInfoToken>(() => store.active!);
@@ -37,9 +37,9 @@ const handleUpdate = () => {
     if (!infoToken.value) {
         return;
     }
-    emit("update", infoToken.value.id, infoToken.value.text);
+    emit("update");
 };
-const handleDelete = () => emit("delete", infoToken.value.id);
+const handleDelete = () => emit("delete");
 </script>
 
 <style lang="scss" scoped>

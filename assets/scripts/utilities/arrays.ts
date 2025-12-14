@@ -6,6 +6,22 @@ export function unique<T = any>(array: T[]) {
     return [...new Set(Array.from(array))];
 };
 
+export function removeAtIndex(array: any[], index: number) {
+
+    if (index < 0 || index >= array.length) {
+        return false;
+    }
+
+    array.splice(index, 1);
+
+    return true;
+
+}
+
+export function removeItem(array: any[], item: any) {
+    return removeAtIndex(array, array.indexOf(item));
+}
+
 // export function shuffle<T = any>(array: T[]) {
 
 //     // Schwartzian transform.

@@ -16,6 +16,9 @@ import {
     watch,
 } from "vue";
 import {
+    removeAtIndex,
+} from "../utilities/arrays";
+import {
     randomId,
 } from "../utilities/strings";
 import {
@@ -72,18 +75,21 @@ const useBluffsStore = defineStore("bluffs", () => {
         bluffs.value.push(innerMakeNewGroup(name));
     };
 
-    const removeGroup = (groupId: IDemonBluffGroup["id"]) => {
+    const removeGroup = (groupId: IDemonBluffGroup["id"]) => removeAtIndex(
+        bluffs.value,
+        bluffs.value.findIndex(({ id }) => id === groupId),
+    );
 
-        const index = bluffs.value.findIndex(({ id }) => id === groupId);
+    //     const index = bluffs.value.findIndex(({ id }) => id === groupId);
 
-        if (index < 0) {
-            return false;
-        }
+    //     if (index < 0) {
+    //         return false;
+    //     }
 
-        bluffs.value.splice(index, 1);
-        return true;
+    //     bluffs.value.splice(index, 1);
+    //     return true;
 
-    };
+    // };
 
     const renameGroup = (groupId: IDemonBluffGroup["id"], name: string) => {
         innerGetGroup(groupId).name = name;

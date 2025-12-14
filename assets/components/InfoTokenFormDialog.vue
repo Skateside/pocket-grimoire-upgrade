@@ -41,7 +41,8 @@
 
 <script setup lang="ts">
 import type { IInfoToken } from "../scripts/types/data";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import useInfoTokenStore from "../scripts/store/infoToken";
 import {
     type IDialogUIEvents,
     DialogUI,
@@ -50,21 +51,16 @@ import {
 import ClusterLayout from "./layouts/ClusterLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 
-const props = defineProps<{
-    id?: IInfoToken["id"],
-    markdown?: IInfoToken["markdown"],
-}>();
+const store = useInfoTokenStore();
 const form = ref<HTMLFormElement | null>();
 const submit = ref<HTMLButtonElement | null>(null);
 const markdown = defineModel<IInfoToken["markdown"]>();
-const mode = computed(() => (
-    props.id
+const isUpdate = computed(() => Boolean(store.active));
+const submitText = computed(() => submit.value?.dataset[
+    isUpdate.value
     ? "update"
     : "create"
-));
-const submitText = computed(() => {
-    return submit.value?.dataset[mode.value] || "";
-});
+] || "");
 
 const emit = defineEmits<IDialogUIEvents & {
     (e: "reset"): void,
@@ -74,10 +70,13 @@ const emit = defineEmits<IDialogUIEvents & {
 
 const handleSubmit = () => {
 
-    if (mode.value === "create" && markdown.value) {
-        emit("create", markdown.value);
-    } else if (mode.value === "update" && props.id && markdown.value) {
-        emit("update", props.id, markdown.value);
+    const { value: isUpdateMode } = isUpdate;
+    const { value: markDownValue } = markdown;
+
+    if (isUpdateMode && markDownValue) {
+        emit("update", store.active!.id, markDownValue);
+    } else if (!isUpdateMode && markDownValue) {
+        emit("create", markDownValue);
     }
 
     form.value?.reset();
@@ -87,4 +86,10 @@ const handleSubmit = () => {
 const handleReset = () => {
     emit("reset");
 };
+
+onMounted(() => {
+    if (store.active) {
+        markdown.value = store.active.markdown;
+    }
+});
 </script>

@@ -80,51 +80,17 @@
     <InfoTokenDialog
         v-if="uiStore.isPopoverOpen('info-token-dialog')"
         @hide="handleInfoTokenDialogHide"
-        @update=""
-        @delete=""
+        @update="handleInfoTokenUpdateClick"
+        @delete="handleInfoTokenDeleteClick"
     />
 
     <InfoTokenFormDialog
         v-if="uiStore.isPopoverOpen('info-token-form-dialog')"
         @hide="handleInfoTokenFormDialogHide"
         @reset="handleInfoTokenFormDialogHide"
-        @create="(markdown) => handleInfoTokenCreate(markdown)"
+        @create="handleInfoTokenCreate"
+        @update="handleInfoTokenUpdate"
     />
-
-    <!-- <div class="list">
-        <button
-            v-for="infoToken in infoTokenStore.infoTokens"
-            :key="infoToken.id"
-            type="button"
-            @click="() => infoTokenId = infoToken.id"
-        >{{ infoToken.text }}</button>
-    </div>
-
-    <Dialog
-        ref="infoTokenDialog"
-        :hide="true"
-        @close="infoTokenId = ''"
-    >
-        <InfoToken
-            :id="infoTokenId"
-            @update="(id, text) => {
-                infoTokenFormId = id;
-                infoTokenFormText = text;
-            }"
-            @delete="deleteInfoToken"
-        />
-    </Dialog>
-
-    <InfoTokenForm
-        :id="infoTokenFormId"
-        :text="infoTokenFormText"
-        @create="addInfoToken"
-        @update="updateInfoToken"
-        @reset="{
-            infoTokenFormId = '';
-            infoTokenFormText = '';
-        }"
-    /> -->
 
 </template>
 
@@ -150,7 +116,7 @@ import {
     TabUI,
 } from "./ui/tabs";
 import SelectEdition from "./SelectEdition.vue";
-import GrimoirePad from "./GrimoirePad.vue";
+import GrimoirePad, { type IGrimoirePadInterface } from "./GrimoirePad.vue";
 import RoleDialog from "./RoleDialog.vue";
 import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
@@ -172,12 +138,12 @@ const infoTokenStore = useInfoTokenStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const uiStore = useUiStore();
-const layout = ref<typeof TabsUI | null>(null);
-const grimoirePad = ref<typeof GrimoirePad | null>(null);
+const layout = ref<ITabsUIInterface | null>(null);
+const grimoirePad = ref<IGrimoirePadInterface | null>(null);
 
 const handleCountConfirm = () => {
 
-    (layout.value as any as ITabsUIInterface)?.setTab("Grimoire");
+    layout.value?.setTab("Grimoire");
 
     times(
         gameStore.count - tokenStore.tokens.length,
@@ -225,9 +191,7 @@ const handleRoleDialogHide = () => {
 };
 
 const handleShowReminderDialog = () => {
-
     uiStore.nextPopover("reminder-list-dialog");
-
 };
 
 const handleReminderListClick = (id: IRoleReminder["id"]) => {
@@ -259,47 +223,27 @@ const handleInfoTokenFormDialogHide = () => {
 };
 
 const handleInfoTokenCreate = (markdown: IInfoToken["markdown"]) => {
-
     infoTokenStore.addInfoToken(markdown);
+};
+
+const handleInfoTokenUpdateClick = () => {
+    uiStore.nextPopover("info-token-form-dialog");
+};
+
+const handleInfoTokenDeleteClick = () => {
+
+    infoTokenStore.removeInfoToken(infoTokenStore.active!.id);
+    uiStore.previousPopover();
 
 };
 
-// import RoleList from "./components/RoleList.vue";
-/*
-import type {
-    IInfoToken,
-} from "./scripts/types/data";
-import {
-    ref,
-    watch,
-} from 'vue';
-import useInfoTokenStore from "./scripts/store/infoToken";
-import Dialog from './components/Dialog.vue';
-import InfoToken from './components/InfoToken.vue';
-import InfoTokenForm from "./components/InfoTokenForm.vue";
+const handleInfoTokenUpdate = (
+    id: IInfoToken["id"],
+    markdown: IInfoToken["markdown"],
+) => {
 
-const infoTokenDialog = ref<typeof Dialog | null>(null);
-const infoTokenStore = useInfoTokenStore();
-const infoTokenId = ref("");
-const infoTokenFormId = ref("");
-const infoTokenFormText = ref("");
+    infoTokenStore.updateInfoToken(id, markdown);
+    uiStore.previousPopover();
 
-watch(infoTokenId, (value) => {
-    if (value) {
-        infoTokenDialog.value?.show();
-    }
-});
-
-const addInfoToken = (text: IInfoToken["text"]) => {
-    infoTokenStore.add(text);
 };
-
-const updateInfoToken = (id: IInfoToken["id"], text: IInfoToken["text"]) => {
-    infoTokenStore.update(id, text);
-};
-
-const deleteInfoToken = (id: IInfoToken["id"]) => {
-    infoTokenStore.remove(id);
-};
-*/
 </script>

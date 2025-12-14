@@ -119,6 +119,10 @@ import RoleToken from "./RoleToken.vue";
 import ReminderToken from "./ReminderToken.vue";
 import usePositioner from "../composables/usePositioner";
 
+export type IGrimoirePadInterface = {
+    setPositions: () => void,
+};
+
 const emit = defineEmits<{
     (e: "seat-click", id: string): void,
 }>();
@@ -138,7 +142,7 @@ const pad = shallowReactive<IPad>({
 });
 const positioner = usePositioner(pad, seats);
 
-const setPositions = () => {
+const setPositions: IGrimoirePadInterface["setPositions"] = () => {
 
     seats.value.forEach((seat, index) => {
 
@@ -151,6 +155,12 @@ const setPositions = () => {
     });
 
 };
+
+const expose: IGrimoirePadInterface = {
+    setPositions,
+};
+
+defineExpose(expose);
 
 //*
 const removeDropdown = ref<HTMLSelectElement | null>(null);
@@ -344,9 +354,5 @@ onUnmounted(() => {
     window.removeEventListener("resize", updatePadDimentions);
     window.removeEventListener("scroll", updatePadDimentions);
 
-});
-
-defineExpose({
-    setPositions,
 });
 </script>

@@ -86,6 +86,10 @@ const setTabByIndex = (index: number) => {
     const floor = Math.floor(index);
     const clamped = clamp(0, floor, tabProps.value.length - 1);
 
+    if (tabProps.value[clamped].disabled) {
+        return false;
+    }
+
     selectedIndex.value = clamped;
 
     return clamped === floor;
@@ -116,6 +120,8 @@ const keyHandlers: Record<string, () => void> = {
         setTabByIndex(tabProps.value.length - 1);
     },
 };
+keyHandlers.ArrowUp = keyHandlers.ArrowLeft;
+keyHandlers.ArrowDown = keyHandlers.ArrowRight;
 
 const moveTabByKey = (event: KeyboardEvent) => {
 
