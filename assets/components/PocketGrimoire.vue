@@ -54,7 +54,7 @@
         :token-id="uiStore.seatMenuToken"
         @toggle="(visible) => uiStore.togglePopover('seat-menu', visible)"
         @remove="() => uiStore.hidePopover('seat-menu', true)"
-        @set-role="() => uiStore.nextPopover('role-list-dialog')"
+        @set-role="handleSeatMenuSetRole"
         @show-role="handleShowRole"
         @add-reminder="handleShowReminderDialog"
     />
@@ -155,8 +155,6 @@ const handleCountConfirm = () => {
 
 };
 
-/*
-
 const roleListClickActions: Record<string, (id: IRole["id"]) => void> = {
 
     setSeatTokenRole(id) {
@@ -213,21 +211,6 @@ const showRoleList = (action: string) => {
 
 const handleSeatMenuSetRole = () => {
     showRoleList("setSeatTokenRole");
-};
-
-*/
-
-const handleRoleListClick = (id: IRole["id"]) => {
-
-    if (!uiStore.seatMenuToken) {
-        return;
-    }
-
-    tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
-        role: id,
-    });
-    uiStore.hideAllPopovers();
-
 };
 
 const handleRoleListHide = () => {
@@ -314,6 +297,6 @@ const handleInfoTokenUpdate = (
 };
 
 const handleInfoTokenAddRoleClick = () => {
-    uiStore.nextPopover("role-list-dialog");
+    showRoleList("addInfoTokenRole");
 };
 </script>
