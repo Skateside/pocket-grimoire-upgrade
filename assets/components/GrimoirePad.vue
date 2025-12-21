@@ -100,6 +100,7 @@ import type {
     ICoordinates,
 } from "../scripts/types/data";
 import {
+    nextTick,
     onMounted,
     onUnmounted,
     shallowReactive,
@@ -114,6 +115,10 @@ import {
 import {
     clamp,
 } from "../scripts/utilities/numbers";
+import {
+    type IResizeObserverResponse,
+    resizeObserver,
+} from "../scripts/utilities/elements";
 import CentreLayout from "./layouts/CentreLayout.vue";
 import RoleToken from "./RoleToken.vue";
 import ReminderToken from "./ReminderToken.vue";
@@ -141,16 +146,23 @@ const pad = shallowReactive<IPad>({
     bottom: 0,
 });
 const positioner = usePositioner(pad, seats);
+const observer = ref<IResizeObserverResponse | null>(null);
 
 const setPositions: IGrimoirePadInterface["setPositions"] = () => {
 
-    seats.value.forEach((seat, index) => {
+    updatePadDimensions();
 
-        const position = positioner.coordinates.value[index];
+    nextTick(() => {
 
-        if (position) {
-            moveTo(seat, position);
-        }
+        seats.value.forEach((seat, index) => {
+
+            const position = positioner.coordinates.value[index];
+
+            if (position) {
+                moveTo(seat, position);
+            }
+
+        });
 
     });
 
@@ -305,7 +317,7 @@ const checkClick = (event: MouseEvent) => {
 
 };
 
-const updatePadDimentions = debounce(() => {
+const updatePadDimensions = () => {
 
     if (!grimoire.value) {
         return;
@@ -327,7 +339,7 @@ const updatePadDimentions = debounce(() => {
         bottom,
     });
 
-}, 150);
+};
 
 onMounted(() => {
 
@@ -337,9 +349,16 @@ onMounted(() => {
     document.addEventListener("touchend", endDragging);
     document.addEventListener("contextmenu", endDragging);
     document.addEventListener("click", checkClick);
-    window.addEventListener("resize", updatePadDimentions);
-    window.addEventListener("scroll", updatePadDimentions);
-    updatePadDimentions();
+    updatePadDimensions();
+
+    if (grimoire.value) {
+
+        observer.value = resizeObserver(
+            grimoire.value,
+            debounce(updatePadDimensions, 150),
+        );
+
+    }
 
 });
 
@@ -351,8 +370,7 @@ onUnmounted(() => {
     document.removeEventListener("touchend", endDragging);
     document.removeEventListener("click", endDragging);
     document.removeEventListener("contextmenu", checkClick);
-    window.removeEventListener("resize", updatePadDimentions);
-    window.removeEventListener("scroll", updatePadDimentions);
+    observer.value?.unobserve();
 
 });
 </script>
