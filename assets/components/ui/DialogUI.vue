@@ -37,7 +37,7 @@ import type { IDialogUIEvents } from "./dialog";
 import {
     computed,
     onMounted,
-    ref,
+    useTemplateRef,
 } from "vue";
 
 const props = withDefaults(defineProps<{
@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<IDialogUIEvents>();
 
-const dialog = ref<HTMLElement | null>(null);
+const dialog = useTemplateRef<HTMLElement>("dialog");
 
 const type = computed(() => (
     props.manual

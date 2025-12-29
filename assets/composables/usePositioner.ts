@@ -1,5 +1,6 @@
 import type {
     ICoordinates,
+    IPad
 } from "../scripts/types/data";
 import {
     type Ref,
@@ -11,9 +12,6 @@ import {
 import {
     times,
 } from "../scripts/utilities/numbers";
-
-// TODO: move this into the "types" folder - taken from GrimoirePad.vue
-type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 type ILayoutData = {
     width: number,
@@ -30,7 +28,7 @@ type ILayouts = Record<
 
 export default function usePositioner(
     padReference: Reactive<IPad>,
-    tokensReference: Ref<HTMLElement[]>,
+    tokensReference: Ref<HTMLElement[] | null>,
     layout: keyof ILayouts = "ellipse",
 ) {
 
@@ -49,7 +47,7 @@ export default function usePositioner(
 const getCoordinates = (
     coordinates: Ref<ICoordinates[]>,
     padReference: Reactive<IPad>,
-    tokensReference: Ref<HTMLElement[]>,
+    tokensReference: Ref<HTMLElement[] | null>,
     layout: keyof ILayouts,
 ) => {
 

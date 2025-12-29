@@ -8,12 +8,12 @@ export default function useFieldSaver(
 ) {
 
     const formElement = toValue(form);
+    const identifier = formElement?.dataset.identifier;
 
-    if (!formElement) {
+    if (!formElement || !identifier) {
         return;
     }
 
-    const identifier = formElement.dataset.identifier!;
     const store = useFieldsStore();
 
     const onInput = ({ target }: Event) => {

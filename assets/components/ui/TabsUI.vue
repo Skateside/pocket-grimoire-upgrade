@@ -43,6 +43,7 @@ import {
     ref,
     useId,
     useSlots,
+    useTemplateRef,
     watch,
 } from "vue";
 import useUiStore from "../../scripts/store/ui";
@@ -57,8 +58,8 @@ const emit = defineEmits<{
 const suffix = useId();
 const slots = useSlots();
 const store = useUiStore();
-const tablist = ref<HTMLElement | null>(null);
-const tabpanels = ref<HTMLElement | null>(null);
+const tablist = useTemplateRef<HTMLElement>("tablist");
+const tabpanels = useTemplateRef<HTMLElement>("tabpanels");
 const tabProps = ref<ITabUIProps[]>(
     slots.default?.().map((slot) => ({
         disabled: slot.props?.disabled || false,

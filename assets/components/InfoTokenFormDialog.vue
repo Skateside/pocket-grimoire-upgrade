@@ -41,7 +41,7 @@
 
 <script setup lang="ts">
 import type { IInfoToken } from "../scripts/types/data";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, useTemplateRef } from "vue";
 import useInfoTokenStore from "../scripts/store/infoToken";
 import {
     type IDialogUIEvents,
@@ -52,8 +52,8 @@ import ClusterLayout from "./layouts/ClusterLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 
 const store = useInfoTokenStore();
-const form = ref<HTMLFormElement | null>();
-const submit = ref<HTMLButtonElement | null>(null);
+const form = useTemplateRef<HTMLFormElement>("form");
+const submit = useTemplateRef<HTMLButtonElement>("submit");
 const markdown = defineModel<IInfoToken["markdown"]>();
 const isUpdate = computed(() => Boolean(store.active));
 const submitText = computed(() => submit.value?.dataset[

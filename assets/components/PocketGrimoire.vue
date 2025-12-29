@@ -4,7 +4,7 @@
     <TabsUI ref="layout" identifier="layout">
         <TabUI title="Grimoire">
             <GrimoirePad
-                ref="grimoirePad"
+                ref="grimoire-pad"
                 @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
             />
             <DemonBluffs />
@@ -105,6 +105,7 @@ import type {
 import {
     nextTick,
     ref,
+    useTemplateRef,
 } from "vue";
 import useGameStore from "../scripts/store/game";
 import useInfoTokenStore from "../scripts/store/infoToken";
@@ -139,8 +140,8 @@ const infoTokenStore = useInfoTokenStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const uiStore = useUiStore();
-const layout = ref<ITabsUIInterface | null>(null);
-const grimoirePad = ref<IGrimoirePadInterface | null>(null);
+const layout = useTemplateRef<ITabsUIInterface>("layout");
+const grimoirePad = useTemplateRef<IGrimoirePadInterface>("grimoire-pad");
 
 const handleCountConfirm = () => {
 

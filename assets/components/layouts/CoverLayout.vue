@@ -23,7 +23,17 @@ import type {
     ILayoutsNode,
     ILayoutsLength,
 } from "../../scripts/types/layouts";
-import { computed, onMounted, ref } from "vue";
+import {
+    computed,
+    onMounted,
+    onUnmounted,
+    ref,
+    useTemplateRef,
+} from "vue";
+import {
+    type IIntersectionObserverResponse,
+    intersectionObserver,
+} from "../../scripts/utilities/elements";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,
@@ -43,7 +53,7 @@ const isVisible = ref<boolean|void>(
     ? false
     : undefined
 );
-const cover = ref<HTMLElement|null>(null);
+const cover = useTemplateRef<HTMLElement>("cover");
 
 const addStyleSheet = () => {
 
@@ -60,24 +70,29 @@ const addStyleSheet = () => {
 
 };
 
-const observeCover = (cover: HTMLElement) => {
-
-    const observer = new IntersectionObserver(([entry]) => {
-        entry.target.setAttribute("data-visible", String(entry.isIntersecting));
-    });
-
-    observer.observe(cover);
-
-};
+let intersector: IIntersectionObserverResponse | null = null;
 
 onMounted(() => {
 
     addStyleSheet();
 
     if (props.observe && cover.value) {
-        observeCover(cover.value);
+
+        intersector = intersectionObserver(cover.value, ({ entry }) => {
+
+            entry.target.setAttribute(
+                "data-visible",
+                String(entry.isIntersecting),
+            );
+
+        });
+
     }
 
+});
+
+onUnmounted(() => {
+    intersector?.disconnect();
 });
 </script>
 

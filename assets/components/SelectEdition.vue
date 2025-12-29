@@ -96,6 +96,7 @@ import {
     onMounted,
     ref,
     useId,
+    useTemplateRef,
     watch,
 } from "vue";
 import useRoleStore from "../scripts/store/role";
@@ -112,7 +113,7 @@ import useFieldSaver from "../composables/useFieldSaver";
 
 const store = useRoleStore();
 const suffix = useId();
-const form = ref<HTMLFormElement | null>(null);
+const form = useTemplateRef<HTMLFormElement>("form");
 const isLoading = ref<boolean>(false);
 const errorMessage = ref<string>("");
 const botcScripts = ref<Record<string, IRoleScriptImport>>({});

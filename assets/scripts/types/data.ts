@@ -58,6 +58,10 @@ export type IInfoTokenColours = (
     | "red"
 );
 
+// The Grimoire Pad.
+
+export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
+
 // Roles.
 
 export type IRoleRaw = {

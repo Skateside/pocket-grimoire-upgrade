@@ -23,8 +23,18 @@ import type {
     ILayoutsNode,
     ILayoutsLength,
 } from "../../scripts/types/layouts";
-import { onMounted, onUnmounted, ref } from "vue";
-import useElementWatcher from "../../composables/useElementWatcher";
+import {
+    onMounted,
+    onUnmounted,
+    ref,
+    useTemplateRef,
+} from "vue";
+import {
+    type IMutationObserverResponse,
+    type IResizeObserverResponse,
+    mutationObserver,
+    resizeObserver,
+} from "../../scripts/utilities/elements";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,
@@ -35,18 +45,45 @@ const props = withDefaults(defineProps<Partial<{
 }>>(), {
     node: "div",
 });
-const reel = ref<HTMLElement | null>(null);
+const reel = useTemplateRef<HTMLElement>("reel");
 const isOverflowing = ref(false);
 
-const {
-    watch,
-    unwatch,
-} = useElementWatcher((element) => {
-    isOverflowing.value = element.scrollWidth > element.clientWidth;
+let mutator: IMutationObserverResponse | null = null;
+let resizor: IResizeObserverResponse | null = null;
+
+const updateIsOverflowing = (element: HTMLElement | null) => {
+
+    if (!element) {
+        return;
+    }
+
+    isOverflowing.value = element.scrollWidth > element.clientWidth
+
+};
+
+onMounted(() => {
+
+    const element = reel.value;
+
+    if (!element) {
+        return;
+    }
+
+    mutator = mutationObserver(element, {
+        callback() {
+            updateIsOverflowing(element);
+        },
+        childList: true,
+    });
+
+    resizor = resizeObserver(element, () => updateIsOverflowing(element));
+
 });
 
-onMounted(() => watch(reel));
-onUnmounted(() => unwatch(reel));
+onUnmounted(() => {
+    mutator?.disconnect();
+    resizor?.disconnect();
+});
 </script>
 
 <style lang="scss">

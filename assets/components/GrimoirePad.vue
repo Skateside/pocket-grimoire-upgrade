@@ -68,7 +68,7 @@
     <p><button type="button" @click="addSeat">Add seat</button></p>
     <p>
         <label for="remove-dropdown">Remove</label>
-        <select id="remove-dropdown" ref="removeDropdown">
+        <select id="remove-dropdown" ref="remove-dropdown">
             <option disabled value="">Please select</option>
             <optgroup v-if="tokenStore.byType.seat?.length" label="Seats">
                 <option
@@ -98,6 +98,7 @@
 <script lang="ts" setup>
 import type {
     ICoordinates,
+    IPad,
 } from "../scripts/types/data";
 import {
     nextTick,
@@ -105,6 +106,7 @@ import {
     onUnmounted,
     shallowReactive,
     ref,
+    useTemplateRef,
 } from "vue";
 import useTokenStore from "../scripts/store/token";
 import useRoleStore from "../scripts/store/role";
@@ -132,12 +134,10 @@ const emit = defineEmits<{
     (e: "seat-click", id: string): void,
 }>();
 
-type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
-
 const tokenStore = useTokenStore();
 const roleStore = useRoleStore();
-const grimoire = ref<HTMLElement | null>(null);
-const seats = ref<HTMLElement[]>([]);
+const grimoire = useTemplateRef<HTMLElement>("grimoire");
+const seats = useTemplateRef<HTMLElement[]>("seats");
 const isDragging = ref<boolean>(false);
 const pad = shallowReactive<IPad>({
     left: 0,
@@ -154,7 +154,7 @@ const setPositions: IGrimoirePadInterface["setPositions"] = () => {
 
     nextTick(() => {
 
-        seats.value.forEach((seat, index) => {
+        seats.value?.forEach((seat, index) => {
 
             const position = positioner.coordinates.value[index];
 
@@ -175,7 +175,7 @@ const expose: IGrimoirePadInterface = {
 defineExpose(expose);
 
 //*
-const removeDropdown = ref<HTMLSelectElement | null>(null);
+const removeDropdown = useTemplateRef<HTMLSelectElement>("remove-dropdown");
 
 const addSeat = () => {
 
