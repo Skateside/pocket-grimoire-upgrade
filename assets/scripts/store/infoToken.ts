@@ -16,13 +16,16 @@ import {
     watch,
 } from "vue";
 import {
+    removeAtIndex,
+    removeItem,
+} from "../utilities/arrays";
+import {
     strip,
     toHTML,
 } from "../utilities/markdown";
 import {
-    removeAtIndex,
-    removeItem,
-} from "../utilities/arrays";
+    deepThaw,
+} from "../utilities/objects";
 import {
     randomId,
     removeMarkup,
@@ -68,7 +71,7 @@ const useInfoTokenStore = defineStore("info-token", () => {
     };
 
     const infoTokens = ref<IInfoToken[]>([
-        ...structuredClone(window.PG.infoTokens).map(innerConvertFromRaw),
+        ...deepThaw(window.PG.infoTokens).map(innerConvertFromRaw),
         ...storage
             .get<IInfoToken[]>(STORAGE_KEY, [])
             .map(innerConvertFromRaw)

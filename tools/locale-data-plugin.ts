@@ -98,6 +98,20 @@ export default (options: ILocaleDataOptions = {}): Plugin => {
 
 };
 
+function deepFreeze(object: any) {
+
+    if (object === null || object === undefined) {
+        return object;
+    }
+
+    if (typeof object === "object") {
+        Object.values(object).forEach((value) => deepFreeze(value));
+    }
+
+    return Object.freeze(object);
+
+}
+
 const buildFiles = async (config: ILocaleDataOptionsReal) => {
 
     const resolvedBase = path.resolve(config.base);
@@ -139,10 +153,17 @@ const buildFiles = async (config: ILocaleDataOptionsReal) => {
         ]) => {
 
             const output = [
+                "window.PG=(function(PG){",
                 `PG.infoTokens=${JSON.stringify(infoTokens)};`,
                 `PG.roles=${JSON.stringify(roles)};`,
                 `PG.scripts=${JSON.stringify(scripts)};`,
                 `PG.i18n=${JSON.stringify(i18n)};`,
+                deepFreeze
+                    .toString()
+                    .replaceAll(/\n+/g, "")
+                    .replaceAll(/\s+/g, " "),
+                "return deepFreeze(PG);",
+                "}({}));",
             ].join("");
             const fileName = `${locale}.js`;
             const filePath = path.join(compiledDir, fileName);

@@ -1,25 +1,25 @@
+export type AnyFunction<TParameters extends any[] = any[], TReturn = any> = (
+    (...args: TParameters) => TReturn
+);
+
+export type AnyObject<
+    TKeys extends PropertyKey = PropertyKey,
+    TValues = any
+> = Record<TKeys, TValues> | Readonly<Record<TKeys, TValues>>;
+
+export type AnyArray<TValues> = Array<TValues> | ReadonlyArray<TValues>;
+
 export type RequireOnly<Type, Keys extends keyof Type> = (
     Partial<Type> & Pick<Type, Keys>
 );
-
-export type Head<List extends unknown[]> = (
-    List extends readonly [infer ListHead, ...unknown[]]
-    ? ListHead
-    : void
-);
-
-export type Tail<List extends readonly unknown[]> = (
-    List extends readonly [unknown, ...infer ListTail]
-    ? ListTail
-    : []
-);
-
-export type AnyFunction = (...args: any[]) => any;
-
-export type AnyObject = Record<string, any>;
 
 export type FieldElement = (
     HTMLInputElement
     | HTMLSelectElement
     | HTMLTextAreaElement
 );
+
+export type DeepWritable<TObject = any> = {
+    -readonly [Property in keyof TObject]: DeepWritable<TObject[Property]>
+};
+

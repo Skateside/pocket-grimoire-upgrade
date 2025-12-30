@@ -101,6 +101,9 @@ import {
 } from "vue";
 import useRoleStore from "../scripts/store/role";
 import {
+    fetchTimeout,
+} from "../scripts/utilities/fetch";
+import {
     debounce,
     memoise,
 } from "../scripts/utilities/functions";
@@ -226,9 +229,10 @@ const processPastedScript = (data: string) => new Promise<IRoleScriptImport>((re
 
 });
 
-const handleAjax = <TResponse = IRoleScriptImport>(url: string, data: Record<string, any>): Promise<TResponse> => fetch(url, {
+const handleAjax = <TResponse = IRoleScriptImport>(url: string, data: Record<string, any>): Promise<TResponse> => fetchTimeout(url, {
         method: "POST",
         body: JSON.stringify(data),
+        timeout: 10000,
     })
     .then((response) => response.json())
     .then(({ success, body }) => {

@@ -28,6 +28,9 @@ import {
     UnrecognisedRoleError,
     UnrecognisedReminderError,
 } from "../../errors";
+import {
+    deepThaw,
+} from "../utilities/objects";
 
 const useRoleStore = defineStore("role", () => {
 
@@ -76,13 +79,13 @@ const useRoleStore = defineStore("role", () => {
     const roles = ref<IRole[]>(
         // Create each reminder's role reference here so that we can always
         // access it.
-        structuredClone(window.PG.roles).map(innerSetRemindersRole)
+        deepThaw(window.PG.roles).map(innerSetRemindersRole)
     );
     const specialRoles = computed(() => {
         return roles.value.filter(({ edition }) => edition === "special");
     });
     const scripts = ref<Record<string, IRoleScriptImport>>(
-        structuredClone(window.PG.scripts)
+        deepThaw(window.PG.scripts)
     );
     const script = ref<IRoleScript>([
         ...storage.get<IRoleScript>(STORAGE_KEY, []).map(innerSetRemindersRole),

@@ -1,3 +1,4 @@
+import type { DeepReadonly } from "vue";
 import type {
     II18nData,
     IInfoToken,
@@ -7,11 +8,11 @@ import type {
 
 declare global {
     interface Window {
-        PG: {
+        PG: DeepReadonly<{
             i18n: II18nData,
             infoTokens: IInfoToken[],
             roles: IRole[],
             scripts: Record<string, IRoleScript>,
-        },
+        }>,
     }
 }
