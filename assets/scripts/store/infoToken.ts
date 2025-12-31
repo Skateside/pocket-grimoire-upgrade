@@ -223,13 +223,12 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     return {
         // State.
-        // * = Getter, not State. TODO: make sure this hasn't created any bugs.
-        active, // *
-        custom, // *
         infoTokens,
-        official, // *
         // Getters.
+        active,
+        custom,
         getById,
+        official,
         // Actions.
         addInfoToken,
         addRole,

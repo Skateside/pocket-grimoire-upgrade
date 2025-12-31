@@ -535,8 +535,6 @@ const useRoleStore = defineStore("role", () => {
         roles,
         script,
         scripts,
-        hasScript,
-        nightOrder,
         // Getters.
         getById,
         getImage,
@@ -553,6 +551,8 @@ const useRoleStore = defineStore("role", () => {
         getNightOrderById,
         getIsOrphan,
         getIsOrphanReminder,
+        hasScript,
+        nightOrder,
         // Actions.
         clear,
         setScript,

@@ -19,6 +19,26 @@ export function random() {
 }
 
 /**
+ * Generates a cryptographically random number between min and max. If only a
+ * single parameter is provided, that parameter is treated as `max` with `min`
+ * being set to `0`. The returned value will be more-than-or-equal-to `min` and
+ * less-than `max`.
+ * 
+ * @param min Minimum value
+ * @param max Maximum value
+ * @returns A random number between `min` and `max`.
+ */
+export function randomInt(min: number, max = 0) {
+
+    if (min > max) {
+        [min, max] = [max, min];
+    }
+
+    return Math.trunc(min + (random() * (max - min)));
+
+}
+
+/**
  * Returns `value` but clamps is so that it is at least `min` and at most `max`.
  *
  * @param min Minimum value.

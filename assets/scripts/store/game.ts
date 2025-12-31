@@ -43,9 +43,6 @@ const useGameStore = defineStore("game", () => {
         "outsider",
         "minion",
         "demon",
-        // "traveller",
-        // "fabled",
-        // "loric",
     ]);
     const count = ref<number>(
         storage.get(STORAGE_KEY, 10)

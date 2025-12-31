@@ -142,10 +142,12 @@ const useUiStore = defineStore("ui", () => {
             await nextTick();
         }
 
-        while (popoverList.length) {
-            hidePopover(...(popoverList.pop()!));
+        for (let index = popoverList.length - 1; index >= 0; index -= 1) {
+            hidePopover(...popoverList[index]);
             await nextTick();
         }
+
+        clearPopoverList();
 
     };
 
