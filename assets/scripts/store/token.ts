@@ -239,12 +239,13 @@ const useTokenStore = defineStore("token", () => {
 
     return {
         // State.
+        // * = Getter, not State. TODO: make sure this hasn't created any bugs.
         tokens,
-        byType,
-        inPlay,
-        alive,
-        dead,
-        active,
+        byType, // *
+        inPlay, // *
+        alive, // *
+        dead, // *
+        active, // *
         // Getters.
         getById,
         isSeat,

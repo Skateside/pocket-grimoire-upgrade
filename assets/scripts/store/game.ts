@@ -11,20 +11,21 @@ import {
 import {
     computed,
     inject,
-    // reactive,
     ref,
     watch,
 } from "vue";
 import {
     clamp,
 } from "../utilities/numbers";
+import {
+    deepFreeze,
+} from "../utilities/objects";
 
 const useGameStore = defineStore("game", () => {
 
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "game";
-
-    const numbers = computed<IGameCounts>(() => ({
+    const NUMBERS = deepFreeze<IGameCounts>({
          5: { townsfolk: 3, outsider: 0, minion: 1, demon: 1 },
          6: { townsfolk: 3, outsider: 1, minion: 1, demon: 1 },
          7: { townsfolk: 5, outsider: 0, minion: 1, demon: 1 },
@@ -36,7 +37,16 @@ const useGameStore = defineStore("game", () => {
         13: { townsfolk: 9, outsider: 0, minion: 3, demon: 1 },
         14: { townsfolk: 9, outsider: 1, minion: 3, demon: 1 },
         15: { townsfolk: 9, outsider: 2, minion: 3, demon: 1 },
-    }));
+    });
+    const TEAM_ORDER: ReadonlyArray<IRoleCoreTeam> = Object.freeze([
+        "townsfolk",
+        "outsider",
+        "minion",
+        "demon",
+        // "traveller",
+        // "fabled",
+        // "loric",
+    ]);
     const count = ref<number>(
         storage.get(STORAGE_KEY, 10)
     );
@@ -49,32 +59,68 @@ const useGameStore = defineStore("game", () => {
         count.value = 10;
     };
 
-    const breakdown = computed(() => {
-        return numbers.value[Math.min(15, count.value) as keyof IGameCounts];
-    });
+    const innerGetSortedCounts = () => {
+        return Object.keys(NUMBERS).map(Number).sort((a, b) => a - b);
+    };
 
-    const table = computed(() => {
+    const innerGetPlayerCounts = () => {
 
-        const table = {} as Record<IRoleCoreTeam, Record<number, number>>;
+        const playerCounts = new Map<number, string>();
 
-        Object.entries(numbers.value).forEach(([count, breakdown]) => {
+        innerGetSortedCounts().forEach((count) => {
 
-            Object.entries(breakdown).forEach(([team, number]) => {
+            playerCounts.set(
+                count,
+                (
+                    count === 15
+                    ? `${count}+`
+                    : String(count)
+                ),
+            );
 
-                const coreTeam = team as IRoleCoreTeam;
+        });
 
-                if (!table[coreTeam]) {
-                    table[coreTeam] = {};
-                }
+        return playerCounts;
 
-                table[coreTeam][Number(count)] = number;
+    };
 
+    const innerGetTeamBreakdown = () => {
+
+        const teams: {
+            team: IRoleCoreTeam,
+            data: { count: number, number: number }[]
+        }[] = [];
+        const counts = innerGetSortedCounts();
+
+        TEAM_ORDER.forEach((team) => {
+
+            teams.push({
+                team,
+                data: counts.map((count) => ({
+                    count,
+                    number: NUMBERS[count][team],
+                }))
             });
 
         });
 
-        return table;
+        return teams;
 
+    };
+
+    const getTable = computed(() => () => ({
+        players: innerGetPlayerCounts(),
+        teams: innerGetTeamBreakdown(),
+    }));
+
+    const getIsCount = computed(() => (number: number) => number === count.value);
+
+    const getRange = computed(() => () => {
+        const counts = innerGetSortedCounts();
+        return {
+            max: Math.max(...counts),
+            min: Math.min(...counts),
+        };
     });
 
     const setCount = (number: number) => {
@@ -83,14 +129,14 @@ const useGameStore = defineStore("game", () => {
 
     return {
         // State.
-        breakdown,
         count,
-        numbers,
-        table,
         // Getters.
-        setCount,
+        getIsCount,
+        getRange,
+        getTable,
         // Actions.
         clear,
+        setCount,
     };
 
 });

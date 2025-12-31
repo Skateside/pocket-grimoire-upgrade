@@ -1,3 +1,4 @@
+import type { DeepReadonly } from "vue";
 import type {
     AnyObject,
     DeepWritable,
@@ -18,4 +19,25 @@ export function deepThaw<
     TObject extends AnyObject = AnyObject
 >(object: TObject): DeepWritable<TObject> {
     return window.structuredClone(object);
+}
+
+/**
+ * Freezes the object such that neither it nor any of its children can be
+ * mutated.
+ * 
+ * @param object Object to freeze.
+ * @returns Original object, now frozen.
+ */
+export function deepFreeze<TObject = any>(object: TObject): DeepReadonly<TObject> {
+
+    if (object === null || object === undefined) {
+        return object as DeepReadonly<TObject>;
+    }
+
+    if (typeof object === "object") {
+        Object.values(object).forEach((value) => deepFreeze(value));
+    }
+
+    return Object.freeze(object) as DeepReadonly<TObject>;
+
 }

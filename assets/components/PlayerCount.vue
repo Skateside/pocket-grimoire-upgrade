@@ -4,18 +4,19 @@
             <tr>
                 <th scope="row">Players</th>
                 <th
-                    v-for="count in counts"
+                    v-for="[count, text] in table.players"
                     :key="count"
                     scope="col"
                     :class="{ 'is-count': count === store.count }"
                 >
-                    {{ count === 15 ? "15+" : count }}
+                    {{ text }}
                 </th>
             </tr>
         </thead>
         <tbody>
             <tr
-                v-for="(breakdown, team) in store.table"
+                v-for="{ team, data } in table.teams"
+                :key="team"
                 :class="[`count-row--${team}`, {
                     'count-row--good': team === 'townsfolk' || team === 'outsider',
                     'count-row--evil': team === 'minion' || team === 'demon',
@@ -23,11 +24,10 @@
             >
                 <th scope="row">{{ labels[team] || team }}</th>
                 <td
-                    v-for="(count, key) in breakdown"
-                    :key="key"
-                    :class="{ 'is-count': store.count === counts[key - 5] }"
+                    v-for="{ count, number } in data"
+                    :class="{ 'is-count': store.getIsCount(count) }"
                 >
-                    {{ count }}
+                    {{ number }}
                 </td>
             </tr>
         </tbody>
@@ -36,15 +36,16 @@
 
 <script setup lang="ts">
 import useGameStore from "../scripts/store/game";
+import { computed } from "vue";
 
 const store = useGameStore();
-const labels = {
+const table = computed(() => store.getTable());
+const labels = { // TODO: i18n
     townsfolk: "Townsfolk",
     outsider: "Outsiders",
     minion: "Minions",
     demon: "Demons",
 };
-const counts = Object.keys(store.numbers).map(Number);
 </script>
 
 <style lang="scss" scoped>

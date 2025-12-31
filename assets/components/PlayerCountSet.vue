@@ -6,8 +6,8 @@
                 <input
                     type="range"
                     :id="`player-count-${suffix}`"
-                    min="5"
-                    max="15"
+                    :min="range.min"
+                    :max="range.max"
                     step="1"
                     :value="store.count"
                     @input="setPlayerCount"
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import {
+    computed,
     useId,
 } from "vue";
 import useGameStore from "../scripts/store/game";
@@ -31,6 +32,7 @@ import StackLayout from "./layouts/StackLayout.vue";
 
 const store = useGameStore();
 const suffix = useId();
+const range = computed(() => store.getRange());
 const setPlayerCount = (event: Event) => {
     store.setCount(Number((event.target as HTMLInputElement).value));
 };
