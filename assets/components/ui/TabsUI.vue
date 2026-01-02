@@ -1,8 +1,9 @@
 <template>
     <div class="tabs">
         <div ref="tablist">
-            <ClusterLayout node="menu" role="tablist" class="no-list">
+            <ReelLayout node="menu" role="tablist" class="no-list tabs__list">
                 <li v-for="{ disabled, tab, title } in tabProps">
+                    <!-- TODO: no-button class on <button> -->
                     <button
                         type="button"
                         class="tabs__tab"
@@ -19,7 +20,7 @@
                         <template v-else>{{ title }}</template>
                     </button>
                 </li>
-            </ClusterLayout>
+            </ReelLayout>
         </div>
         <div class="tabs__contents" :class="props.contentsClass" ref="tabpanels">
             <slot></slot>
@@ -47,7 +48,7 @@ import {
     watch,
 } from "vue";
 import useUiStore from "../../scripts/store/ui";
-import ClusterLayout from "../layouts/ClusterLayout.vue";
+import ReelLayout from "../layouts/ReelLayout.vue";
 import { words } from "../../scripts/utilities/strings";
 import { clamp } from "../../scripts/utilities/numbers";
 
@@ -187,3 +188,9 @@ onMounted(() => {
 
 });
 </script>
+
+<style lang="scss" scoped>
+.tabs__tab[aria-selected="true"] {
+    font-weight: bold;
+}
+</style>
