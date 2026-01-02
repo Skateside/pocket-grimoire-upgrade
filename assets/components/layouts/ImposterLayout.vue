@@ -1,3 +1,9 @@
+<!--
+Sits outside of the layout, like a dialog box.
+
+https://every-layout.dev/layouts/imposter/
+-->
+
 <template>
     <component
         :is="props.node"

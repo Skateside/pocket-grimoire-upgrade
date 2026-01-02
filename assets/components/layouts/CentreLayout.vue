@@ -1,3 +1,9 @@
+<!--
+Centres contents and/or centres itself.
+
+https://every-layout.dev/layouts/center/
+-->
+
 <template>
     <component
         :is="props.node"

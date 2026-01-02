@@ -224,17 +224,6 @@ const useTokenStore = defineStore("token", () => {
 
     const destroy = (id: IToken["id"]) => {
         return removeAtIndex(tokens.value, innerGetIndexById(id));
-
-        // const index = innerGetIndexById(id);
-
-        // if (index < 0) {
-        //     return false;
-        // }
-
-        // tokens.value.splice(index, 1);
-
-        // return true;
-
     };
 
     return {

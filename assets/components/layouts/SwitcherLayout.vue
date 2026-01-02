@@ -1,3 +1,10 @@
+<!--
+Puts items next to one another horizontally, but where there are more than N
+items, the items stack vertically.
+
+https://every-layout.dev/layouts/switcher/
+-->
+
 <template>
     <component
         :is="props.node"
@@ -56,7 +63,7 @@ onMounted(() => {
 @property --l-switcher-gap { syntax: "<length>"; initial-value: 16px; inherits: true;  }
 @property --l-switcher-threshold { syntax: "<length>"; initial-value: 480px; inherits: true;  }
 
-.l-switcher {
+:where(.l-switcher) {
     --l-switcher-gap: var(--base-sizing);
     --l-switcher-threshold: 30rem;
 

@@ -1,3 +1,9 @@
+<!--
+Creates a cover page.
+
+https://every-layout.dev/layouts/cover/
+-->
+
 <template>
     <component
         :is="props.node"
@@ -63,9 +69,9 @@ const addStyleSheet = () => {
 
     const style = document.createElement("style");
     style.id = dataI.value;
-    style.textContent += `:where(.l-cover[data-i="${dataI.value}"])>:where(:first-child:not(${props.centred})){margin-block-start:0}`;
-    style.textContent += `:where(.l-cover[data-i="${dataI.value}"])>:where(:last-child:not(${props.centred})){margin-block-end:0}`;
-    style.textContent += `:where(.l-cover[data-i="${dataI.value}"])>:where(${props.centred}){margin-block:auto}`;
+    style.textContent += `:where(.l-cover[data-i="${dataI.value}"])>:first-child:where:(not(${props.centred})){margin-block-start:0}`;
+    style.textContent += `:where(.l-cover[data-i="${dataI.value}"])>:last-child:where:(not(${props.centred})){margin-block-end:0}`;
+    style.textContent += `:where(.l-cover[data-i="${dataI.value}"])>${props.centred}{margin-block:auto}`;
     document.head.append(style);
 
 };

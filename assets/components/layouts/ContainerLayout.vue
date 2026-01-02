@@ -1,3 +1,9 @@
+<!--
+Creates a CSS container that can be checked and referenced.
+
+https://every-layout.dev/layouts/container/
+-->
+
 <template>
     <component
         :is="props.node"

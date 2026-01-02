@@ -1,3 +1,9 @@
+<!--
+Positions an icon so it can be put next to text.
+
+https://every-layout.dev/layouts/icon/
+-->
+
 <template>
     <component
         :is="props.node"
@@ -54,12 +60,12 @@ onMounted(() => {
 
     style.id = dataI.value;
 
-    style.textContent += `:where(.l-icon[data-i="${dataI.value}"])>:where(${props.iconNode}){height:0.75em;height:1cap;width:0.75em;width:1cap}`;
-    style.textContent += `:where(.l-icon--lower[data-i="${dataI.value}"])>:where(${props.iconNode}){height:1ex;width:1ex}`;
+    style.textContent += `:where(.l-icon[data-i="${dataI.value}"])>${props.iconNode}{height:0.75em;height:1cap;width:0.75em;width:1cap}`;
+    style.textContent += `:where(.l-icon--lower[data-i="${dataI.value}"])>${props.iconNode}{height:1ex;width:1ex}`;
 
     if (props.gap !== undefined) {
         style.textContent += `:where(.l-icon[data-i="${dataI.value}"]){display:inline-flex;align-items:baseline}`;
-        style.textContent += `:where(.l-icon[data-i="${dataI.value}"])>:where(${props.iconNode}){margin-inline-end:${props.gap}}`;
+        style.textContent += `:where(.l-icon[data-i="${dataI.value}"])>${props.iconNode}{margin-inline-end:${props.gap}}`;
     }
 
     document.head.append(style);

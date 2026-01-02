@@ -1,3 +1,10 @@
+<!--
+Puts elements next to one another with a horizontal scroll bar to see the hidden
+ones. Optionally, shadows can be added and the reel can snap to the scrolling.
+
+https://every-layout.dev/layouts/reel/
+-->
+
 <template>
     <component
         :is="props.node"

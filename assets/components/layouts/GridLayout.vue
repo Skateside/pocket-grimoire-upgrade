@@ -1,3 +1,10 @@
+<!--
+Puts things into a grid of as many columns as possible (up to a max width for
+each column). Any subsequent children go onto the next row.
+
+https://every-layout.dev/layouts/grid/
+-->
+
 <template>
     <component
         :is="props.node"

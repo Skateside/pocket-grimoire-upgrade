@@ -1,3 +1,11 @@
+<!--
+Puts things in a box.
+
+A box has equal padding on each side and a set border.
+
+https://every-layout.dev/layouts/box/
+-->
+
 <template>
     <component
         :is="props.node"
@@ -64,8 +72,12 @@ const props = withDefaults(defineProps<Partial<{
     // 	color: inherit;
     // }
 
-    > * {
-        margin-block: 0;
+    > :first-child {
+        margin-block-start: 0;
+    }
+
+    > :last-child {
+        margin-block-end: 0;
     }
 }
 </style>

@@ -1,3 +1,10 @@
+<!--
+Puts a smaller item next to a larger one. If there is not enough space for both,
+the children stack.
+
+https://every-layout.dev/layouts/sidebar/
+-->
+
 <template>
     <component
         :is="props.node"
@@ -55,8 +62,8 @@ const props = withDefaults(defineProps<Partial<{
     }
 }
 
-:where(.l-sidebar--start > :first-child),
-:where(.l-sidebar--end > :last-child) {
+:where(.l-sidebar--start) > :first-child,
+:where(.l-sidebar--end) > :last-child {
     flex-basis: 0;
     flex-grow: 999;
     min-inline-size: var(--l-sidebar-content-size);

@@ -1,3 +1,9 @@
+<!--
+Puts an image or video into a frame with a fixed aspect ratio.
+
+https://every-layout.dev/layouts/frame/
+-->
+
 <template>
     <component
         :is="props.node"
@@ -52,7 +58,8 @@ const ratio = computed(() => {
     justify-content: center;
     align-items: center;
 
-    > :where(img, video) {
+    > img,
+    > video {
         inline-size: 100%;
         block-size: 100%;
         object-fit: cover;
