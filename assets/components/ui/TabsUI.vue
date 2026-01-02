@@ -62,17 +62,22 @@ const store = useUiStore();
 const tablist = useTemplateRef<HTMLElement>("tablist");
 const tabpanels = useTemplateRef<HTMLElement>("tabpanels");
 const tabProps = computed<ITabUIProps[]>(() => {
+
     return slots.default?.().map((slot) => ({
         disabled: slot.props?.disabled || false,
         tab: (slot.children as Record<string, Slot>|null)?.tab,
         title: slot.props?.title || "",
-    })) || []
+    })) || [];
+
 });
 const selectedIndex = ref<number>(0);
-const selectedTitle = computed(() => tabProps.value[selectedIndex.value]?.title || "");
+const selectedTitle = computed(() => {
+    return tabProps.value[selectedIndex.value]?.title || "";
+});
 
 const makeId: ITabsUIInterface["makeId"] = (title: string) => {
-    return `tab-${words(title.replace(/\W/g, "").toLowerCase()).join("-")}-${suffix}`;
+    const id = words(title.replace(/\W/g, "").toLowerCase()).join("-");
+    return `tab-${id}-${suffix}`;
 };
 
 const isTabSelected: ITabsUIInterface["isTabSelected"] = (
@@ -169,13 +174,15 @@ watch(selectedIndex, (index, oldIndex) => {
         store.setTabIndex(props.identifier, index);
     }
 
-    const panels = tabpanels.value?.querySelectorAll<HTMLElement>("[role=\"tabpanel\"]") || [];
+    const panels = tabpanels.value?.querySelectorAll<HTMLElement>(
+        "[role=\"tabpanel\"]"
+    );
 
     emit("tabchange", {
         index,
         oldIndex,
-        tab: panels[index] ?? null,
-        oldTab: panels[oldIndex] ?? null,
+        tab: panels?.[index] ?? null,
+        oldTab: panels?.[oldIndex] ?? null,
     });
 
 });
