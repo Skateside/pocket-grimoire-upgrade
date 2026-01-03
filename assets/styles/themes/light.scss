@@ -157,6 +157,11 @@ $layout: (
         "syntax": "<number>",
         "initial-value": 1.618,
     ),
+    "line-height-heading": (
+        "value": 1.1,
+        "syntax": "<number>",
+        "initial-value": 1.1,
+    ),
     // Specific elements.
     // "header-height": (
     // 	"value": calc(var(--sizing-md) * 2),

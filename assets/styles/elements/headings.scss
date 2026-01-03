@@ -6,6 +6,7 @@ h5, .h5,
 h6, .h6 {
     font-family: var(--font-family-serif);
     font-weight: bold;
+    line-height: var(--line-height-heading);
     margin-block: var(--base-sizing);
 }
 
