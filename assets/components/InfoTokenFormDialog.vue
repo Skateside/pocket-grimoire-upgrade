@@ -52,8 +52,8 @@ import ClusterLayout from "./layouts/ClusterLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 
 const store = useInfoTokenStore();
-const form = useTemplateRef<HTMLFormElement>("form");
-const submit = useTemplateRef<HTMLButtonElement>("submit");
+const form = useTemplateRef("form");
+const submit = useTemplateRef("submit");
 const markdown = defineModel<IInfoToken["markdown"]>();
 const isUpdate = computed(() => Boolean(store.active));
 const submitText = computed(() => submit.value?.dataset[

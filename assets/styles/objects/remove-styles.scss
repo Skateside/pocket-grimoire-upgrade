@@ -23,11 +23,18 @@
  * Remove the list styling for any element that might need the list semantics
  * but not the bullet points.
  * https://medium.com/@havard.brynjulfsen/removing-list-style-on-lists-and-the-accessibility-implications-that-follow-2392f5ddb332
+ *
+ * [1]
+ * A <menu>::marker has an effective `margin-left: -1px` whereas an <ol>::marker
+ * and a <ul>::marker does not. These styles "correct" for that by breaking both
+ * and then working around the break for consistency - as far as I can tell,
+ * there's no way to fix the original bug.
  */
 
 .no-list,
 %no-list {
-	padding-inline-start: 0;
+	list-style-position: inside; // [1]
+	padding-inline-start: 1px; // [1]
 
 	> :where(li) {
 		margin-block: 0;
@@ -36,4 +43,17 @@
 			font-size: 0;
 		}
 	}
+}
+
+/**
+ * Remove the list styling.
+ * WARNING: this also removes the list semantics from Safari - an additional
+ * `role="list"` attribute will need to be added to the element to fix that.
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/list-style#accessibility
+ */
+
+.not-a-list,
+%not-a-list {
+	list-style-type: none;
+	padding-inline-start: 0;
 }

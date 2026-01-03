@@ -55,7 +55,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<IDialogUIEvents>();
 
-const dialog = useTemplateRef<HTMLElement>("dialog");
+const dialog = useTemplateRef("dialog");
 
 const type = computed(() => (
     props.manual

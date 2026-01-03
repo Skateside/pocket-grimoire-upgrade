@@ -1,7 +1,7 @@
 <template>
 
     <h1>Pocket Grimoire</h1>
-    <TabsUI ref="layout" identifier="layout">
+    <TabsUI ref="layout" identifier="layout" :scroll="true">
         <TabUI title="Grimoire">
             <GrimoirePad
                 ref="grimoire-pad"

@@ -116,7 +116,7 @@ import useFieldSaver from "../composables/useFieldSaver";
 
 const store = useRoleStore();
 const suffix = useId();
-const form = useTemplateRef<HTMLFormElement>("form");
+const form = useTemplateRef("form");
 const isLoading = ref<boolean>(false);
 const errorMessage = ref<string>("");
 const botcScripts = ref<Record<string, IRoleScriptImport>>({});

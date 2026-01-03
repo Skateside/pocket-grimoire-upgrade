@@ -136,8 +136,8 @@ const emit = defineEmits<{
 
 const tokenStore = useTokenStore();
 const roleStore = useRoleStore();
-const grimoire = useTemplateRef<HTMLElement>("grimoire");
-const seats = useTemplateRef<HTMLElement[]>("seats");
+const grimoire = useTemplateRef("grimoire");
+const seats = useTemplateRef("seats");
 const isDragging = ref<boolean>(false);
 const pad = shallowReactive<IPad>({
     left: 0,
@@ -175,7 +175,7 @@ const expose: IGrimoirePadInterface = {
 defineExpose(expose);
 
 //*
-const removeDropdown = useTemplateRef<HTMLSelectElement>("remove-dropdown");
+const removeDropdown = useTemplateRef("remove-dropdown");
 
 const addSeat = () => {
 

@@ -17,6 +17,7 @@ export type ITabsUIProps = {
     tabClass?: HTMLAttributes["class"],
     contentsClass?: HTMLAttributes["class"],
     identifier?: string,
+    scroll?: boolean,
 };
 
 export type ITabUIProps = {

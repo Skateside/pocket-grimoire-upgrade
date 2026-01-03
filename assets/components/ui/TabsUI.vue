@@ -1,7 +1,12 @@
 <template>
     <div class="tabs">
         <div ref="tablist">
-            <ReelLayout node="menu" role="tablist" class="no-list tabs__list">
+            <component
+                :is="props.scroll ? ReelLayout : ClusterLayout"
+                node="menu"
+                role="tablist"
+                class="not-a-list tabs__list"
+            >
                 <li v-for="{ disabled, tab, title } in tabProps">
                     <!-- TODO: no-button class on <button> -->
                     <button
@@ -20,7 +25,7 @@
                         <template v-else>{{ title }}</template>
                     </button>
                 </li>
-            </ReelLayout>
+            </component>
         </div>
         <div class="tabs__contents" :class="props.contentsClass" ref="tabpanels">
             <slot></slot>
@@ -48,6 +53,7 @@ import {
     watch,
 } from "vue";
 import useUiStore from "../../scripts/store/ui";
+import ClusterLayout from "../layouts/ClusterLayout.vue";
 import ReelLayout from "../layouts/ReelLayout.vue";
 import { words } from "../../scripts/utilities/strings";
 import { clamp } from "../../scripts/utilities/numbers";
@@ -59,8 +65,8 @@ const emit = defineEmits<{
 const suffix = useId();
 const slots = useSlots();
 const store = useUiStore();
-const tablist = useTemplateRef<HTMLElement>("tablist");
-const tabpanels = useTemplateRef<HTMLElement>("tabpanels");
+const tablist = useTemplateRef("tablist");
+const tabpanels = useTemplateRef("tabpanels");
 const tabProps = computed<ITabUIProps[]>(() => {
 
     return slots.default?.().map((slot) => ({
@@ -197,6 +203,14 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.tabs__list {
+    margin-block: var(--base-sizing);
+
+    > li {
+        margin-block: 0;
+    }
+}
+
 .tabs__tab[aria-selected="true"] {
     font-weight: bold;
 }
