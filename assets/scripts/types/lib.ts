@@ -22,4 +22,3 @@ export type FieldElement = (
 export type DeepWritable<TObject = any> = {
     -readonly [Property in keyof TObject]: DeepWritable<TObject[Property]>
 };
-

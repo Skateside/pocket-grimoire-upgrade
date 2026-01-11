@@ -8,7 +8,7 @@ export type ICoordinates = {
 
 // Demon Bluffs.
 
-export type IDemonBluffId = IRole["id"]|null;
+export type IDemonBluffId = IRole["id"] | null;
 
 export type IDemonBluffGroup = {
     id: string,
@@ -82,6 +82,16 @@ export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 // Roles.
 
+export enum ERoleIds {
+    Meta = "_meta",
+    NoRole = "__no_role__",
+    Universal = "universalinfo",
+};
+
+export enum ERoleEditions {
+    Special = "special",
+};
+
 export type IRoleRaw = {
     id: string,
     team: IRoleTeam,
@@ -110,16 +120,43 @@ export type IRoleDeprecatedReminders = IRole & {
     remindersGlobal?: string[],
 };
 
-export type IRoleCoreTeam = "townsfolk" | "outsider" | "minion" | "demon";
-export type IRolePlayTeam = IRoleCoreTeam | "traveller";
-export type IRoleTeam = IRolePlayTeam | "fabled" | "loric";
+export enum ERoleTeam {
+    Townsfolk = "townsfolk",
+    Outsider = "outsider",
+    Minion = "minion",
+    Demon = "demon",
+    Traveller = "traveller",
+    Fabled = "fabled",
+    Loric = "loric",
+};
 
-export type IRoleReminderFlag = "global" | "public" | "kill" | "dead" | "role";
+export type IRoleCoreTeam = (
+    ERoleTeam.Townsfolk
+    | ERoleTeam.Outsider
+    | ERoleTeam.Minion
+    | ERoleTeam.Demon
+);
+export type IRolePlayTeam = IRoleCoreTeam | ERoleTeam.Traveller;
+export type IRoleTeam = IRolePlayTeam | ERoleTeam.Fabled | ERoleTeam.Loric;
+
+export enum ERoleReminderFlag {
+    Global = "global",
+    Public = "public",
+    Kill = "kill",
+    Dead = "dead",
+    Role = "role",
+}
 
 export type IRoleReminderRaw = {
     name: string,
     count?: number,
-    flags?: IRoleReminderFlag[],
+    flags?: (
+        ERoleReminderFlag.Global
+        | ERoleReminderFlag.Public
+        | ERoleReminderFlag.Kill
+        | ERoleReminderFlag.Dead
+        | ERoleReminderFlag.Role
+    )[],
 };
 
 export type IRoleReminder = IRoleReminderRaw & {
@@ -134,14 +171,19 @@ export type IRoleJinxRaw = {
 };
 
 export type IRoleMeta = {
-    id: "_meta",
+    id: ERoleIds.Meta,
     name: string,
     author?: string,
     firstNight?: string[],
     otherNight?: string[],
 };
 
-export type IRoleAlignment = 0 | 1 | 2;
+export enum ERoleAlignment {
+    Default,
+    TravellerGood,
+    Inverse = 1,
+    TravellerEvil,
+}
 
 /*
 export type IRoleSpecial = {
@@ -180,6 +222,7 @@ export type IRoleSpecial = {
     global?: IRolePlayTeam | "dead",
 };
 */
+// NOTE: Would it make sense to turn these into `enum`s?
 export type IRoleSpecialTime = (
     "pregame"
     | "day"
@@ -229,30 +272,36 @@ export type IRoleNightOrder = Record<"first" | "other", {
 
 // Tokens.
 
+export enum ETokenType {
+    Seat,
+    Role,
+    Reminder,
+};
+
 export type IToken = Required<ICoordinates> & {
     id: string,
-    type: "seat" | "role" | "reminder",
+    type: ETokenType,
 };
 
 export type ITokenSeat = IToken & {
-    type: "seat",
+    type: ETokenType.Seat,
     index?: number,
     role?: IRole["id"],
     name?: string,
     dead?: boolean,
     ghostVote?: boolean,
     rotate?: boolean,
-    alignment?: IRoleAlignment,
+    alignment?: ERoleAlignment,
 };
 
 // NOTE: This is for something like a Fabled - on the grimoire pad but not a player.
 export type ITokenRole = IToken & {
-    type: "role",
+    type: ETokenType.Role,
     role: IRole["id"],
 };
 
 export type ITokenReminder = IToken & {
-    type: "reminder",
+    type: ETokenType.Reminder,
     reminder: IRoleReminder["id"],
 };
 

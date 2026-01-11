@@ -11,9 +11,9 @@
 </template>
 
 <script setup lang="ts">
-import type {
-    IRole,
-    IRoleAlignment,
+import {
+    type IRole,
+    ERoleAlignment,
 } from "../scripts/types/data";
 import {
     type IDialogUIEvents,
@@ -24,7 +24,7 @@ import RoleToken from "./RoleToken.vue";
 
 const props = defineProps<{
     role: IRole,
-    alignment?: IRoleAlignment,
+    alignment?: ERoleAlignment,
 }>();
 const emit = defineEmits<IDialogUIEvents>();
 </script>

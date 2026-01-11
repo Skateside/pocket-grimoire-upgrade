@@ -1,21 +1,24 @@
 import type {
     IRole,
-    // IRoleJinx,
     IRoleMeta,
     IRoleReminder,
     IRoleScript,
     IRoleScriptImport,
     IRoleDeprecatedReminders,
     IRoleTeam,
-    IRoleAlignment,
     IRoleNightOrder,
     IRoleJinxRaw,
-    // IRoleDemonBluffGroup,
-    // IRoleDemonBluffs,
 } from "../types/data";
 import type {
     IStorage,
 } from "../classes/Storage";
+import {
+    ERoleAlignment,
+    ERoleEditions,
+    ERoleIds,
+    ERoleReminderFlag,
+    ERoleTeam,
+} from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -41,8 +44,12 @@ const useRoleStore = defineStore("role", () => {
     // TODO: Add functionality for augments.
     // TODO: Work out how to augment the reminders.
 
-    const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => role.id === "_meta";
-    const innerIsUniversal = (role: IRole) => role.id === "universalinfo";
+    const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => {
+        return role.id === ERoleIds.Meta;
+    };
+    const innerIsUniversal = (role: IRole) => {
+        return role.id === ERoleIds.Universal;
+    };
 
     const innerSetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
 
@@ -82,9 +89,9 @@ const useRoleStore = defineStore("role", () => {
         // access it.
         deepThaw(window.PG.roles).map(innerSetRemindersRole)
     );
-    const specialRoles = computed(() => {
-        return roles.value.filter(({ edition }) => edition === "special");
-    });
+    const specialRoles = computed(() => roles.value.filter(({ edition }) => (
+        edition === ERoleEditions.Special
+    )));
     const scripts = ref<Record<string, IRoleScriptImport>>(
         deepThaw(window.PG.scripts)
     );
@@ -206,7 +213,6 @@ const useRoleStore = defineStore("role", () => {
                 const jinx: IRoleJinxRaw = {
                     id,
                     reason,
-                    // state: "theoretical",
                 };
 
                 if (index < 0) {
@@ -249,7 +255,10 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const innerGetImage = (role: IRole, index: IRoleAlignment = 0) => {
+    const innerGetImage = (
+        role: IRole,
+        index: ERoleAlignment = ERoleAlignment.Default,
+    ) => {
 
         if (!role || !role.image) {
             return "";
@@ -269,14 +278,14 @@ const useRoleStore = defineStore("role", () => {
 
     const getReminderImage = computed(() => (
         reminder: IRoleReminder,
-        index: IRoleAlignment = 0,
+        index: ERoleAlignment = ERoleAlignment.Default,
     ) => {
         return reminder.image || innerGetImage(reminder.role, index);
     });
 
     const innerGetIsSpecialById = (id: IRole["id"]) => {
         const role = innerGetRole(id);
-        return role?.edition === "special";
+        return role?.edition === ERoleEditions.Special;
     };
 
     const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
@@ -328,13 +337,17 @@ const useRoleStore = defineStore("role", () => {
             reminders.push(...((role as IRole).reminders || []));
         });
 
-        roles.value.filter(({ team }) => team === "fabled").forEach((role) => {
-            reminders.push(...((role as IRole).reminders || []));
-        });
+        roles.value
+            .filter(({ team }) => team === ERoleTeam.Fabled)
+            .forEach((role) => {
+                reminders.push(...((role as IRole).reminders || []));
+            });
 
-        roles.value.filter(({ team }) => team === "loric").forEach((role) => {
-            reminders.push(...((role as IRole).reminders || []));
-        });
+        roles.value
+            .filter(({ team }) => team === ERoleTeam.Loric)
+            .forEach((role) => {
+                reminders.push(...((role as IRole).reminders || []));
+            });
 
         // TODO: add any reminders for roles that have been added to the page
         // but not in the script (such as orphan roles or added travellers).
@@ -437,7 +450,7 @@ const useRoleStore = defineStore("role", () => {
                     id: `${role.id}:${reminderCount + index}`,
                     role, // needed for TypeScript, gets set again in the next step.
                     name: reminder as string,
-                    flags: ["global"],
+                    flags: [ERoleReminderFlag.Global],
                 };
                 reminders.push(newReminder);
 
@@ -462,13 +475,13 @@ const useRoleStore = defineStore("role", () => {
                 return groups;
 
             }, [
-                ["townsfolk", []],
-                ["outsider", []],
-                ["minion", []],
-                ["demon", []],
-                ["traveller", []],
-                ["fabled", []],
-                ["loric", []],
+                [ERoleTeam.Townsfolk, []],
+                [ERoleTeam.Outsider, []],
+                [ERoleTeam.Minion, []],
+                [ERoleTeam.Demon, []],
+                [ERoleTeam.Traveller, []],
+                [ERoleTeam.Fabled, []],
+                [ERoleTeam.Loric, []],
             ] as [IRoleTeam, IRole[]][])
             .map(([_team, roles]) => roles)
             .flat();
@@ -524,7 +537,7 @@ const useRoleStore = defineStore("role", () => {
             // TODO: test to make sure this doesn't cause serious errors.
             // Intention is to allow a script containing a role that hasn't been
             // added to the data yet without the entire system crashing.
-            return { id: "__no_role__" } as IRole;
+            return { id: ERoleIds.NoRole } as IRole;
 
         }));
 

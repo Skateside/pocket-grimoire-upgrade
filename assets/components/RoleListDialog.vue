@@ -13,7 +13,7 @@
                 <RoleToken :role="role" />
             </button>
         </GridLayout>
-        <StackLayout v-if="props.type === 'demon-bluffs'">
+        <StackLayout v-if="props.type === 'demon-bluffs'" node="form">
             <label :for="`show-existing-${suffix}`">
                 <input
                     type="checkbox"

@@ -18,8 +18,14 @@
                 v-for="{ team, data } in table.teams"
                 :key="team"
                 :class="[`count-row--${team}`, {
-                    'count-row--good': team === 'townsfolk' || team === 'outsider',
-                    'count-row--evil': team === 'minion' || team === 'demon',
+                    'count-row--good': (
+                        team === ERoleTeam.Townsfolk
+                        || team === ERoleTeam.Outsider
+                    ),
+                    'count-row--evil': (
+                        team === ERoleTeam.Minion
+                        || team === ERoleTeam.Demon
+                    ),
                 }]"
             >
                 <th scope="row">{{ labels[team] || team }}</th>
@@ -35,16 +41,17 @@
 </template>
 
 <script setup lang="ts">
+import { ERoleTeam } from "../scripts/types/data";
 import useGameStore from "../scripts/store/game";
 import { computed } from "vue";
 
 const store = useGameStore();
 const table = computed(() => store.getTable());
 const labels = { // TODO: i18n
-    townsfolk: "Townsfolk",
-    outsider: "Outsiders",
-    minion: "Minions",
-    demon: "Demons",
+    [ERoleTeam.Townsfolk]: "Townsfolk",
+    [ERoleTeam.Outsider]: "Outsiders",
+    [ERoleTeam.Minion]: "Minions",
+    [ERoleTeam.Demon]: "Demons",
 };
 </script>
 

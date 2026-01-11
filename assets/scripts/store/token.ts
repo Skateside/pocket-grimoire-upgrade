@@ -8,6 +8,7 @@ import type {
 import type {
     IStorage,
 } from "../classes/Storage";
+import { ETokenType } from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -126,13 +127,13 @@ const useTokenStore = defineStore("token", () => {
 
     };
     const innerIsSeat = (token: IToken): token is ITokenSeat => (
-        token.type === "seat"
+        token.type === ETokenType.Seat
     );
     const innerIsReminder = (token: IToken): token is ITokenReminder => (
-        token.type === "reminder"
+        token.type === ETokenType.Reminder
     );
     const innerIsRole = (token: IToken): token is ITokenRole => (
-        token.type === "role"
+        token.type === ETokenType.Role
     );
 
     const getById = computed(() => innerGetById);
@@ -146,7 +147,10 @@ const useTokenStore = defineStore("token", () => {
         innerIsRole(innerGetToken(tokenOrId))
     ));
 
-    const create = (settings: Partial<IToken> = {}, type: IToken["type"] = "seat") => {
+    const create = (
+        settings: Partial<IToken> = {},
+        type: IToken["type"] = ETokenType.Seat,
+    ) => {
 
         const token: IToken = Object.assign({
             type,
@@ -183,10 +187,10 @@ const useTokenStore = defineStore("token", () => {
     };
 
     const createSeat = (settings: Partial<ITokenSeat> = {}) => (
-        create(settings, "seat")
+        create(settings, ETokenType.Seat)
     );
     const createReminder = (settings: Partial<ITokenReminder> = {}) => (
-        create(settings, "reminder")
+        create(settings, ETokenType.Reminder)
     );
 
     const update = <TToken extends IToken = IToken>(

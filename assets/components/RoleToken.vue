@@ -32,14 +32,14 @@
 </template>
 
 <script lang="ts" setup>
-import type { IRole, IRoleAlignment } from "../scripts/types/data";
 import type { RequireOnly } from "../scripts/types/lib";
+import { type IRole, ERoleAlignment } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
     role?: IRole|IRole["id"]|null,
-    alignment?: IRoleAlignment,
+    alignment?: ERoleAlignment,
     orphan?: boolean,
 }>();
 const store = useRoleStore();

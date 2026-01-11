@@ -5,6 +5,7 @@ import type {
 import type {
     IStorage,
 } from "../classes/Storage";
+import { ERoleTeam } from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -26,23 +27,78 @@ const useGameStore = defineStore("game", () => {
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "game";
     const NUMBERS = deepFreeze<IGameCounts>({
-         5: { townsfolk: 3, outsider: 0, minion: 1, demon: 1 },
-         6: { townsfolk: 3, outsider: 1, minion: 1, demon: 1 },
-         7: { townsfolk: 5, outsider: 0, minion: 1, demon: 1 },
-         8: { townsfolk: 5, outsider: 1, minion: 1, demon: 1 },
-         9: { townsfolk: 5, outsider: 2, minion: 1, demon: 1 },
-        10: { townsfolk: 7, outsider: 0, minion: 2, demon: 1 },
-        11: { townsfolk: 7, outsider: 1, minion: 2, demon: 1 },
-        12: { townsfolk: 7, outsider: 2, minion: 2, demon: 1 },
-        13: { townsfolk: 9, outsider: 0, minion: 3, demon: 1 },
-        14: { townsfolk: 9, outsider: 1, minion: 3, demon: 1 },
-        15: { townsfolk: 9, outsider: 2, minion: 3, demon: 1 },
+        5: {
+            [ERoleTeam.Townsfolk]: 3,
+            [ERoleTeam.Outsider]: 0,
+            [ERoleTeam.Minion]: 1,
+            [ERoleTeam.Demon]: 1,
+        },
+        6: {
+            [ERoleTeam.Townsfolk]: 3,
+            [ERoleTeam.Outsider]: 1,
+            [ERoleTeam.Minion]: 1,
+            [ERoleTeam.Demon]: 1,
+        },
+        7: {
+            [ERoleTeam.Townsfolk]: 5,
+            [ERoleTeam.Outsider]: 0,
+            [ERoleTeam.Minion]: 1,
+            [ERoleTeam.Demon]: 1,
+        },
+        8: {
+            [ERoleTeam.Townsfolk]: 5,
+            [ERoleTeam.Outsider]: 1,
+            [ERoleTeam.Minion]: 1,
+            [ERoleTeam.Demon]: 1,
+        },
+        9: {
+            [ERoleTeam.Townsfolk]: 5,
+            [ERoleTeam.Outsider]: 2,
+            [ERoleTeam.Minion]: 1,
+            [ERoleTeam.Demon]: 1,
+        },
+        10: {
+            [ERoleTeam.Townsfolk]: 7,
+            [ERoleTeam.Outsider]: 0,
+            [ERoleTeam.Minion]: 2,
+            [ERoleTeam.Demon]: 1,
+        },
+        11: {
+            [ERoleTeam.Townsfolk]: 7,
+            [ERoleTeam.Outsider]: 1,
+            [ERoleTeam.Minion]: 2,
+            [ERoleTeam.Demon]: 1,
+        },
+        12: {
+            [ERoleTeam.Townsfolk]: 7,
+            [ERoleTeam.Outsider]: 2,
+            [ERoleTeam.Minion]: 2,
+            [ERoleTeam.Demon]: 1,
+        },
+        13: {
+            [ERoleTeam.Townsfolk]: 9,
+            [ERoleTeam.Outsider]: 0,
+            [ERoleTeam.Minion]: 3,
+            [ERoleTeam.Demon]: 1,
+        },
+        14: {
+            [ERoleTeam.Townsfolk]: 9,
+            [ERoleTeam.Outsider]: 1,
+            [ERoleTeam.Minion]: 3,
+            [ERoleTeam.Demon]: 1,
+        },
+        15: {
+            [ERoleTeam.Townsfolk]: 9,
+            [ERoleTeam.Outsider]: 2,
+            [ERoleTeam.Minion]: 3,
+            [ERoleTeam.Demon]: 1,
+        },
     });
     const TEAM_ORDER: ReadonlyArray<IRoleCoreTeam> = Object.freeze([
-        "townsfolk",
-        "outsider",
-        "minion",
-        "demon",
+        ERoleTeam.Townsfolk,
+        ERoleTeam.Outsider,
+        ERoleTeam.Minion,
+        ERoleTeam.Demon,
     ]);
     const count = ref<number>(
         storage.get(STORAGE_KEY, 10)

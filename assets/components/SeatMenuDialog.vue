@@ -81,19 +81,20 @@
 <script setup lang="ts">
 import type {
     IRole,
-    IRoleAlignment,
     ITokenSeat,
+} from "../scripts/types/data";
+import {
+    ERoleAlignment,
+    ERoleTeam,
 } from "../scripts/types/data";
 import {
     computed,
     onMounted,
-    // ref,
     useId,
     watch,
 } from 'vue';
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
-// import useUiStore from "../scripts/store/ui";
 import {
     TabsUI,
     TabUI,
@@ -116,11 +117,12 @@ const emit = defineEmits<IDialogUIEvents & {
     (e: "show-role", id: IRole): void,
     (e: "add-reminder"): void,
 }>();
-const seatName = defineModel<string>('seat-name', { default: "" });
-const alignment = defineModel<IRoleAlignment>('alignment', { default: 0 });
+const seatName = defineModel<string>("seat-name", { default: "" });
+const alignment = defineModel<ERoleAlignment>("alignment", {
+    default: ERoleAlignment.Default,
+});
 
 const idSuffix = useId();
-// const uiStore = useUiStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 
@@ -144,30 +146,40 @@ const showAlignment = computed(() => {
         image
         && typeof image !== "string"
         && image.length > 1
-        && team !== "fabled"
+        && team !== ERoleTeam.Fabled
     );
 
 });
-const alignmentOptions = computed<string[]>(() => {
+const alignmentOptions = computed(() => {
 
     const { team } = roleToken.value || {};
 
     switch (team) {
 
-    case "townsfolk":
-    case "outsider":
-        return ["Good", "Evil"]; // TODO i18n
+    case ERoleTeam.Townsfolk:
+    case ERoleTeam.Outsider:
+        return {
+            [ERoleAlignment.Default]: "Good", // TODO i18n
+            [ERoleAlignment.Inverse]: "Evil", // TODO i18n
+        };
 
-    case "minion":
-    case "demon":
-        return ["Evil", "Good"]; // TODO i18n
+    case ERoleTeam.Minion:
+    case ERoleTeam.Demon:
+        return {
+            [ERoleAlignment.Default]: "Evil", // TODO i18n
+            [ERoleAlignment.Inverse]: "Good", // TODO i18n
+        };
 
-    case "traveller":
-        return ["Default", "Good", "Evil"]; // TODO i18n
+    case ERoleTeam.Traveller:
+        return {
+            [ERoleAlignment.Default]: "Default", // TODO i18n
+            [ERoleAlignment.TravellerGood]: "Good", // TODO i18n
+            [ERoleAlignment.TravellerEvil]: "Evil", // TODO i18n
+        };
 
     }
 
-    return [];
+    return {};
 
 });
 const name = computed(() => {

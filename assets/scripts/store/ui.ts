@@ -1,11 +1,11 @@
 import type {
     IRole,
-    IRoleAlignment,
     IToken,
 } from "../types/data";
 import type {
     IStorage,
 } from "../classes/Storage";
+import { ERoleAlignment } from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -33,7 +33,7 @@ const useUiStore = defineStore("ui", () => {
     const seatMenuToken = ref<IToken["id"]>("");
     const roleDialog = shallowReactive<{
         role?: IRole,
-        alignment?: IRoleAlignment,
+        alignment?: ERoleAlignment,
     }>({});
 
     const storage = inject<IStorage>("storage")!;

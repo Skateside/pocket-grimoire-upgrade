@@ -21,13 +21,13 @@
 </template>
 
 <script setup lang="ts">
-import type { IRoleReminder, IRoleAlignment } from "../scripts/types/data";
+import { type IRoleReminder, ERoleAlignment } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
     reminder: IRoleReminder,
-    alignment?: IRoleAlignment,
+    alignment?: ERoleAlignment,
     orphan?: boolean,
 }>();
 

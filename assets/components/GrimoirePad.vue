@@ -66,7 +66,7 @@
 
     <!-- TODO: Remove this part from this component -->
     <p><button type="button" @click="addSeat">Add seat</button></p>
-    <p>
+    <form>
         <label for="remove-dropdown">Remove</label>
         <select id="remove-dropdown" ref="remove-dropdown">
             <option disabled value="">Please select</option>
@@ -88,7 +88,7 @@
             </optgroup>
         </select>
         <button type="button" @click="removeByDropdown">Remove</button>
-    </p>
+    </form>
 
     <!-- TODO: Remove this part: trigger from export -->
     <p><button type="button" @click="setPositions">Position</button></p>
