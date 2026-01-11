@@ -33,12 +33,12 @@
 
 <script lang="ts" setup>
 import type { RequireOnly } from "../scripts/types/lib";
-import { type IRole, ERoleAlignment } from "../scripts/types/data";
+import { type IRole, ERoleAlignment, ERoleIds } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
 const props = defineProps<{
-    role?: IRole|IRole["id"]|null,
+    role?: IRole | IRole["id"] | null,
     alignment?: ERoleAlignment,
     orphan?: boolean,
 }>();
@@ -50,11 +50,11 @@ const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
         image: "/icons/norole.svg",
     };
 
-    if (!role) {
+    if (!props.role) {
         return role;
     }
 
-    if (role.id === "_meta") {
+    if (typeof props.role === "object" && props.role?.id === ERoleIds.Meta) {
 
         role.name = "rolemeta"; // TODO: i18n
         role.image = "/icons/metarole.svg";

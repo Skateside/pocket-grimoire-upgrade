@@ -2,7 +2,7 @@
     <div ref="grimoire" class="grimoire movable">
 
         <button
-            v-for="seat in tokenStore.byType.seat"
+            v-for="seat in tokenStore.seats"
             ref="seats"
             type="button"
             class="token token--seat movable__item"
@@ -41,7 +41,7 @@
         </button>
 
         <button
-            v-for="reminder in tokenStore.byType.reminder"
+            v-for="reminder in tokenStore.reminders"
             type="button"
             class="token token--reminder movable__item"
             :id="reminder.id"
@@ -70,17 +70,17 @@
         <label for="remove-dropdown">Remove</label>
         <select id="remove-dropdown" ref="remove-dropdown">
             <option disabled value="">Please select</option>
-            <optgroup v-if="tokenStore.byType.seat?.length" label="Seats">
+            <optgroup v-if="tokenStore.seats?.length" label="Seats">
                 <option
-                    v-for="seat in tokenStore.byType.seat"
+                    v-for="seat in tokenStore.seats"
                     :value="seat.id"
                 >
                     {{ seat.name || seat.role }} ({{ seat.id }})
                 </option>
             </optgroup>
-            <optgroup v-if="tokenStore.byType.reminder?.length" label="Reminders">
+            <optgroup v-if="tokenStore.reminders?.length" label="Reminders">
                 <option
-                    v-for="reminder in tokenStore.byType.reminder"
+                    v-for="reminder in tokenStore.reminders"
                     :value="reminder.id"
                 >
                     {{ reminder.reminder }} ({{ reminder.id }})
