@@ -58,6 +58,24 @@ export type IInfoTokenColours = (
     | "red"
 );
 
+// Jinxes.
+
+export enum EJinxState {
+    Theoretical,
+    Potential,
+    Active,
+};
+// state: "theoretical" = this jinx exists but only the target is in the script.
+// state: "potential" = the target and trick are both in the script.
+// state: "active" = the target and trick are both in play.
+
+export type IJinx = {
+    target: IRole,
+    trick: IRole,
+    reason: IRoleJinxRaw["reason"],
+    state: EJinxState,
+};
+
 // The Grimoire Pad.
 
 export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
@@ -82,10 +100,9 @@ export type IRoleRaw = {
     special?: IRoleSpecial[],
 };
 
-export type IRole = Omit<IRoleRaw, "reminders" | "jinxes"> & {
+export type IRole = Omit<IRoleRaw, "reminders"> & {
     // TODO: anything that the Pocket Grimoire needs to manage the role.
     reminders?: IRoleReminder[],
-    jinxes?: IRoleJinx[],
 };
 
 export type IRoleDeprecatedReminders = IRole & {
@@ -115,15 +132,6 @@ export type IRoleJinxRaw = {
     id: string,
     reason: string,
 };
-
-export type IRoleJinx = IRoleJinxRaw & {
-    state: "theoretical" | "potential" | "active",
-};
-// state: "theoretical" = this jinx exists but only the role is in the script,
-//                        the id mentioned here isn't.
-// state: "potential" = the role and the id are both in the script, but they not
-//                      both in play.
-// state: "active" = both the role and id are in play.
 
 export type IRoleMeta = {
     id: "_meta",
@@ -218,13 +226,6 @@ export type IRoleNightOrder = Record<"first" | "other", {
     role: IRole,
     order: number,
 }[]>;
-
-// export type IRoleDemonBluffGroup = {
-//     name: string,
-//     roles: IRole["id"][],
-// };
-
-// export type IRoleDemonBluffs = IRoleDemonBluffGroup[];
 
 // Tokens.
 

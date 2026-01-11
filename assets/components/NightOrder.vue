@@ -19,30 +19,32 @@
         </div>
     </ReelLayout>
 
-    <ul>
-        <li>
-            <label :for="`show-dead-${suffix}`">
-                <input
-                    v-model="showDead"
-                    type="checkbox"
-                    :id="`show-dead-${suffix}`"
-                    name="show-dead"
-                >
-                Show dead characters
-            </label>
-        </li>
-        <li>
-            <label :for="`show-nip-${suffix}`">
-                <input
-                    v-model="showNotInPlay"
-                    type="checkbox"
-                    :id="`show-nip-${suffix}`"
-                    name="show-nip"
-                >
-                Show characters not in play
-            </label>
-        </li>
-    </ul>
+    <form>
+        <ul>
+            <li>
+                <label :for="`show-dead-${suffix}`">
+                    <input
+                        v-model="showDead"
+                        type="checkbox"
+                        :id="`show-dead-${suffix}`"
+                        name="show-dead"
+                    >
+                    Show dead characters
+                </label>
+            </li>
+            <li>
+                <label :for="`show-nip-${suffix}`">
+                    <input
+                        v-model="showNotInPlay"
+                        type="checkbox"
+                        :id="`show-nip-${suffix}`"
+                        name="show-nip"
+                    >
+                    Show characters not in play
+                </label>
+            </li>
+        </ul>
+    </form>
 </template>
 
 <script setup lang="ts">

@@ -34,8 +34,8 @@
         <TabUI title="Night Order" :disabled="!roleStore.hasScript">
             <NightOrder />
         </TabUI>
-        <TabUI title="Jinxes" :disabled="true">
-            <p>Todo: Jinxes (enabled if necessary)</p>
+        <TabUI title="Jinxes" :disabled="!jinxStore.hasJinxes">
+            <JinxList />
         </TabUI>
     </TabsUI>
 
@@ -109,6 +109,7 @@ import {
 } from "vue";
 import useGameStore from "../scripts/store/game";
 import useInfoTokenStore from "../scripts/store/infoToken";
+import useJinxStore from "../scripts/store/jinx";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import useUiStore from "../scripts/store/ui";
@@ -131,11 +132,13 @@ import RoleListDialog from "./RoleListDialog.vue";
 import ReminderListDialog from "./ReminderListDialog.vue";
 import InfoTokenDialog from "./InfoTokenDialog.vue";
 import InfoTokenFormDialog from "./InfoTokenFormDialog.vue";
+import JinxList from "./JinxList.vue";
 import {
     times,
 } from "../scripts/utilities/numbers";
 
 const gameStore = useGameStore();
+const jinxStore = useJinxStore();
 const infoTokenStore = useInfoTokenStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();

@@ -1,6 +1,6 @@
 import type {
     IRole,
-    IRoleJinx,
+    // IRoleJinx,
     IRoleMeta,
     IRoleReminder,
     IRoleScript,
@@ -9,6 +9,7 @@ import type {
     IRoleTeam,
     IRoleAlignment,
     IRoleNightOrder,
+    IRoleJinxRaw,
     // IRoleDemonBluffGroup,
     // IRoleDemonBluffs,
 } from "../types/data";
@@ -88,10 +89,12 @@ const useRoleStore = defineStore("role", () => {
         deepThaw(window.PG.scripts)
     );
     const script = ref<IRoleScript>([
-        ...storage.get<IRoleScript>(STORAGE_KEY, []).map(innerSetRemindersRole),
+        ...storage
+            .get<IRoleScript>(STORAGE_KEY, [])
+            .map(innerSetRemindersRole),
     ]);
     const hasScript = computed(() => script.value.length > 0);
-    // TODO: hasJinxes
+
     const nightOrder = computed(() => {
 
         const nightOrder: IRoleNightOrder = {
@@ -181,8 +184,8 @@ const useRoleStore = defineStore("role", () => {
     };
 
     const innerCombineJinxes = (
-        roleJinxes?: IRoleJinx[],
-        homebrewJinxes?: IRoleJinx[],
+        roleJinxes?: IRoleJinxRaw[],
+        homebrewJinxes?: IRoleJinxRaw[],
     ) => {
 
         if (!roleJinxes?.length && !homebrewJinxes?.length) {
@@ -200,10 +203,10 @@ const useRoleStore = defineStore("role", () => {
             // If there is a `reason`, the intention is to add/update the jinx.
             } else if (reason) {
 
-                const jinx: IRoleJinx = {
+                const jinx: IRoleJinxRaw = {
                     id,
                     reason,
-                    state: "theoretical",
+                    // state: "theoretical",
                 };
 
                 if (index < 0) {
@@ -314,7 +317,7 @@ const useRoleStore = defineStore("role", () => {
 
     const getReminders = computed(() => () => {
 
-        // TODO: filters
+        // TODO: filters (probably a parameter)
         const reminders: IRoleReminder[] = [];
 
         reminders.push(
@@ -508,7 +511,12 @@ const useRoleStore = defineStore("role", () => {
             );
 
             if (role) {
-                return innerSetRemindersRole(innerUpdateReminders(role as IRole));
+
+                return [
+                    innerUpdateReminders,
+                    innerSetRemindersRole,
+                ].reduce((updated, func) => func(updated), role);
+
             }
 
             error = JSON.stringify(data);
