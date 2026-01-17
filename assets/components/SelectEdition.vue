@@ -2,7 +2,7 @@
 
     <form
         ref="form"
-        data-identifier="select-edition"
+        data-memory="select-edition"
         @submit.prevent="handleSubmit"
     >
 
@@ -10,8 +10,8 @@
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <TabsUI identifier="edition" @tabmounted="handleTabmounted" @tabchange="handleTabchange">
-            <TabUI title="Official scripts">
+        <TabsUI memory="edition" @tabmounted="handleTabmounted" @tabchange="handleTabchange">
+            <TabUI id="official" title="Official scripts">
                 <fieldset>
                     <legend>Official scripts</legend>
                     <ul>
@@ -25,24 +25,24 @@
                 </fieldset>
             </TabUI>
 
-            <TabUI title="Upload a custom script">
+            <TabUI id="upload" title="Upload a custom script">
                 <label :for="`upload-${suffix}`">Upload a custom script</label>
                 <input type="file" name="upload" :id="`upload-${suffix}`" accept="application/json">
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
-            <TabUI title="Enter a URL">
+            <TabUI id="url" title="Enter a URL">
                 <label :for="`url-${suffix}`">Enter a URL</label>
                 <input type="url" name="url" :id="`script-${suffix}`" class="input" placeholder="https://www.example.com/script.json">
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
-            <TabUI title="Paste from clipboard">
+            <TabUI id="clipboard" title="Paste from clipboard">
                 <label :for="`paste-${suffix}`">Paste from clipboard</label>
                 <textarea name="paste" :id="`paste-${suffix}`" placeholder='["washerwoman","investigator","librarian","chef"]'></textarea>
             </TabUI>
     
-            <TabUI title="Search BotC Scripts">
+            <TabUI id="botc-scripts" title="Search BotC Scripts">
                 <fieldset>
                     <legend>Script type</legend>
                     <ul>
@@ -67,6 +67,7 @@
                     </ul>
                 </fieldset>
                 <p>
+<!-- TODO: improve this interface -->
                     <label :for="`script-botc-${suffix}`">Search BotC Scripts</label>
                     <!--
                     <input type="text" name="botc" :id="`script-botc-${suffix}`" :list="`script-botc-list-${suffix}`" v-model="botcLookup">
@@ -140,6 +141,10 @@ import {
 } from "./ui/tabs";
 import useFieldSaver from "../composables/useFieldSaver";
 
+const emit = defineEmits<{
+    (e: "edition-selected"): void,
+}>();
+
 const store = useRoleStore();
 const suffix = useId();
 const form = useTemplateRef("form");
@@ -185,7 +190,7 @@ const handleSubmit = (event: Event) => {
 
     isLoading.value = true;
     
-    const data = new FormData((event.target as HTMLFormElement));
+    const data = new FormData(event.target as HTMLFormElement);
     const promises: [string, (_value: any) => Promise<IRoleScriptImport>][] = [
         ["", () => Promise.reject("Empty form")], // TODO: i18n
         ["script", processScriptId],
@@ -200,7 +205,10 @@ const handleSubmit = (event: Event) => {
     ] = promises.find(([name]) => data.has(name)) || promises[0];
 
     promiseMaker(data.get(name))
-        .then((script) => store.setScript(script))
+        .then((script) => {
+            store.setScript(script);
+            emit("edition-selected");
+        })
         .catch((error) => {
             console.error(error);
             errorMessage.value = error;

@@ -8,10 +8,14 @@ export default function useFieldSaver(
 ) {
 
     const formElement = toValue(form);
-    const identifier = formElement?.dataset.identifier;
+    const memory = formElement?.dataset.memory;
 
-    if (!formElement || !identifier) {
-        return;
+    if (!formElement) {
+        return console.warn("Missing form element");
+    }
+
+    if (!memory) {
+        return console.warn("Form %o missing data-memory attribute", formElement);
     }
 
     const store = useFieldsStore();
@@ -22,7 +26,7 @@ export default function useFieldSaver(
             return;
         }
 
-        store.saveField(identifier, target as FieldElement);
+        store.saveField(memory, target as FieldElement);
 
     };
 
@@ -30,7 +34,7 @@ export default function useFieldSaver(
     onUnmounted(() => formElement.removeEventListener("input", onInput));
 
     if (populateOnLoad) {
-        store.populateFields(formElement, identifier);
+        store.populateFields(formElement, memory);
     }
 
 }

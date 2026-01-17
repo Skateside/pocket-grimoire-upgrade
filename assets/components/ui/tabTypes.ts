@@ -14,19 +14,20 @@ export type ITabsUIMounted = {
 };
 
 export type ITabsUIInterface = {
-    isTabSelected: (indexOrTitle: number | string) => boolean,
+    isTabSelected: (indexOrId: number | string) => boolean,
     makeId: (title: string) => string,
-    setTab: (indexOrTitle: number | string) => boolean,
+    setTab: (indexOrId: number | string) => boolean,
 };
 
 export type ITabsUIProps = {
     tabClass?: HTMLAttributes["class"],
     contentsClass?: HTMLAttributes["class"],
-    identifier?: string,
+    memory?: string,
     scroll?: boolean,
 };
 
 export type ITabUIProps = {
+    id: string,
     title: string,
     tab?: Slot,
     disabled?: boolean,

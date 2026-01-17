@@ -36,21 +36,21 @@ const useFieldsStore = defineStore("fields", () => {
 
     };
 
-    const innerHasForm = (identifier: string) => (
-        Object.hasOwn(inputs.value, identifier)
+    const innerHasForm = (memory: string) => (
+        Object.hasOwn(inputs.value, memory)
     );
 
-    const innerGetForm = (identifier: string) => {
+    const innerGetForm = (memory: string) => {
 
-        if (!innerHasForm(identifier)) {
-            inputs.value[identifier] = Object.create(null);
+        if (!innerHasForm(memory)) {
+            inputs.value[memory] = Object.create(null);
         }
 
-        return inputs.value[identifier];
+        return inputs.value[memory];
 
     };
 
-    const saveField = (identifier: string, field: FieldElement) => {
+    const saveField = (memory: string, field: FieldElement) => {
 
         const { name, type } = field;
 
@@ -70,7 +70,7 @@ const useFieldsStore = defineStore("fields", () => {
             : field.value
         );
 
-        innerGetForm(identifier)[selector] = value;
+        innerGetForm(memory)[selector] = value;
 
         return true;
 
@@ -78,15 +78,15 @@ const useFieldsStore = defineStore("fields", () => {
 
     const populateFields = (
         form: HTMLFormElement,
-        identifier: string,
+        memory: string,
     ) => {
 
-        if (!innerHasForm(identifier)) {
+        if (!innerHasForm(memory)) {
             return false;
         }
 
         Object
-            .entries(innerGetForm(identifier))
+            .entries(innerGetForm(memory))
             .forEach(([selector, value]) => {
 
                 const input = form.querySelector<FieldElement>(selector);

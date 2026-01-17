@@ -7,18 +7,19 @@
                 role="tablist"
                 class="not-a-list tabs__list"
             >
-                <li v-for="{ disabled, tab, title } in tabProps">
+                <li v-for="{ disabled, id, tab, title } in tabProps">
                     <!-- TODO: no-button class on <button> -->
                     <button
                         type="button"
                         class="tabs__tab"
                         :class="props.tabClass"
                         role="tab"
-                        :aria-selected="isTabSelected(title)"
-                        :aria-controls="makeId(title)"
-                        :tabindex="isTabSelected(title) ? 0 : -1"
+                        :aria-selected="isTabSelected(id)"
+                        :aria-controls="makeId(id)"
+                        :tabindex="isTabSelected(id) ? 0 : -1"
                         :disabled="disabled"
-                        @click="setTabByTitle(title)"
+                        :data-tab-id="id"
+                        @click="setTabById(id)"
                         @keydown="moveTabByKey"
                     >
                         <component v-if="tab" :is="tab" />
@@ -71,16 +72,17 @@ const tablist = useTemplateRef("tablist");
 const tabpanels = useTemplateRef("tabpanels");
 const tabProps = computed<ITabUIProps[]>(() => {
 
-    return slots.default?.().map((slot) => ({
+    return slots.default?.().map((slot, index) => ({
         disabled: slot.props?.disabled || false,
+        id: slot.props?.id ?? `tab-${index}`,
         tab: (slot.children as Record<string, Slot>|null)?.tab,
-        title: slot.props?.title || "",
+        title: slot.props?.title ?? String(index),
     })) || [];
 
 });
 const selectedIndex = ref<number>(0);
-const selectedTitle = computed(() => {
-    return tabProps.value[selectedIndex.value]?.title || "";
+const selectedId = computed(() => {
+    return tabProps.value[selectedIndex.value]?.id || "";
 });
 
 const tabs = computed(() => {
@@ -92,21 +94,21 @@ const panels = computed(() => {
     return element.querySelectorAll<HTMLElement>("[role=\"tabpanel\"]");
 });
 
-const makeId: ITabsUIInterface["makeId"] = (title: string) => {
-    const id = words(title.replace(/\W/g, "").toLowerCase()).join("-");
-    return `tab-${id}-${suffix}`;
+const makeId: ITabsUIInterface["makeId"] = (id: string) => {
+    const modified = words(id.replace(/\W/g, "").toLowerCase()).join("-");
+    return `tab-${modified}-${suffix}`;
 };
 
 const isTabSelected: ITabsUIInterface["isTabSelected"] = (
-    indexOrTitle: number | string,
+    indexOrId: number | string,
 ) => (
-    typeof indexOrTitle === "string"
-    ? selectedTitle.value === indexOrTitle
-    : selectedIndex.value === indexOrTitle
+    typeof indexOrId === "string"
+    ? selectedId.value === indexOrId
+    : selectedIndex.value === indexOrId
 );
 
 const setTabByIndex = (index: number) => {
-
+console.log("setTabByIndex(%o)", index);
     const floor = Math.floor(index);
     const clamped = clamp(0, floor, tabProps.value.length - 1);
 
@@ -120,14 +122,20 @@ const setTabByIndex = (index: number) => {
 
 };
 
-const setTabByTitle = (title: string) => setTabByIndex(
-    tabProps.value.findIndex(({ title: tabTitle }) => tabTitle === title)
-);
+// const setTabById = (id: string) => setTabByIndex(
+//     tabProps.value.findIndex(({ id: tabId }) => tabId === id)
+// );
+const setTabById = (id: string) => {
+    console.log("setTabById(%o)", id);
+    return setTabByIndex(
+        tabProps.value.findIndex(({ id: tabId }) => tabId === id)
+    );
+};
 
-const setTab: ITabsUIInterface["setTab"] = (indexOrTitle: number | string) => (
-    typeof indexOrTitle === "number"
-    ? setTabByIndex(indexOrTitle)
-    : setTabByTitle(indexOrTitle)
+const setTab: ITabsUIInterface["setTab"] = (indexOrId: number | string) => (
+    typeof indexOrId === "number"
+    ? setTabByIndex(indexOrId)
+    : setTabById(indexOrId)
 );
 
 const keyHandlers: Record<string, () => void> = {
@@ -181,8 +189,8 @@ watch(selectedIndex, (index, oldIndex) => {
         return;
     }
 
-    if (props.identifier) {
-        store.setTabIndex(props.identifier, index);
+    if (props.memory) {
+        store.setTabIndex(props.memory, index);
     }
 
     emit("tabchange", {
@@ -196,8 +204,8 @@ watch(selectedIndex, (index, oldIndex) => {
 
 onMounted(() => {
 
-    if (props.identifier) {
-        setTabByIndex(store.getTabIndex(props.identifier));
+    if (props.memory) {
+        setTabByIndex(store.getTabIndex(props.memory));
     }
 
     emit("tabmounted", {

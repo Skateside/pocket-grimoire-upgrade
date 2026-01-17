@@ -1,40 +1,40 @@
 <template>
 
     <h1>Pocket Grimoire</h1>
-    <TabsUI ref="layout" identifier="layout" :scroll="true">
-        <TabUI title="Grimoire">
+    <TabsUI ref="layout" memory="layout" :scroll="true">
+        <TabUI id="setup" title="Setup">
+            <TabsUI ref="setup" memory="setup">
+                <TabUI id="edition" title="Select edition">
+                    <SelectEdition @edition-selected="handleEditionSelected" />
+                </TabUI>
+                <TabUI id="players" title="Set players">
+                    <PlayerCount />
+                    <PlayerCountSet
+                        @count-confirm="handleCountConfirm"
+                    />
+                </TabUI>
+                <TabUI id="cache" title="Cache">
+                    <ClearCache />
+                </TabUI>
+            </TabsUI>
+        </TabUI>
+        <TabUI id="grimoire" title="Grimoire">
             <GrimoirePad
                 ref="grimoire-pad"
                 @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
             />
             <DemonBluffs />
         </TabUI>
-        <TabUI title="Setup">
-            <TabsUI identifier="setup">
-                <TabUI title="Set players">
-                    <PlayerCount />
-                    <PlayerCountSet
-                        @count-confirm="handleCountConfirm"
-                    />
-                </TabUI>
-                <TabUI title="Select edition">
-                    <SelectEdition />
-                </TabUI>
-                <TabUI title="Cache">
-                    <ClearCache />
-                </TabUI>
-            </TabsUI>
-        </TabUI>
-        <TabUI title="Info Tokens">
+        <TabUI id="info" title="Info Tokens">
             <InfoTokens
                 @info-token-click="handleInfoTokenClick"
                 @add-info-token="handleAddInfoToken"
             />
         </TabUI>
-        <TabUI title="Night Order" :disabled="!roleStore.hasScript">
+        <TabUI id="night" title="Night Order" :disabled="!roleStore.hasScript">
             <NightOrder />
         </TabUI>
-        <TabUI title="Jinxes" :disabled="!jinxStore.hasJinxes">
+        <TabUI id="jinxes" title="Jinxes" :disabled="!jinxStore.hasJinxes">
             <JinxList />
         </TabUI>
     </TabsUI>
@@ -144,11 +144,16 @@ const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const uiStore = useUiStore();
 const layout = useTemplateRef<ITabsUIInterface>("layout");
+const setup = useTemplateRef<ITabsUIInterface>("setup");
 const grimoirePad = useTemplateRef<IGrimoirePadInterface>("grimoire-pad");
+
+const handleEditionSelected = () => {
+    setup.value?.setTab("players");
+};
 
 const handleCountConfirm = () => {
 
-    layout.value?.setTab("Grimoire");
+    layout.value?.setTab("grimoire");
 
     times(
         gameStore.count - tokenStore.tokens.length,
@@ -195,10 +200,7 @@ const handleRoleListClick = (id: IRole["id"]) => {
     const action = roleListClickActions[value];
 
     if (!action) {
-
-        console.warn(`Unrecognised role list click action "${value}"`);
-        return;
-
+        return console.warn(`Unrecognised role list click action "${value}"`);
     }
 
     action(id);
