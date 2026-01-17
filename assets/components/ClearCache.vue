@@ -36,7 +36,7 @@ const storage = inject<IStorage>("storage")!;
 const clearCache = () => {
 
     if (!window.confirm("Are you sure you want to CLEAR the cache?")) {
-        return;
+        return; // user choice.
     }
 
     // stores.forEach((store) => store.clear());
@@ -48,7 +48,7 @@ const clearCache = () => {
 const removeCache = () => {
 
     if (!window.confirm("Are you sure you want to REMOVE the cache")) {
-        return;
+        return; // user choice.
     }
 
     storage.kill();

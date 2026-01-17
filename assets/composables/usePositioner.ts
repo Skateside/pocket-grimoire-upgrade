@@ -51,14 +51,14 @@ const getCoordinates = (
     layout: keyof ILayouts,
 ) => {
 
-    coordinates.value.length = 0;
     const pad = toValue(padReference);
     const tokens = toValue(tokensReference);
-
+    
     if (!pad || !tokens?.length) {
-        return;
+        return; // no pad or tokens - probably because component hasn't finished mounting.
     }
-
+    
+    coordinates.value.length = 0;
     const tokenRects = tokens[0].getBoundingClientRect();
     const data: ILayoutData = {
         width: pad.right - pad.left,

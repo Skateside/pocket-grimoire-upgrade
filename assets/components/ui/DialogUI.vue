@@ -37,6 +37,7 @@ import type { IDialogUIEvents } from "./dialog";
 import {
     computed,
     onMounted,
+    onUnmounted,
     useTemplateRef,
 } from "vue";
 
@@ -63,25 +64,30 @@ const type = computed(() => (
     : "auto"
 ));
 
+const handleToggle = ({ newState }: ToggleEvent) => {
+
+    emit("toggle", newState === "open");
+
+    if (newState === "open") {
+        emit("show");
+    } else if (newState === "closed") {
+        emit("hide");
+    }
+
+};
+
 onMounted(() => {
 
     if (props.open) {
         dialog.value?.showPopover();
     }
 
-    dialog.value?.addEventListener("toggle", ({ newState }) => {
-
-        emit("toggle", newState === "open");
-
-        if (newState === "open") {
-            emit("show");
-        } else if (newState === "closed") {
-            emit("hide");
-        }
-
-    });
-
+    dialog.value?.addEventListener("toggle", handleToggle);
     // TODO: beforeToggle event.
 
+});
+
+onUnmounted(() => {
+    dialog.value?.removeEventListener("toggle", handleToggle);
 });
 </script>

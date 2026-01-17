@@ -53,7 +53,7 @@ const dataI = computed(() => {
 onMounted(() => {
 
     if (document.getElementById(dataI.value)) {
-        return;
+        return; // style already exists.
     }
 
     const style = document.createElement("style");

@@ -64,7 +64,7 @@ const cover = useTemplateRef<HTMLElement>("cover");
 const addStyleSheet = () => {
 
     if (document.getElementById(dataI.value)) {
-        return;
+        return; // style already exists.
     }
 
     const style = document.createElement("style");

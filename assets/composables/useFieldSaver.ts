@@ -23,7 +23,7 @@ export default function useFieldSaver(
     const onInput = ({ target }: Event) => {
 
         if (!target) {
-            return;
+            return console.warn("heard input event on non-existing target");
         }
 
         store.saveField(memory, target as FieldElement);

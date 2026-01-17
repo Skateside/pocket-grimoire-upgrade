@@ -46,8 +46,8 @@ export function removeItem(array: any[], item: any) {
 
 /**
  * Swaps the items in the array at `indexA` and `indexB`. If either `indexA` or
- * `indexB` are less than `0` or more-than-or-equal-to the length of `array` 
- * then no action is taken.
+ * `indexB` are less than `0`, more-than-or-equal-to the length of `array`, or
+ * not an integer, then no action is taken.
  * 
  * @param array Array whose items should be swapped.
  * @param indexA Index of one item to swap.
@@ -56,16 +56,26 @@ export function removeItem(array: any[], item: any) {
  */
 const swap = (array: any[], indexA: number, indexB: number) => {
 
+    if (indexA === indexB) {
+        return; // no need to swap, items already in desired place.
+    }
+    
     const { length }  = array;
 
     if (
-        indexA === indexB
-        || indexA < 0
+        indexA < 0
         || indexA >= length
+        || Math.trunc(indexA) !== indexA
         || indexB < 0
         || indexB >= length
+        || Math.trunc(indexB) !== indexB
     ) {
-        return;
+
+        return console.warn(
+            "can't swap, indices make no sense",
+            { indexA, indexB, length },
+        );
+
     }
 
     [array[indexA], array[indexB]] = [array[indexB], array[indexA]];

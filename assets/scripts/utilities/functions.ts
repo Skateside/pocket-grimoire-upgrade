@@ -32,7 +32,7 @@ export function debounce<T extends AnyFunction = AnyFunction>(
  * A function that takes no arguments and returns nothing.
  */
 export function noop(..._ignore: any[]) {
-    return;
+    return; // no operation.
 }
 
 /**

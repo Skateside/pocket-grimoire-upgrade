@@ -190,7 +190,7 @@ const name = computed(() => {
 const setSeatName = () => {
 
     if (!props.tokenId) {
-        return;
+        return console.warn("can't update seat - no token ID");
     }
 
     tokenStore.update<ITokenSeat>(props.tokenId, {

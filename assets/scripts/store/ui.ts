@@ -82,7 +82,7 @@ const useUiStore = defineStore("ui", () => {
         }
 
         if (state === Boolean(innerPopoverOpen[id])) {
-            return;
+            return; // desired state already set.
         }
 
         innerPopoverOpen[id] = state;

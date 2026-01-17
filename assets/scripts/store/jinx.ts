@@ -65,7 +65,7 @@ const useJinxStore = defineStore("jinx", () => {
         roleStore.script.forEach((role) => {
 
             if (roleStore.getIsMeta(role) || !role.jinxes) {
-                return;
+                return; // ignore meta role and role without jinxes.
             }
 
             jinxes.push(

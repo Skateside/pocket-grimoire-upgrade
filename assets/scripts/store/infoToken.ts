@@ -190,7 +190,7 @@ const useInfoTokenStore = defineStore("info-token", () => {
         const { roleIds } = innerGetById(activeId.value || "") || {};
 
         if (!roleIds) {
-            return;
+            return console.warn("can't add role, no active info token");
         }
 
         if (!roleIds.includes(id)) {
@@ -204,7 +204,7 @@ const useInfoTokenStore = defineStore("info-token", () => {
         const { roleIds } = innerGetById(activeId.value || "") || {};
 
         if (!roleIds) {
-            return;
+            return console.warn("can't remove role, no active info token");
         }
 
         removeItem(roleIds, id);

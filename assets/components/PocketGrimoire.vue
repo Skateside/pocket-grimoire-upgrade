@@ -169,7 +169,7 @@ const roleListClickActions: Record<string, (id: IRole["id"]) => void> = {
     setSeatTokenRole(id) {
 
         if (!uiStore.seatMenuToken) {
-            return;
+            return console.warn("uiStore doesn't have seat menu token set");
         }
 
         tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
@@ -182,7 +182,7 @@ const roleListClickActions: Record<string, (id: IRole["id"]) => void> = {
     addInfoTokenRole(id) {
 
         if (!infoTokenStore.active) {
-            return;
+            return console.warn("infoTokenStore has no active info token");
         }
 
         infoTokenStore.addRole(id);

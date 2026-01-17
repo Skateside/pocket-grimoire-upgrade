@@ -192,7 +192,7 @@ const removeByDropdown = () => {
     const id = removeDropdown.value?.value;
 
     if (!id) {
-        return;
+        return console.warn("can't remove id - id doesn't exist");
     }
 
     remove(id);
@@ -215,7 +215,7 @@ const moveTo = (movableItem: HTMLElement, { x, y, z }: ICoordinates) => {
     const { id } = movableItem;
 
     if (!id) {
-        return;
+        return console.warn("can't move token - movable item isn't set");
     }
 
     const update: ICoordinates = { x, y };
@@ -270,7 +270,7 @@ const startDrag = (event: MouseEvent | TouchEvent) => {
     const { id } = movableItem || {};
 
     if (!movableItem || !id) {
-        return;
+        return; // clicked outside of a movable item.
     }
     
     endDragging();
@@ -287,7 +287,7 @@ const startDrag = (event: MouseEvent | TouchEvent) => {
 const endDragging = () => {
 
     if (dragHandler === noop) {
-        return;
+        return; // dragging has already ended.
     }
 
     window.removeEventListener("mousemove", dragHandler);
@@ -307,7 +307,7 @@ const checkClick = (event: MouseEvent) => {
     const element = getMovableItem(event.target as HTMLElement);
 
     if (!element || isDragging.value) {
-        return;
+        return; // no element or still dragging - in either case, not a click
     }
 
     element.dispatchEvent(new CustomEvent("movable-click", {
@@ -320,11 +320,12 @@ const checkClick = (event: MouseEvent) => {
 const updatePadDimensions = () => {
 
     if (!grimoire.value) {
-        return;
+        return console.warn("can't update dimensions - element doesn't exist");
     }
 
     // Destructure and then pass to Object.assign() because Vue doesn't seem to
-    // trigger watchEffect() if the function results are directly assigned.
+    // trigger watchEffect() if we pass the results of getBoundingClientRect()
+    // directly to Object.assign().
     const {
         top,
         left,
@@ -341,6 +342,8 @@ const updatePadDimensions = () => {
 
 };
 
+const updateEventually = debounce(updatePadDimensions, 150);
+
 onMounted(() => {
 
     document.addEventListener("mousedown", startDrag);
@@ -349,15 +352,11 @@ onMounted(() => {
     document.addEventListener("touchend", endDragging);
     document.addEventListener("contextmenu", endDragging);
     document.addEventListener("click", checkClick);
+    window.addEventListener("scroll", updateEventually, { passive: true });
     updatePadDimensions();
 
     if (grimoire.value) {
-
-        observer.value = resizeObserver(
-            grimoire.value,
-            debounce(updatePadDimensions, 150),
-        );
-
+        observer.value = resizeObserver(grimoire.value, updateEventually);
     }
 
 });
@@ -368,8 +367,9 @@ onUnmounted(() => {
     document.removeEventListener("touchstart", startDrag);
     document.removeEventListener("mouseup", endDragging);
     document.removeEventListener("touchend", endDragging);
-    document.removeEventListener("click", endDragging);
-    document.removeEventListener("contextmenu", checkClick);
+    document.removeEventListener("contextmenu", endDragging);
+    document.removeEventListener("click", checkClick);
+    window.removeEventListener("scroll", updateEventually);
     observer.value?.unobserve();
 
 });

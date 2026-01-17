@@ -61,7 +61,7 @@ let resizor: IResizeObserverResponse | null = null;
 const updateIsOverflowing = (element: HTMLElement | null) => {
 
     if (!element) {
-        return;
+        return console.warn("can't update - element doesn't exist");
     }
 
     isOverflowing.value = element.scrollWidth > element.clientWidth
@@ -73,7 +73,7 @@ onMounted(() => {
     const element = reel.value;
 
     if (!element) {
-        return;
+        return console.warn("can't observe - element doesn't exist");
     }
 
     mutator = mutationObserver(element, {

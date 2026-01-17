@@ -154,7 +154,7 @@ const moveTabByKey = (event: KeyboardEvent) => {
     const handler = keyHandlers[event.key];
 
     if (!handler) {
-        return;
+        return; // key isn't supposed to be captured.
     }
 
     handler();
@@ -180,7 +180,7 @@ defineExpose(tabsInterface);
 watch(selectedIndex, (index, oldIndex) => {
 
     if (index === oldIndex) {
-        return;
+        return; // no change in index, tab wasn't changed.
     }
 
     if (props.memory) {

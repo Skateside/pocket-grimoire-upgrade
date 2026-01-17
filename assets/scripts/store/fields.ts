@@ -92,7 +92,7 @@ const useFieldsStore = defineStore("fields", () => {
                 const input = form.querySelector<FieldElement>(selector);
 
                 if (!input) {
-                    return;
+                    return console.warn(`selector matches nothing: ${selector}`);
                 }
 
                 switch (input.type) {

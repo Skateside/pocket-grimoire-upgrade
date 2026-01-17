@@ -112,7 +112,7 @@ const useRoleStore = defineStore("role", () => {
         script.value.forEach((role) => {
 
             if (innerIsMeta(role)) {
-                return;
+                return; // ignore meta role.
             }
 
             const { firstNight, otherNight } = role;
@@ -196,7 +196,7 @@ const useRoleStore = defineStore("role", () => {
     ) => {
 
         if (!roleJinxes?.length && !homebrewJinxes?.length) {
-            return;
+            return; // no jinxes, nothing to combine.
         }
 
         return (homebrewJinxes || []).reduce((jinxes, { id, reason }) => {
@@ -416,7 +416,7 @@ const useRoleStore = defineStore("role", () => {
 
             if (typeof reminder === "object") {
                 reminders.push(reminder);
-                return;
+                return; // reminder is already an object.
             }
 
             const found = reminders.find(({ name }) => name === reminder);

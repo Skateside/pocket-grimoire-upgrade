@@ -159,7 +159,7 @@ const handleTabmounted = ({ tabs, index }: ITabsUIMounted) => {
     tabs.forEach((tab, tabIndex) => {
 
         if (index === tabIndex) {
-            return;
+            return; // leave current tab's inputs enabled.
         }
 
         tab
@@ -185,7 +185,7 @@ const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
 const handleSubmit = (event: Event) => {
 
     if (isLoading.value) {
-        return;
+        return; // can't submit, still loading.
     }
 
     isLoading.value = true;
@@ -317,7 +317,7 @@ watch(botcLookup, debounce((value) => {
 
     if (!value?.trim()) {
         isLoading.value = false;
-        return;
+        return; // nothing to look up.
     }
 
     const type = document

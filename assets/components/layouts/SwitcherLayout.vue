@@ -46,7 +46,7 @@ const dataI = computed(() => `L-Switcher--${toPosInt(props.limit)}`);
 onMounted(() => {
 
     if (document.getElementById(dataI.value)) {
-        return;
+        return; // style already exists.
     }
 
     const limit = toPosInt(props.limit);

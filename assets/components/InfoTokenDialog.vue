@@ -48,7 +48,7 @@ const roles = computed(() => infoToken.value.roleIds.map(roleStore.getById));
 const handleUpdate = () => {
 
     if (!infoToken.value) {
-        return;
+        return console.warn("can't update - no active info token");
     }
 
     emit("update");
