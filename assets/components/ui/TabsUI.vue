@@ -108,7 +108,7 @@ const isTabSelected: ITabsUIInterface["isTabSelected"] = (
 );
 
 const setTabByIndex = (index: number) => {
-console.log("setTabByIndex(%o)", index);
+
     const floor = Math.floor(index);
     const clamped = clamp(0, floor, tabProps.value.length - 1);
 
@@ -122,15 +122,9 @@ console.log("setTabByIndex(%o)", index);
 
 };
 
-// const setTabById = (id: string) => setTabByIndex(
-//     tabProps.value.findIndex(({ id: tabId }) => tabId === id)
-// );
-const setTabById = (id: string) => {
-    console.log("setTabById(%o)", id);
-    return setTabByIndex(
-        tabProps.value.findIndex(({ id: tabId }) => tabId === id)
-    );
-};
+const setTabById = (id: string) => setTabByIndex(
+    tabProps.value.findIndex(({ id: tabId }) => tabId === id)
+);
 
 const setTab: ITabsUIInterface["setTab"] = (indexOrId: number | string) => (
     typeof indexOrId === "number"
