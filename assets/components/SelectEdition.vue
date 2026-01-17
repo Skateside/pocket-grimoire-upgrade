@@ -10,7 +10,7 @@
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <TabsUI identifier="edition" @tabchange="handleTabchange">
+        <TabsUI identifier="edition" @tabmounted="handleTabmounted" @tabchange="handleTabchange">
             <TabUI title="Official scripts">
                 <fieldset>
                     <legend>Official scripts</legend>
@@ -27,19 +27,19 @@
 
             <TabUI title="Upload a custom script">
                 <label :for="`upload-${suffix}`">Upload a custom script</label>
-                <input type="file" name="upload" :id="`upload-${suffix}`" accept="application/json" disabled>
+                <input type="file" name="upload" :id="`upload-${suffix}`" accept="application/json">
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI title="Enter a URL">
                 <label :for="`url-${suffix}`">Enter a URL</label>
-                <input type="url" name="url" :id="`script-${suffix}`" class="input" placeholder="https://www.example.com/script.json" disabled>
+                <input type="url" name="url" :id="`script-${suffix}`" class="input" placeholder="https://www.example.com/script.json">
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI title="Paste from clipboard">
                 <label :for="`paste-${suffix}`">Paste from clipboard</label>
-                <textarea name="paste" :id="`paste-${suffix}`" placeholder='["washerwoman","investigator","librarian","chef"]' disabled></textarea>
+                <textarea name="paste" :id="`paste-${suffix}`" placeholder='["washerwoman","investigator","librarian","chef"]'></textarea>
             </TabUI>
     
             <TabUI title="Search BotC Scripts">
@@ -48,32 +48,57 @@
                     <ul>
                         <li>
                             <label :for="`botc-type-any-${suffix}`">
-                                <input type="radio" name="botc-type" value="" :id="`botc-type-any-${suffix}`" checked disabled>
+                                <input type="radio" name="botc-type" value="" :id="`botc-type-any-${suffix}`" checked>
                                 Any
                             </label>
                         </li>
                         <li>
                             <label :for="`botc-type-full-${suffix}`">
-                                <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${suffix}`" disabled>
+                                <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${suffix}`">
                                 Full
                             </label>
                         </li>
                         <li>
                             <label :for="`botc-type-teensyville-${suffix}`">
-                                <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${suffix}`" disabled>
+                                <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${suffix}`">
                                 Teensyville
                             </label>
                         </li>
                     </ul>
                 </fieldset>
                 <p>
-                    <label for="script-botc">Search BotC Scripts</label>
-                    <input type="text" name="botc" id="script-botc" list="script-botc-list" v-model="botcLookup" disabled>
-                    <datalist id="script-botc-list">
+                    <label :for="`script-botc-${suffix}`">Search BotC Scripts</label>
+                    <!--
+                    <input type="text" name="botc" :id="`script-botc-${suffix}`" :list="`script-botc-list-${suffix}`" v-model="botcLookup">
+                    <datalist :id="`script-botc-list-${suffix}`">
                         <option v-for="value in datalist" :key="value">{{ value }}</option>
                     </datalist>
+                    -->
+                    <div>
+                        <input
+                            type="text"
+                            name="botc"
+                            :id="`script-botc-${suffix}`"
+                            v-model="botcLookup"
+                        >
+                        <ul>
+                            <template v-if="isLoading">
+                                <li>Loading</li>
+                            </template>
+                            <template v-else-if="datalist.length">
+                                <li v-for="value in datalist" :key="value">
+                                    <button type="button" @click="botcLookup = value">
+                                        {{ value }}
+                                    </button>
+                                </li>
+                            </template>
+                            <template v-else-if="botcLookup">
+                                <li>No results found for "{{ botcLookup }}"</li>
+                            </template>
+                        </ul>
+                    </div>
                 </p>
-                <p v-if="isLoading">Please wait ...</p>
+                <!-- <p v-if="isLoading">Please wait ...</p> -->
             </TabUI>
         </TabsUI>
 
@@ -109,6 +134,7 @@ import {
 } from "../scripts/utilities/functions";
 import {
     type ITabsUIChange,
+    type ITabsUIMounted,
     TabsUI,
     TabUI,
 } from "./ui/tabs";
@@ -122,6 +148,22 @@ const errorMessage = ref<string>("");
 const botcScripts = ref<Record<string, IRoleScriptImport>>({});
 const botcLookup = defineModel<string>();
 const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
+
+const handleTabmounted = ({ tabs, index }: ITabsUIMounted) => {
+
+    tabs.forEach((tab, tabIndex) => {
+
+        if (index === tabIndex) {
+            return;
+        }
+
+        tab
+            .querySelectorAll<FieldElement>("input,select,textarea")
+            .forEach((input) => input.disabled = true);
+
+    });
+
+};
 
 const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
 
@@ -271,7 +313,7 @@ watch(botcLookup, debounce((value) => {
     }
 
     const type = document
-        .querySelector<HTMLInputElement>(`[name="botc-type"]:checked`)
+        .querySelector<HTMLInputElement>(`[name="botc-type"][id$="-${suffix}"]:checked`)
         ?.value || "";
 
     getBotcScripts(value, type)

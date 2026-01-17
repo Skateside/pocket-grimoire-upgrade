@@ -7,6 +7,12 @@ export type ITabsUIChange = {
     oldIndex: number,
 };
 
+export type ITabsUIMounted = {
+    tab: HTMLElement | null,
+    index: number,
+    tabs: HTMLElement[],
+};
+
 export type ITabsUIInterface = {
     isTabSelected: (indexOrTitle: number | string) => boolean,
     makeId: (title: string) => string,

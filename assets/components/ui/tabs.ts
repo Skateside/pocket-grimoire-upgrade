@@ -1,5 +1,6 @@
 import type {
     ITabsUIChange,
+    ITabsUIMounted,
     ITabsUIInterface,
     ITabsUIProps,
     ITabUIProps,
@@ -9,6 +10,7 @@ import TabsUI from "./TabsUI.vue";
 
 export type {
     ITabsUIChange,
+    ITabsUIMounted,
     ITabsUIInterface,
     ITabsUIProps,
     ITabUIProps,

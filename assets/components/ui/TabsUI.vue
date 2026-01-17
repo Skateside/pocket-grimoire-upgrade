@@ -36,6 +36,7 @@
 <script setup lang="ts">
 import type {
     ITabsUIChange,
+    ITabsUIMounted,
     ITabsUIInterface,
     ITabsUIProps,
     ITabUIProps,
@@ -61,6 +62,7 @@ import { clamp } from "../../scripts/utilities/numbers";
 const props = defineProps<ITabsUIProps>();
 const emit = defineEmits<{
     (e: "tabchange", tab: ITabsUIChange): void,
+    (e: "tabmounted", data: ITabsUIMounted): void,
 }>();
 const suffix = useId();
 const slots = useSlots();
@@ -79,6 +81,15 @@ const tabProps = computed<ITabUIProps[]>(() => {
 const selectedIndex = ref<number>(0);
 const selectedTitle = computed(() => {
     return tabProps.value[selectedIndex.value]?.title || "";
+});
+
+const tabs = computed(() => {
+    const element = tablist.value || document.createElement("div");
+    return element.querySelectorAll<HTMLButtonElement>("[role=\"tab\"]");
+});
+const panels = computed(() => {
+    const element = tabpanels.value || document.createElement("div");
+    return element.querySelectorAll<HTMLElement>("[role=\"tabpanel\"]");
 });
 
 const makeId: ITabsUIInterface["makeId"] = (title: string) => {
@@ -152,13 +163,7 @@ const moveTabByKey = (event: KeyboardEvent) => {
 };
 
 const focusOnSelectedTab = () => {
-
-    tablist
-        .value
-        ?.querySelectorAll<HTMLButtonElement>("[role=\"tab\"]")
-        ?.[selectedIndex.value]
-        ?.focus();
-
+    tabs.value[selectedIndex.value]?.focus();
 };
 
 const tabsInterface: ITabsUIInterface = {
@@ -180,15 +185,11 @@ watch(selectedIndex, (index, oldIndex) => {
         store.setTabIndex(props.identifier, index);
     }
 
-    const panels = tabpanels.value?.querySelectorAll<HTMLElement>(
-        "[role=\"tabpanel\"]"
-    );
-
     emit("tabchange", {
         index,
         oldIndex,
-        tab: panels?.[index] ?? null,
-        oldTab: panels?.[oldIndex] ?? null,
+        tab: panels.value[index] ?? null,
+        oldTab: panels.value[oldIndex] ?? null,
     });
 
 });
@@ -198,6 +199,12 @@ onMounted(() => {
     if (props.identifier) {
         setTabByIndex(store.getTabIndex(props.identifier));
     }
+
+    emit("tabmounted", {
+        tab: panels.value[selectedIndex.value] ?? null,
+        index: selectedIndex.value,
+        tabs: [...panels.value],
+    });
 
 });
 </script>
