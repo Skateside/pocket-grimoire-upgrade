@@ -100,6 +100,24 @@ const useRoleStore = defineStore("role", () => {
             .get<IRoleScript>(STORAGE_KEY, [])
             .map(innerSetRemindersRole),
     ]);
+
+    watch(script, (value) => {
+        // When saving a script, remove each reminder's role to prevent a
+        // circular reference.
+        storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
+    });
+
+    const clear = () => {
+        script.value.length = 0;
+    };
+
+    const scriptByType = computed(() => Object.groupBy(
+        script.value.filter((role) => (
+            !innerIsMeta(role) && role.edition !== ERoleEditions.Special
+        )),
+        (role) => (role as IRole).team || "",
+    ) as Record<ERoleTeam, IRole[]>);
+
     const hasScript = computed(() => script.value.length > 0);
 
     const nightOrder = computed(() => {
@@ -143,16 +161,6 @@ const useRoleStore = defineStore("role", () => {
         return nightOrder;
 
     });
-
-    watch(script, (value) => {
-        // When saving a script, remove each reminder's role to prevent a
-        // circular reference.
-        storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
-    });
-
-    const clear = () => {
-        script.value.length = 0;
-    };
 
     const innerAsRoleObject = (roleOrId: IRoleScriptImport[0]) => {
         return (
@@ -574,6 +582,7 @@ const useRoleStore = defineStore("role", () => {
         getIsOrphanReminder,
         hasScript,
         nightOrder,
+        scriptByType,
         // Actions.
         clear,
         setScript,
