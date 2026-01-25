@@ -8,6 +8,10 @@
                         <button type="button">
                             <RoleToken :role="role" />
                         </button>
+                        <BaseInputSpinner
+                            v-model="counts[role.id]"
+                            :label="`Number of ${role.name} added`"
+                        />
                     </div>
                 </GridLayout>
             </fieldset>
@@ -70,13 +74,15 @@
 import {
     ERoleTeam,
     ETokenDirection,
+    type IRole,
     type ITokenSeat,
 } from "../scripts/types/data";
-import { computed, ref, useId } from "vue";
+import { computed, onMounted, reactive, ref, useId } from "vue";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import GridLayout from "./layouts/GridLayout.vue";
 import RoleToken from "./RoleToken.vue";
+import BaseInputSpinner from "./BaseInputSpinner.vue";
 
 const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([
     ERoleTeam.Townsfolk,
@@ -95,11 +101,16 @@ const direction = defineModel<ETokenDirection>("direction", {
 const duplicates = defineModel<boolean>("duplicates", {
     default: false,
 });
+const counts = reactive<Record<IRole["id"], number>>({});
 
 const sorted = computed(() => {
     return tokenStore
         .getSortedSeats()
         .map((id) => tokenStore.getById(id))
         .filter(Boolean) as ITokenSeat[];
+});
+
+onMounted(() => {
+    roleStore.script.forEach(({ id }) => counts[id] = 0);
 });
 </script>
