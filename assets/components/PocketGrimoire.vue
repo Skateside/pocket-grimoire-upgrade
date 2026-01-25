@@ -5,13 +5,16 @@
         <TabUI id="setup" title="Setup">
             <TabsUI ref="setup" memory="setup">
                 <TabUI id="edition" title="Select edition">
-                    <SelectEdition @edition-selected="handleEditionSelected" />
+                    <SelectEdition />
                 </TabUI>
                 <TabUI id="players" title="Set players">
                     <PlayerCount />
                     <PlayerCountSet
                         @count-confirm="handleCountConfirm"
                     />
+                </TabUI>
+                <TabUI id="roles" title="Assign roles" :disabled="!roleStore.hasScript">
+                    <AssignRoles />
                 </TabUI>
                 <TabUI id="cache" title="Cache">
                     <ClearCache />
@@ -118,21 +121,22 @@ import {
     TabsUI,
     TabUI,
 } from "./ui/tabs";
-import SelectEdition from "./SelectEdition.vue";
+import AssignRoles from "./AssignRoles.vue";
+import ClearCache from "./ClearCache.vue";
+import DemonBluffs from "./DemonBluffs.vue";
 import GrimoirePad, { type IGrimoirePadInterface } from "./GrimoirePad.vue";
-import RoleDialog from "./RoleDialog.vue";
+import InfoTokenDialog from "./InfoTokenDialog.vue";
+import InfoTokenFormDialog from "./InfoTokenFormDialog.vue";
+import InfoTokens from "./InfoTokens.vue";
+import JinxList from "./JinxList.vue";
 import NightOrder from "./NightOrder.vue";
 import PlayerCount from "./PlayerCount.vue";
 import PlayerCountSet from "./PlayerCountSet.vue";
-import DemonBluffs from "./DemonBluffs.vue";
-import ClearCache from "./ClearCache.vue";
-import InfoTokens from "./InfoTokens.vue";
-import SeatMenuDialog from "./SeatMenuDialog.vue";
-import RoleListDialog from "./RoleListDialog.vue";
 import ReminderListDialog from "./ReminderListDialog.vue";
-import InfoTokenDialog from "./InfoTokenDialog.vue";
-import InfoTokenFormDialog from "./InfoTokenFormDialog.vue";
-import JinxList from "./JinxList.vue";
+import RoleDialog from "./RoleDialog.vue";
+import RoleListDialog from "./RoleListDialog.vue";
+import SeatMenuDialog from "./SeatMenuDialog.vue";
+import SelectEdition from "./SelectEdition.vue";
 import {
     times,
 } from "../scripts/utilities/numbers";
@@ -144,12 +148,12 @@ const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const uiStore = useUiStore();
 const layout = useTemplateRef<ITabsUIInterface>("layout");
-const setup = useTemplateRef<ITabsUIInterface>("setup");
+// const setup = useTemplateRef<ITabsUIInterface>("setup");
 const grimoirePad = useTemplateRef<IGrimoirePadInterface>("grimoire-pad");
 
-const handleEditionSelected = () => {
-    setup.value?.setTab("players");
-};
+// const handleEditionSelected = () => {
+//     setup.value?.setTab("players");
+// };
 
 const handleCountConfirm = () => {
 

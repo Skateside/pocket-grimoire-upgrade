@@ -1,4 +1,5 @@
 import type {
+    ICoordinates,
     IRole,
     IToken,
     ITokenSeat,
@@ -234,6 +235,60 @@ const useTokenStore = defineStore("token", () => {
         return removeAtIndex(tokens.value, innerGetIndexById(id));
     };
 
+    const innerGetCentre = (items: ICoordinates[]) => {
+
+        const centre: ICoordinates = { x: 0, y: 0 };
+
+        if (!items.length) {
+            return centre;
+        }
+
+        items.forEach(({ x, y }) => {
+            centre.x += x;
+            centre.y += y;
+        });
+
+        centre.x /= items.length;
+        centre.y /= items.length;
+
+        return centre;
+
+    };
+
+    const innerGetAngle = (item: ICoordinates, centre: ICoordinates) => {
+
+        const x = item.x - centre.x;
+        const y = item.y - centre.y;
+        // atan2() would start at 3 o'clock, so we add PI/2 to start at 12.
+        let angle = Math.atan2(y, x) + (Math.PI / 2);
+
+        // Add a circle's worth of radians to keep all angles positive.
+        if (angle <= 0) {
+            angle += 2 * Math.PI;
+        }
+
+        return angle;
+
+    };
+
+    const innerGetDistance = (item: ICoordinates, centre: ICoordinates) => {
+        return Math.hypot(item.x - centre.x, item.y - centre.y);
+    };
+
+    const getSortedSeats = computed(() => () => {
+
+        const centre = innerGetCentre(seats.value);
+
+        return seats.value.map((seat) => ({
+            id: seat.id,
+            angle: innerGetAngle(seat, centre),
+            distance: innerGetDistance(seat, centre),
+        })).sort((seatA, seatB) => (
+            (seatA.angle - seatB.angle) || (seatA.distance - seatB.distance)
+        )).map(({ id }) => id);
+
+    });
+
     return {
         // State.
         tokens,
@@ -243,6 +298,7 @@ const useTokenStore = defineStore("token", () => {
         byType,
         dead,
         getById,
+        getSortedSeats,
         inPlay,
         isSeat,
         isReminder,

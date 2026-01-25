@@ -278,6 +278,11 @@ export enum ETokenType {
     Reminder,
 };
 
+export enum ETokenDirection {
+    Clockwise,
+    Anticlockwise,
+};
+
 export type IToken = Required<ICoordinates> & {
     id: string,
     type: ETokenType,
