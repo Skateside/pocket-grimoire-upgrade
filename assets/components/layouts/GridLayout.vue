@@ -43,7 +43,8 @@ const props = withDefaults(defineProps<Partial<{
     --l-grid-min-width: 30ch;
 
     display: grid;
+    align-content: start;
     grid-gap: var(--l-grid-gap);
-    grid-template-columns: repeat(auto-fit, minmax(min(var(--l-grid-min-width), 100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(var(--l-grid-min-width), 100%), 1fr));
 }
 </style>

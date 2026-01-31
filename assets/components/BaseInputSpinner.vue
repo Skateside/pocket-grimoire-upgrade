@@ -1,37 +1,44 @@
 <template>
-    <ClusterLayout gap="0">
+    <SidebarLayout gap="0">
         <button
             type="button"
             tabindex="-1"
             @click="changeValueAndFocus(-props.step)"
         >-</button>
-        <input
-            ref="input"
-            type="number"
-            :aria-label="props.label"
-            :step="props.step"
-            :min="props.min"
-            :max="props.max"
-            :value="props.modelValue"
-            @input="handleInput"
-            @keydown="handleKeydown"
-        >
-        <button
-            type="button"
-            tabindex="-1"
-            @click="changeValueAndFocus(props.step)"
-        >+</button>
-    </ClusterLayout>
+        <SidebarLayout gap="0" side="end">
+            <input
+                ref="input"
+                type="text"
+                inputmode="numeric"
+                pattern="\d+"
+                v-bind="attrs"
+                :step="props.step"
+                :min="props.min"
+                :max="props.max"
+                :value="props.modelValue"
+                @input="handleInput"
+                @keydown="handleKeydown"
+            >
+            <button
+                type="button"
+                tabindex="-1"
+                @click="changeValueAndFocus(props.step)"
+            >+</button>
+        </SidebarLayout>
+    </SidebarLayout>
 </template>
 
 <script setup lang="ts">
-import { useTemplateRef } from "vue";
+import { useAttrs, useTemplateRef } from "vue";
 import { clamp } from '../scripts/utilities/numbers';
-import ClusterLayout from "./layouts/ClusterLayout.vue";
+import SidebarLayout from "./layouts/SidebarLayout.vue";
 
+defineOptions({
+    inheritAttrs: false,
+});
+const attrs = useAttrs();
 const props = withDefaults(defineProps<{
     modelValue: number | string,
-    label: string,
     step?: number,
     min?: number,
     max?: number,
@@ -62,8 +69,13 @@ const changeValue = (delta: number) => {
 };
 
 const changeValueAndFocus = (delta: number) => {
+
     changeValue(delta);
-    input.value?.focus();
+
+    if (input.value?.offsetParent) {
+        input.value.focus();
+    }
+
 };
 
 const handleInput = (event: Event) => {

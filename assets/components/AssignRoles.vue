@@ -3,14 +3,15 @@
         <template v-for="team in ORDER">
             <fieldset v-if="roleStore.scriptByType[team]?.length">
                 <legend>{{ team }}</legend>
-                <GridLayout>
+                <GridLayout min-width="20ch">
                     <div v-for="role in roleStore.scriptByType[team]" :key="role.id">
                         <button type="button">
                             <RoleToken :role="role" />
                         </button>
                         <BaseInputSpinner
                             v-model="counts[role.id]"
-                            :label="`Number of ${role.name} added`"
+                            readonly
+                            :aria-label="`Number of ${role.name} added`"
                             :min="0"
                         />
                     </div>

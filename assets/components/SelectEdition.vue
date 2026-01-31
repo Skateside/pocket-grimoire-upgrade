@@ -66,7 +66,7 @@
                         </li>
                     </ul>
                 </fieldset>
-                <p>
+                <div>
 <!-- TODO: improve this interface -->
                     <label :for="`script-botc-${suffix}`">Search BotC Scripts</label>
                     <!--
@@ -98,7 +98,7 @@
                             </template>
                         </ul>
                     </div>
-                </p>
+                </div>
                 <!-- <p v-if="isLoading">Please wait ...</p> -->
             </TabUI>
         </TabsUI>
