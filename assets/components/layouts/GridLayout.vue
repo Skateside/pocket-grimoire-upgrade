@@ -11,7 +11,7 @@ https://every-layout.dev/layouts/grid/
         class="l-grid"
         :style="{
             '--l-grid-gap': props.gap,
-            '--l-grid-max-width': props.maxWidth,
+            '--l-grid-min-width': props.minWidth,
         }"
     >
         <slot></slot>
@@ -28,7 +28,7 @@ import type {
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,
     gap: ILayoutsLength,
-    maxWidth: ILayoutsLengthPercentage,
+    minWidth: ILayoutsLengthPercentage,
 }>>(), {
     node: "div",
 });
@@ -36,14 +36,14 @@ const props = withDefaults(defineProps<Partial<{
 
 <style lang="scss">
 @property --l-grid-gap { syntax: "<length>"; initial-value: 16px; inherits: true; }
-@property --l-grid-max-width { syntax: "<length-percentage>"; initial-value: 120px; inherits: true; }
+@property --l-grid-min-width { syntax: "<length-percentage>"; initial-value: 120px; inherits: true; }
 
 .l-grid {
     --l-grid-gap: var(--base-sizing);
-    --l-grid-max-width: 30ch;
+    --l-grid-min-width: 30ch;
 
     display: grid;
     grid-gap: var(--l-grid-gap);
-    grid-template-columns: repeat(auto-fit, minmax(min(var(--l-grid-max-width), 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--l-grid-min-width), 100%), 1fr));
 }
 </style>

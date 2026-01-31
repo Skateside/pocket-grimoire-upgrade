@@ -7,19 +7,19 @@
                 role="tablist"
                 class="not-a-list tabs__list"
             >
-                <li v-for="{ disabled, id, tab, title } in tabProps">
+                <li v-for="{ disabled, name, tab, title } in tabProps">
                     <!-- TODO: no-button class on <button> -->
                     <button
                         type="button"
                         class="tabs__tab"
                         :class="props.tabClass"
                         role="tab"
-                        :aria-selected="isTabSelected(id)"
-                        :aria-controls="makeId(id)"
-                        :tabindex="isTabSelected(id) ? 0 : -1"
+                        :aria-selected="isTabSelected(name)"
+                        :aria-controls="makeId(name)"
+                        :tabindex="isTabSelected(name) ? 0 : -1"
                         :disabled="disabled"
-                        :data-tab-id="id"
-                        @click="setTabById(id)"
+                        :data-tab-name="name"
+                        @click="setTabByName(name)"
                         @keydown="moveTabByKey"
                     >
                         <component v-if="tab" :is="tab" />
@@ -74,15 +74,15 @@ const tabProps = computed<ITabUIProps[]>(() => {
 
     return slots.default?.().map((slot, index) => ({
         disabled: slot.props?.disabled || false,
-        id: slot.props?.id ?? `tab-${index}`,
+        name: slot.props?.name ?? `tab-${index}`,
         tab: (slot.children as Record<string, Slot>|null)?.tab,
         title: slot.props?.title ?? String(index),
     })) || [];
 
 });
 const selectedIndex = ref<number>(0);
-const selectedId = computed(() => {
-    return tabProps.value[selectedIndex.value]?.id || "";
+const selectedName = computed(() => {
+    return tabProps.value[selectedIndex.value]?.name || "";
 });
 
 const tabs = computed(() => {
@@ -94,17 +94,17 @@ const panels = computed(() => {
     return element.querySelectorAll<HTMLElement>("[role=\"tabpanel\"]");
 });
 
-const makeId: ITabsUIInterface["makeId"] = (id: string) => {
-    const modified = words(id.replace(/\W/g, "").toLowerCase()).join("-");
+const makeId: ITabsUIInterface["makeId"] = (name: string) => {
+    const modified = words(name.replace(/\W/g, "").toLowerCase()).join("-");
     return `tab-${modified}-${suffix}`;
 };
 
 const isTabSelected: ITabsUIInterface["isTabSelected"] = (
-    indexOrId: number | string,
+    indexOrName: number | string,
 ) => (
-    typeof indexOrId === "string"
-    ? selectedId.value === indexOrId
-    : selectedIndex.value === indexOrId
+    typeof indexOrName === "string"
+    ? selectedName.value === indexOrName
+    : selectedIndex.value === indexOrName
 );
 
 const setTabByIndex = (index: number) => {
@@ -122,14 +122,14 @@ const setTabByIndex = (index: number) => {
 
 };
 
-const setTabById = (id: string) => setTabByIndex(
-    tabProps.value.findIndex(({ id: tabId }) => tabId === id)
+const setTabByName = (name: string) => setTabByIndex(
+    tabProps.value.findIndex(({ name: tabName }) => tabName === name)
 );
 
-const setTab: ITabsUIInterface["setTab"] = (indexOrId: number | string) => (
-    typeof indexOrId === "number"
-    ? setTabByIndex(indexOrId)
-    : setTabById(indexOrId)
+const setTab: ITabsUIInterface["setTab"] = (indexOrName: number | string) => (
+    typeof indexOrName === "number"
+    ? setTabByIndex(indexOrName)
+    : setTabByName(indexOrName)
 );
 
 const keyHandlers: Record<string, () => void> = {

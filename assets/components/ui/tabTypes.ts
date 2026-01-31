@@ -27,7 +27,7 @@ export type ITabsUIProps = {
 };
 
 export type ITabUIProps = {
-    id: string,
+    name: string,
     title: string,
     tab?: Slot,
     disabled?: boolean,

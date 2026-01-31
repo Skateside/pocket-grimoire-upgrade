@@ -30,7 +30,7 @@
         </table>
 
         <TabsUI>
-            <TabUI id="players" title="Player">
+            <TabUI name="players" title="Player">
                 <menu>
                     <li><button type="button" @click="removePlayer">Remove</button></li>
                 </menu>
@@ -46,7 +46,7 @@
                     <button type="submit">Set player name</button>
                 </form>
             </TabUI>
-            <TabUI id="role" title="Role" :disabled="!roleStore.hasScript">
+            <TabUI name="role" title="Role" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button" @click="setRole">Set</button></li>
                     <li v-if="roleToken"><button type="button" @click="unsetRole">Remove</button></li>
@@ -67,7 +67,7 @@
                     </ul>
                 </fieldset>
             </TabUI>
-            <TabUI id="reminder" title="Reminder" :disabled="!roleStore.hasScript">
+            <TabUI name="reminder" title="Reminder" :disabled="!roleStore.hasScript">
                 <menu>
                     <li><button type="button" @click="addReminder">Add</button></li>
                 </menu>

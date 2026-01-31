@@ -12,6 +12,7 @@ https://every-layout.dev/layouts/sidebar/
         :class="{
             'l-sidebar--start': props.side === 'start',
             'l-sidebar--end': props.side === 'end',
+            'l-sidebar--sized': props.sideSize !== undefined,
         }"
         :style="{
             '--l-sidebar-gap': props.gap,
@@ -50,7 +51,6 @@ const props = withDefaults(defineProps<Partial<{
 :where(.l-sidebar) {
     --l-sidebar-gap: var(--base-sizing);
     --l-sidebar-content-size: 50%;
-    --l-sidebar-side-size: 30ch;
 
     display: flex;
     flex-wrap: wrap;
@@ -58,12 +58,19 @@ const props = withDefaults(defineProps<Partial<{
 
     > * {
         flex-grow: 1;
+    }
+}
+
+:where(.l-sidebar--sized) {
+    --l-sidebar-side-size: 30ch;
+
+    > * {
         flex-basis: var(--l-sidebar-side-size);
     }
 }
 
-:where(.l-sidebar--start) > :first-child,
-:where(.l-sidebar--end) > :last-child {
+:where(.l-sidebar--start) > :last-child,
+:where(.l-sidebar--end) > :first-child {
     flex-basis: 0;
     flex-grow: 999;
     min-inline-size: var(--l-sidebar-content-size);

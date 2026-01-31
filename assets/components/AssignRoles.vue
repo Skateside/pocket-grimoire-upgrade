@@ -11,6 +11,7 @@
                         <BaseInputSpinner
                             v-model="counts[role.id]"
                             :label="`Number of ${role.name} added`"
+                            :min="0"
                         />
                     </div>
                 </GridLayout>
@@ -77,7 +78,7 @@ import {
     type IRole,
     type ITokenSeat,
 } from "../scripts/types/data";
-import { computed, onMounted, reactive, ref, useId } from "vue";
+import { computed, reactive, ref, useId } from "vue";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import GridLayout from "./layouts/GridLayout.vue";
@@ -101,16 +102,14 @@ const direction = defineModel<ETokenDirection>("direction", {
 const duplicates = defineModel<boolean>("duplicates", {
     default: false,
 });
-const counts = reactive<Record<IRole["id"], number>>({});
+const counts = reactive<Record<IRole["id"], number>>(
+    Object.fromEntries(roleStore.script.map(({ id }) => [id, 0]))
+);
 
 const sorted = computed(() => {
     return tokenStore
         .getSortedSeats()
         .map((id) => tokenStore.getById(id))
         .filter(Boolean) as ITokenSeat[];
-});
-
-onMounted(() => {
-    roleStore.script.forEach(({ id }) => counts[id] = 0);
 });
 </script>

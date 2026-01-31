@@ -11,7 +11,7 @@
         </div>
 
         <TabsUI memory="edition" @tabmounted="handleTabmounted" @tabchange="handleTabchange">
-            <TabUI id="official" title="Official scripts">
+            <TabUI name="official" title="Official scripts">
                 <fieldset>
                     <legend>Official scripts</legend>
                     <ul>
@@ -25,24 +25,24 @@
                 </fieldset>
             </TabUI>
 
-            <TabUI id="upload" title="Upload a custom script">
+            <TabUI name="upload" title="Upload a custom script">
                 <label :for="`upload-${suffix}`">Upload a custom script</label>
                 <input type="file" name="upload" :id="`upload-${suffix}`" accept="application/json">
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
-            <TabUI id="url" title="Enter a URL">
+            <TabUI name="url" title="Enter a URL">
                 <label :for="`url-${suffix}`">Enter a URL</label>
                 <input type="url" name="url" :id="`script-${suffix}`" class="input" placeholder="https://www.example.com/script.json">
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
-            <TabUI id="clipboard" title="Paste from clipboard">
+            <TabUI name="clipboard" title="Paste from clipboard">
                 <label :for="`paste-${suffix}`">Paste from clipboard</label>
                 <textarea name="paste" :id="`paste-${suffix}`" placeholder='["washerwoman","investigator","librarian","chef"]'></textarea>
             </TabUI>
     
-            <TabUI id="botc-scripts" title="Search BotC Scripts">
+            <TabUI name="botc-scripts" title="Search BotC Scripts">
                 <fieldset>
                     <legend>Script type</legend>
                     <ul>

@@ -2,42 +2,42 @@
 
     <h1>Pocket Grimoire</h1>
     <TabsUI ref="layout" memory="layout" :scroll="true">
-        <TabUI id="setup" title="Setup">
+        <TabUI name="setup" title="Setup">
             <TabsUI ref="setup" memory="setup">
-                <TabUI id="edition" title="Select edition">
+                <TabUI name="edition" title="Select edition">
                     <SelectEdition />
                 </TabUI>
-                <TabUI id="players" title="Set players">
+                <TabUI name="players" title="Set players">
                     <PlayerCount />
                     <PlayerCountSet
                         @count-confirm="handleCountConfirm"
                     />
                 </TabUI>
-                <TabUI id="roles" title="Assign roles" :disabled="!roleStore.hasScript">
+                <TabUI name="roles" title="Assign roles" :disabled="!roleStore.hasScript">
                     <AssignRoles />
                 </TabUI>
-                <TabUI id="cache" title="Cache">
+                <TabUI name="cache" title="Cache">
                     <ClearCache />
                 </TabUI>
             </TabsUI>
         </TabUI>
-        <TabUI id="grimoire" title="Grimoire">
+        <TabUI name="grimoire" title="Grimoire">
             <GrimoirePad
                 ref="grimoire-pad"
                 @seat-click="(id) => uiStore.showPopover('seat-menu', id)"
             />
             <DemonBluffs />
         </TabUI>
-        <TabUI id="info" title="Info Tokens">
+        <TabUI name="info" title="Info Tokens">
             <InfoTokens
                 @info-token-click="handleInfoTokenClick"
                 @add-info-token="handleAddInfoToken"
             />
         </TabUI>
-        <TabUI id="night" title="Night Order" :disabled="!roleStore.hasScript">
+        <TabUI name="night" title="Night Order" :disabled="!roleStore.hasScript">
             <NightOrder />
         </TabUI>
-        <TabUI id="jinxes" title="Jinxes" :disabled="!jinxStore.hasJinxes">
+        <TabUI name="jinxes" title="Jinxes" :disabled="!jinxStore.hasJinxes">
             <JinxList />
         </TabUI>
     </TabsUI>
