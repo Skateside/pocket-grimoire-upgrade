@@ -21,6 +21,7 @@
             <span v-if="setup" class="role-token__leaf role-token__leaf--setup"></span>
         </span>
         <span class="role-token__image" :class="`role-token__image--${role.team ?? ''}`">
+<!-- TODO: Either create a <RoleImage :role="role" /> component ... -->
             <img :src="image" alt="" class="role-token__icon" width="150" height="150" loading="lazy">
         </span>
         <svg viewBox="0 0 150 150" class="role-token__text">
@@ -45,6 +46,7 @@ const props = defineProps<{
     orphan?: boolean,
 }>();
 const store = useRoleStore();
+// TODO: ... or put this into the roleStore.
 const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
 
     const role: RequireOnly<IRole, "name" | "image"> = {
