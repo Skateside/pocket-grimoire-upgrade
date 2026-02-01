@@ -201,6 +201,7 @@ export type IRoleSpecial = {
         | "card"
         | "distribute-roles"
         | "ghost-votes"
+        | "good-duplicate"
         | "grimoire"
         | "hidden"
         | "multiplier"
@@ -237,7 +238,7 @@ export type IRoleSpecialGlobal = IRolePlayTeam | "dead";
 
 export type IRoleSpecial = {
     type: "selection",
-    name: "bag-disabled" | "bag-duplicate",
+    name: "bag-disabled" | "bag-duplicate" | "good-duplicate",
 } | {
     type: "ability",
     name: "pointing" | "ghost-votes" | "distribute-votes",
@@ -260,6 +261,9 @@ export type IRoleSpecial = {
 } | {
     type: "reveal",
     name: "replace-character",
+} | {
+    type: "player",
+    name: "open-eyes",
 };
 
 export type IRoleScript = (IRoleMeta | IRole)[];

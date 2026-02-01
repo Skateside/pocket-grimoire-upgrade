@@ -8,6 +8,7 @@ import type {
     IRoleTeam,
     IRoleNightOrder,
     IRoleJinxRaw,
+    IRoleSpecial,
 } from "../types/data";
 import type {
     IStorage,
@@ -412,6 +413,35 @@ const useRoleStore = defineStore("role", () => {
         getIsOrphan.value(getReminderById.value(reminderId).role.id)
     ));
 
+    function innerGetSpecial(
+        role: IRole,
+        type: IRoleSpecial["type"],
+    ): IRoleSpecial[];
+    function innerGetSpecial(
+        role: IRole,
+        type: IRoleSpecial["type"],
+        name: IRoleSpecial["name"],
+    ): IRoleSpecial | undefined;
+    function innerGetSpecial(
+        role: IRole,
+        type: IRoleSpecial["type"],
+        name?: IRoleSpecial["name"],
+    ) {
+
+        const specials = role.special?.filter(({ type: specialType }) => {
+            return specialType === type;
+        }) || [];
+
+        return (
+            name
+            ? specials.find(({ name: specialName }) => specialName === name)
+            : specials
+        );
+
+    }
+
+    const getSpecial = computed(() => innerGetSpecial);
+
     const innerUpdateReminders = (role: IRole | IRoleDeprecatedReminders): IRole => {
 
         const reminders: IRoleReminder[] = [];
@@ -550,7 +580,7 @@ const useRoleStore = defineStore("role", () => {
         }));
 
         if (error) {
-            throw new UnrecognisedReminderError(error);
+            throw new UnrecognisedRoleError(error);
         }
 
     }
@@ -567,19 +597,20 @@ const useRoleStore = defineStore("role", () => {
         // Getters.
         getById,
         getImage,
-        getReminderImage,
         getIsMeta,
+        getIsOrphan,
+        getIsOrphanReminder,
         getIsSpecial,
         getIsSpecialById,
         getIsUniversal,
-        getScriptMeta,
         getIsValidImport,
-        getScriptById,
-        getReminderById,
-        getReminders,
         getNightOrderById,
-        getIsOrphan,
-        getIsOrphanReminder,
+        getReminderById,
+        getReminderImage,
+        getReminders,
+        getScriptById,
+        getScriptMeta,
+        getSpecial,        
         hasScript,
         nightOrder,
         scriptByType,

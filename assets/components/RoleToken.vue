@@ -1,6 +1,8 @@
 <template>
 
-    <div
+    <span
+        role="img"
+        :aria-label="role.name"
         class="role-token"
         :class="{
             'is-orphan': props.orphan,
@@ -27,7 +29,7 @@
                 <textPath xlink:href="#curve" style="fill: currentColor;">{{ role.name }}</textPath>
             </text>
         </svg>
-    </div>
+    </span>
 
 </template>
 

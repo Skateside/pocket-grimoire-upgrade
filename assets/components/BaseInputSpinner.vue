@@ -3,6 +3,10 @@
         <button
             type="button"
             tabindex="-1"
+            :disabled="(
+                typeof props.min === 'number'
+                && Number(props.modelValue) <= props.min
+            )"
             @click="changeValueAndFocus(-props.step)"
         >-</button>
         <SidebarLayout gap="0" side="end">
@@ -22,6 +26,10 @@
             <button
                 type="button"
                 tabindex="-1"
+                :disabled="(
+                    typeof props.max === 'number'
+                    && Number(props.modelValue) >= props.max
+                )"
                 @click="changeValueAndFocus(props.step)"
             >+</button>
         </SidebarLayout>
