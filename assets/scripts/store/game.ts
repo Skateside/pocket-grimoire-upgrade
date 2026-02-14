@@ -1,11 +1,12 @@
 import type {
+    IGameBreakdown,
     IGameCounts,
     IRoleCoreTeam,
 } from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
-import { ERoleTeam } from "../types/data";
+import {
+    EGameValues,
+    ERoleTeam,
+} from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -15,6 +16,9 @@ import {
     ref,
     watch,
 } from "vue";
+import type {
+    IStorage,
+} from "../classes/Storage";
 import {
     clamp,
 } from "../utilities/numbers";
@@ -100,16 +104,17 @@ const useGameStore = defineStore("game", () => {
         ERoleTeam.MINION,
         ERoleTeam.DEMON,
     ]);
-    const count = ref<number>(
-        storage.get(STORAGE_KEY, 10)
+    const playerCount = ref<number>(
+        storage.get(STORAGE_KEY, EGameValues.DEFAULT_NEW_GAME)
     );
+    const breakdown = computed<IGameBreakdown>(() => NUMBERS[playerCount.value]);
 
-    watch(count, (value) => {
+    watch(playerCount, (value) => {
         storage.set(STORAGE_KEY, value);
     });
 
     const clear = () => {
-        count.value = 10;
+        playerCount.value = EGameValues.DEFAULT_NEW_GAME;
     };
 
     const innerGetSortedCounts = () => {
@@ -125,7 +130,7 @@ const useGameStore = defineStore("game", () => {
             playerCounts.set(
                 count,
                 (
-                    count === 15
+                    count === EGameValues.MAX_NON_TRAVELLER_PLAYERS
                     ? `${count}+`
                     : String(count)
                 ),
@@ -166,7 +171,9 @@ const useGameStore = defineStore("game", () => {
         teams: innerGetTeamBreakdown(),
     }));
 
-    const getIsCount = computed(() => (number: number) => number === count.value);
+    const getIsPlayerCount = computed(() => (number: number) => {
+        return number === playerCount.value;
+    });
 
     const getRange = computed(() => () => {
         const counts = innerGetSortedCounts();
@@ -176,20 +183,25 @@ const useGameStore = defineStore("game", () => {
         };
     });
 
-    const setCount = (number: number) => {
-        count.value = clamp(5, Math.floor(number), 20);
+    const setPlayerCount = (number: number) => {
+        playerCount.value = clamp(
+            EGameValues.MIN_PLAYERS,
+            Math.floor(number),
+            EGameValues.MAX_PLAYERS,
+        );
     };
 
     return {
         // State.
-        count,
+        playerCount,
         // Getters.
-        getIsCount,
+        breakdown,
+        getIsPlayerCount,
         getRange,
         getTable,
         // Actions.
         clear,
-        setCount,
+        setPlayerCount,
     };
 
 });

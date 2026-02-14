@@ -2,10 +2,9 @@ import type {
     IRole,
     IToken,
 } from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
-import { ERoleAlignment } from "../types/data";
+import {
+    ERoleAlignment,
+} from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -17,6 +16,9 @@ import {
     shallowReactive,
     watch,
 } from "vue";
+import type {
+    IStorage,
+} from "../classes/Storage";
 
 const useUiStore = defineStore("ui", () => {
 

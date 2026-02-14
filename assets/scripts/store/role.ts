@@ -10,9 +10,6 @@ import type {
     IRoleJinxRaw,
     IRoleSpecial,
 } from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
 import {
     ERoleAlignment,
     ERoleEditions,
@@ -29,13 +26,16 @@ import {
     ref,
     watch,
 } from "vue";
+import type {
+    IStorage,
+} from "../classes/Storage";
+import {
+    deepThaw,
+} from "../utilities/objects";
 import {
     UnrecognisedRoleError,
     UnrecognisedReminderError,
 } from "../../errors";
-import {
-    deepThaw,
-} from "../utilities/objects";
 
 const useRoleStore = defineStore("role", () => {
 

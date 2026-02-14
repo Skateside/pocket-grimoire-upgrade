@@ -4,9 +4,6 @@ import type {
 import type {
     IFields,
 } from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
 import {
     defineStore,
 } from "pinia";
@@ -15,6 +12,9 @@ import {
     ref,
     watch,
 } from "vue";
+import type {
+    IStorage,
+} from "../classes/Storage";
 
 const useFieldsStore = defineStore("fields", () => {
 

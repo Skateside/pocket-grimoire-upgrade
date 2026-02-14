@@ -25,7 +25,7 @@
 
         <template v-for="team in ORDER">
             <fieldset v-if="roleStore.scriptByType[team]?.length">
-                <legend>{{ team }}</legend>
+                <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.breakdown[team as IRoleCoreTeam] ?? "X" }})</legend>
                 <GridLayout min-width="10ch">
                     <div v-for="role in roleStore.scriptByType[team]" :key="role.id">
                         <BaseInputSpinner
@@ -101,9 +101,11 @@ import {
     ERoleTeam,
     ETokenDirection,
     type IRole,
+    type IRoleCoreTeam,
     type ITokenSeat,
 } from "../scripts/types/data";
 import { computed, reactive, ref, useId, watch } from "vue";
+import useGameStore from "../scripts/store/game";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import GridLayout from "./layouts/GridLayout.vue";
@@ -119,6 +121,7 @@ const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([
 ]));
 
 const suffix = useId();
+const gameStore = useGameStore();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const direction = defineModel<ETokenDirection>("direction", {
@@ -136,6 +139,30 @@ const included = reactive<Record<IRole["id"], boolean>>(
 const counts = reactive<Record<IRole["id"], number>>(
     Object.fromEntries(roleStore.script.map(({ id }) => [id, 0]))
 );
+const teams = computed<Record<IRole["id"], ERoleTeam>>(() => Object.fromEntries(
+    roleStore.script
+        .filter((role) => !roleStore.getIsMeta(role))
+        .map((role) => [role.id, (role as IRole).team])
+));
+const teamCounts = computed(() => {
+
+    const teamCounts = Object.fromEntries(ORDER.value.map((team) => [team, 0]));
+
+    Object.entries(counts).forEach(([id, count]) => {
+
+        const team = teams.value[id];
+
+        if (!team) {
+            return;
+        }
+
+        teamCounts[team] += Number(count);
+
+    });
+
+    return teamCounts;
+
+});
 
 watch(counts, (value) => {
 

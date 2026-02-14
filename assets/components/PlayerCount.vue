@@ -7,7 +7,7 @@
                     v-for="[count, text] in table.players"
                     :key="count"
                     scope="col"
-                    :class="{ 'is-count': count === store.count }"
+                    :class="{ 'is-count': store.getIsPlayerCount(count) }"
                 >
                     {{ text }}
                 </th>
@@ -31,7 +31,7 @@
                 <th scope="row">{{ labels[team] || team }}</th>
                 <td
                     v-for="{ count, number } in data"
-                    :class="{ 'is-count': store.getIsCount(count) }"
+                    :class="{ 'is-count': store.getIsPlayerCount(count) }"
                 >
                     {{ number }}
                 </td>

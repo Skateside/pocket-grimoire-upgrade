@@ -6,10 +6,9 @@ import type {
     ITokenRole,
     ITokenReminder,
 } from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
-import { ETokenType } from "../types/data";
+import {
+    ETokenType,
+} from "../types/data";
 import {
     defineStore,
 } from "pinia";
@@ -19,6 +18,9 @@ import {
     ref,
     watch,
 } from "vue";
+import type {
+    IStorage,
+} from "../classes/Storage";
 import {
     removeAtIndex,
     unique,

@@ -9,10 +9,10 @@
                     :min="range.min"
                     :max="range.max"
                     step="1"
-                    :value="store.count"
+                    :value="store.playerCount"
                     @input="setPlayerCount"
                 >
-                <output :value="store.count" aria-hidden="true"></output>
+                <output :value="store.playerCount" aria-hidden="true"></output>
             </ClusterLayout>
             <div>
                 <button type="submit">Add seats</button>
@@ -34,7 +34,7 @@ const store = useGameStore();
 const suffix = useId();
 const range = computed(() => store.getRange());
 const setPlayerCount = (event: Event) => {
-    store.setCount(Number((event.target as HTMLInputElement).value));
+    store.setPlayerCount(Number((event.target as HTMLInputElement).value));
 };
 
 const emit = defineEmits<{

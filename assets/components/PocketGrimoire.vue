@@ -160,7 +160,7 @@ const handleCountConfirm = () => {
     layout.value?.setTab("grimoire");
 
     times(
-        gameStore.count - tokenStore.tokens.length,
+        gameStore.playerCount - tokenStore.tokens.length,
         () => tokenStore.create(),
     );
 

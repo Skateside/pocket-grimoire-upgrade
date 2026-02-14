@@ -27,6 +27,13 @@ export type IFields = Record<string, Record<string, boolean | string>>;
 export type IGameBreakdown = Record<IRoleCoreTeam, number>;
 export type IGameCounts = Record<number, IGameBreakdown>;
 
+export enum EGameValues {
+    MIN_PLAYERS = 5,
+    DEFAULT_NEW_GAME = 10,
+    MAX_NON_TRAVELLER_PLAYERS = 15,
+    MAX_PLAYERS = 20,
+};
+
 // Internationalisation information.
 
 export type II18nData = Record<string, string>;

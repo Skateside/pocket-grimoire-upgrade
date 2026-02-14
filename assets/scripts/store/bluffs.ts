@@ -3,9 +3,6 @@ import type {
     IDemonBluffGroup,
     IDemonBluffs,
 } from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
 import {
     defineStore,
 } from "pinia";
@@ -15,6 +12,9 @@ import {
     ref,
     watch,
 } from "vue";
+import type {
+    IStorage,
+} from "../classes/Storage";
 import {
     removeAtIndex,
 } from "../utilities/arrays";
