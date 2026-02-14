@@ -44,8 +44,11 @@
                                 :disabled="Boolean(roleStore.getSpecial(role, 'selection', 'bag-disabled'))"
                                 @change="() => handleSelection(role)"
                             >
-                            <RoleToken :role="role" />
-                            <span v-if="showAbilities">{{ role.ability }}</span>
+                            <StackLayout node="span">
+                                <img :src="roleStore.getImage(role)" alt="" width="50" height="50">
+                                <strong>{{ role.name }}</strong>
+                                <span v-if="showAbilities">{{ role.ability }}</span>
+                            </StackLayout>
                         </label>
                     </div>
                 </GridLayout>
@@ -104,7 +107,7 @@ import { computed, reactive, ref, useId, watch } from "vue";
 import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import GridLayout from "./layouts/GridLayout.vue";
-import RoleToken from "./RoleToken.vue";
+import StackLayout from "./layouts/StackLayout.vue";
 import BaseInputSpinner from "./BaseInputSpinner.vue";
 
 const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([

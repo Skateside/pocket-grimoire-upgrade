@@ -1,0 +1,42 @@
+[
+    {
+        "id": "_meta",
+        "name": "Meta entry",
+        "ability": "The meta entry about the script",
+        "edition": "special",
+        "firstNight": 0,
+        "otherNight": 0
+    },
+    {
+        "id": "_norole",
+        "name": "No role",
+        "ability": "No role was provided",
+        "edition": "special",
+        "firstNight": 0,
+        "otherNight": 0
+    },
+    {
+        "id": "_universal",
+        "name": "Universal information",
+        "ability": "A place to store universal reminders",
+        "edition": "special",
+        "reminders": [
+            {
+                "name": "Good team"
+            },
+            {
+                "name": "Evil team"
+            }
+        ],
+        "firstNight": 0,
+        "otherNight": 0
+    },
+    {
+        "id": "_unrecognised",
+        "name": "Unrecognised",
+        "ability": "The role was not recognised",
+        "edition": "special",
+        "firstNight": 0,
+        "otherNight": 0
+    }
+]

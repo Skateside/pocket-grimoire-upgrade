@@ -21,7 +21,6 @@
             <span v-if="setup" class="role-token__leaf role-token__leaf--setup"></span>
         </span>
         <span class="role-token__image" :class="`role-token__image--${role.team ?? ''}`">
-<!-- TODO: Either create a <RoleImage :role="role" /> component ... -->
             <img :src="image" alt="" class="role-token__icon" width="150" height="150" loading="lazy">
         </span>
         <svg viewBox="0 0 150 150" class="role-token__text">
@@ -35,8 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { RequireOnly } from "../scripts/types/lib";
-import { type IRole, ERoleAlignment, ERoleIds } from "../scripts/types/data";
+import { type IRole, ERoleAlignment } from "../scripts/types/data";
 import { computed } from "vue";
 import useRoleStore from "../scripts/store/role";
 
@@ -46,38 +44,8 @@ const props = defineProps<{
     orphan?: boolean,
 }>();
 const store = useRoleStore();
-// TODO: ... or put this into the roleStore.
-const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
-
-    const role: RequireOnly<IRole, "name" | "image"> = {
-        name: "norole", // TODO: i18n
-        image: "/icons/norole.svg",
-    };
-
-    if (!props.role) {
-        return role;
-    }
-
-    if (typeof props.role === "object" && props.role?.id === ERoleIds.META) {
-
-        role.name = "rolemeta"; // TODO: i18n
-        role.image = "/icons/metarole.svg";
-
-        return role;
-
-    }
-
-    return Object.assign(
-        role,
-        (
-            typeof props.role === "string"
-            ? store.getById(props.role)
-            : props.role
-        ) || {},
-    );
-
-});
-const image = computed(() => store.getImage(role.value as IRole, props.alignment));
+const role = computed(() => store.interpretRole(props.role));
+const image = computed(() => store.getImage(role.value, props.alignment));
 const top = computed(() => {
     if (!role.value?.reminders) {
         return 0;

@@ -84,8 +84,9 @@ export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 export enum ERoleIds {
     META = "_meta",
-    NO_ROLE = "__no_role__",
-    UNIVERSAL = "universalinfo",
+    NO_ROLE = "_norole",
+    UNIVERSAL = "_universal",
+    UNRECOGNISED = "_unrecognised",
 };
 
 export enum ERoleEditions {

@@ -30,7 +30,7 @@ type ILocaleDataOptionsReal = {
         infoTokens: string,
         roles: string,
         scripts: string,
-        universal: string,
+        specialRoles: string,
     },
     locales: {
         dirname: string,
@@ -74,7 +74,7 @@ export default (options: ILocaleDataOptions = {}): Plugin => {
             infoTokens: "info-tokens.json",
             roles: "roles.json",
             scripts: "scripts.json",
-            universal: "universal.json",
+            specialRoles: "special-roles.json",
         },
         locales: {
             dirname: "locales",
@@ -133,7 +133,7 @@ const buildFiles = async (config: ILocaleDataOptionsReal) => {
             createRoles([
                 path.join(rawDir, config.raw.roles),
                 path.join(rawDir, config.raw.images),
-                path.join(rawDir, config.raw.universal),
+                path.join(rawDir, config.raw.specialRoles),
                 path.join(localesDir, locale, config.locales.roles),
                 path.join(localesDir, locale, config.locales.extra),
                 path.join(localesDir, locale, config.locales.jinxes),
@@ -211,7 +211,7 @@ const createInfoTokens = (tokenFiles: string[]) => processFiles(tokenFiles).then
 const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
     rawRoles,
     images,
-    universalRoles,
+    specialRoles,
     localeRoles,
     localeExtraRoles,
     localeJinxes,
@@ -220,7 +220,7 @@ const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
     const roles = rawRoles as IRoleRaw[];
 
     roles.push(
-        ...(universalRoles as IRoleRaw[]),
+        ...(specialRoles as IRoleRaw[]),
         ...((localeExtraRoles || []) as IRoleRaw[]),
     );
     roles.forEach((role) => {

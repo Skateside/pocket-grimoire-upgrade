@@ -297,6 +297,46 @@ const useRoleStore = defineStore("role", () => {
         return role?.edition === ERoleEditions.SPECIAL;
     };
 
+    const interpretRole = computed(() => (role: IRole | IRole['id'] | null | void) => {
+
+        if (
+            !role
+            || role === ERoleIds.NO_ROLE
+            || (role as IRole).id === ERoleIds.NO_ROLE
+        ) {
+            return roles.value.find(({ id }) => id === ERoleIds.NO_ROLE)!;
+        }
+
+        if (role === ERoleIds.META || innerIsMeta(role as IRole)) {
+            return roles.value.find(({ id }) => id === ERoleIds.META)!;
+        }
+
+        if (role === ERoleIds.UNIVERSAL || innerIsUniversal(role as IRole)) {
+            return roles.value.find(({ id }) => id === ERoleIds.UNIVERSAL)!;
+        }
+
+        const object = innerAsRoleObject(role);
+
+        if (
+            !script.value.find(({ id }) => id === object.id)
+            && !roles.value.find(({ id }) => id === object.id)
+        ) {
+
+            const unrecognised = roles.value.find(({ id }) => {
+                return id === ERoleIds.UNRECOGNISED;
+            })!;
+
+            return {
+                ...unrecognised,
+                name: `${unrecognised.name}: ${object.id}`,
+            };
+
+        }
+
+        return object;
+
+    });
+
     const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
     const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role));
     const getScriptMeta = computed(() => innerGetMeta);
@@ -612,6 +652,7 @@ const useRoleStore = defineStore("role", () => {
         getScriptMeta,
         getSpecial,        
         hasScript,
+        interpretRole,
         nightOrder,
         scriptByType,
         // Actions.
