@@ -180,10 +180,10 @@ export type IRoleMeta = {
 };
 
 export enum ERoleAlignment {
-    DEFAULT,
-    TRAVELLER_GOOD,
+    DEFAULT = 0,
     INVERSE = 1,
-    TRAVELLER_EVIL,
+    TRAVELLER_GOOD = 1,
+    TRAVELLER_EVIL = 2,
 }
 
 /*

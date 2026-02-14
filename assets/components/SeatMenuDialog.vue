@@ -41,7 +41,6 @@
                         name="name"
                         :id="`name-${idSuffix}`"
                         v-model="seatName"
-                        @focus="({ target }) => (target as HTMLInputElement)?.select()"
                     >
                     <button type="submit">Set player name</button>
                 </form>
