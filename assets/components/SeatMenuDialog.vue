@@ -119,7 +119,7 @@ const emit = defineEmits<IDialogUIEvents & {
 }>();
 const seatName = defineModel<string>("seat-name", { default: "" });
 const alignment = defineModel<ERoleAlignment>("alignment", {
-    default: ERoleAlignment.Default,
+    default: ERoleAlignment.DEFAULT,
 });
 
 const idSuffix = useId();
@@ -146,7 +146,7 @@ const showAlignment = computed(() => {
         image
         && typeof image !== "string"
         && image.length > 1
-        && team !== ERoleTeam.Fabled
+        && team !== ERoleTeam.FABLED
     );
 
 });
@@ -156,25 +156,25 @@ const alignmentOptions = computed(() => {
 
     switch (team) {
 
-    case ERoleTeam.Townsfolk:
-    case ERoleTeam.Outsider:
+    case ERoleTeam.TOWNSFOLK:
+    case ERoleTeam.OUTSIDER:
         return {
-            [ERoleAlignment.Default]: "Good", // TODO i18n
-            [ERoleAlignment.Inverse]: "Evil", // TODO i18n
+            [ERoleAlignment.DEFAULT]: "Good", // TODO i18n
+            [ERoleAlignment.INVERSE]: "Evil", // TODO i18n
         };
 
-    case ERoleTeam.Minion:
-    case ERoleTeam.Demon:
+    case ERoleTeam.MINION:
+    case ERoleTeam.DEMON:
         return {
-            [ERoleAlignment.Default]: "Evil", // TODO i18n
-            [ERoleAlignment.Inverse]: "Good", // TODO i18n
+            [ERoleAlignment.DEFAULT]: "Evil", // TODO i18n
+            [ERoleAlignment.INVERSE]: "Good", // TODO i18n
         };
 
-    case ERoleTeam.Traveller:
+    case ERoleTeam.TRAVELLER:
         return {
-            [ERoleAlignment.Default]: "Default", // TODO i18n
-            [ERoleAlignment.TravellerGood]: "Good", // TODO i18n
-            [ERoleAlignment.TravellerEvil]: "Evil", // TODO i18n
+            [ERoleAlignment.DEFAULT]: "Default", // TODO i18n
+            [ERoleAlignment.TRAVELLER_GOOD]: "Good", // TODO i18n
+            [ERoleAlignment.TRAVELLER_EVIL]: "Evil", // TODO i18n
         };
 
     }

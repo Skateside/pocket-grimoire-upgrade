@@ -58,7 +58,7 @@ const role = computed<RequireOnly<IRole, "name" | "image">>(() => {
         return role;
     }
 
-    if (typeof props.role === "object" && props.role?.id === ERoleIds.Meta) {
+    if (typeof props.role === "object" && props.role?.id === ERoleIds.META) {
 
         role.name = "rolemeta"; // TODO: i18n
         role.image = "/icons/metarole.svg";

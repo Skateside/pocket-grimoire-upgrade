@@ -1,7 +1,3 @@
-@property --p-derived-luma-r { syntax: "<number>"; initial-value: 0.299; inherits: true; }
-@property --p-derived-luma-b { syntax: "<number>"; initial-value: 0.587; inherits: true; }
-@property --p-derived-luma-g { syntax: "<number>"; initial-value: 0.114; inherits: true; }
-@property --p-derived-threshold { syntax: "<number>"; initial-value: 0.5; inherits: true; }
 @property --p-derived-background { syntax: "<color>"; initial-value: #000; inherits: true; }
 @property --p-derived-colour { syntax: "<color>"; initial-value: #fff; inherits: true; }
 
@@ -19,57 +15,20 @@
  * How it works
  * ------------
  *
- * Following the tutorial from here:
- * https://css-tricks.com/switch-font-color-for-different-backgrounds-with-css/
+ * Using the formula described here:
+ * https://css-tricks.com/approximating-contrast-color-with-other-css-features/
  *
- * The basic principle is to analyse the background colour and change the text
- * colour so that it has a high contrast. This is based on the background
- * colour's "percieved luminance" rather than the luminance value of an hsl()
- * colour.
- *
- * The algorithm is:
- * Let Red be the red value of the background * 0.299
- * Let Green be the green value of the background * 0.587
- * Let Blue be the blue value of the background * 0.114
- * Let Sum be the result of Red + Green + Blue
- * Let Luminence be the result of Sum / 255
- * Let Threshold be 0.5
- * Let Value be (Luminence - Threshold) * -10000000
- * Set the colour to rgb(Value Value Value)
- *
- * The large value, `-10000000`, works using a trick where CSS functions that
- * adjust colour, such as rgb(), will clamp the values to between 0 and 255.
- * Any sufficiently large number will simply be 255, any sufficiently small (or
- * even negative) number will simply be 0.
- *
- * Since we can't set variables within the rgb() function, nor can extract the
- * red, green, or blue values from the rgb() function, we have to do the
- * calculation multiple times.
- *
- * The "luma" values have been taken from here:
- * https://www.w3.org/TR/AERT/#color-contrast
- *
- @future
- * Future
- * ------
- *
- * When color-contrast() becomes supported in CSS Color 6, this whole thing can
- * be replaced with this line:
- * `color: color-contrast(var(--background-colour) vs var(--colour-black), var(--colour-white));`
- * https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/color-contrast
+ * The formula is based on WCAG 2.2 and should be a good approximation of the
+ * future CSS function `contrast-color()`.
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/contrast-color
  */
 
 %p-derived,
 .p-derived {
-    --p-derived-luma-r: 0.299;
-    --p-derived-luma-g: 0.587;
-    --p-derived-luma-b: 0.114;
-    --p-derived-threshold: 0.5;
     --p-derived-background: #0000;
-    --p-derived-colour: rgb(
-        from var(--p-derived-background)
-        calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
-        calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
-        calc( (((r * var(--p-derived-luma-r) + g * var(--p-derived-luma-g) + b * var(--p-derived-luma-b)) / 255) - var(--p-derived-threshold)) * -10000000 )
+    --p-derived-colour: rgb(from var(--p-derived-background)
+        round(173.178 - 48.705 * pow(r / 255 + .055, 2.4) - 163.863 * pow(g / 255 + .055, 2.4) - 16.5495 * pow(b / 255 + .055, 2.4), 255)
+        round(173.178 - 48.705 * pow(r / 255 + .055, 2.4) - 163.863 * pow(g / 255 + .055, 2.4) - 16.5495 * pow(b / 255 + .055, 2.4), 255)
+        round(173.178 - 48.705 * pow(r / 255 + .055, 2.4) - 163.863 * pow(g / 255 + .055, 2.4) - 16.5495 * pow(b / 255 + .055, 2.4), 255)
     );
 }

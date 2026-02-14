@@ -26,7 +26,7 @@
         <template v-for="team in ORDER">
             <fieldset v-if="roleStore.scriptByType[team]?.length">
                 <legend>{{ team }}</legend>
-                <GridLayout min-width="20ch">
+                <GridLayout min-width="10ch">
                     <div v-for="role in roleStore.scriptByType[team]" :key="role.id">
                         <BaseInputSpinner
                             v-if="allowDuplicates && included[role.id]"
@@ -72,7 +72,7 @@
                             type="radio"
                             name="direction"
                             :id="`direction-clockwise-${suffix}`"
-                            :value="ETokenDirection.Clockwise"
+                            :value="ETokenDirection.CLOCKWISE"
                         >
                     </label>
                 </li>
@@ -84,7 +84,7 @@
                             type="radio"
                             name="direction"
                             :id="`direction-anticlockwise-${suffix}`"
-                            :value="ETokenDirection.Anticlockwise"
+                            :value="ETokenDirection.ANTICLOCKWISE"
                         >
                     </label>
                 </li>
@@ -108,18 +108,18 @@ import RoleToken from "./RoleToken.vue";
 import BaseInputSpinner from "./BaseInputSpinner.vue";
 
 const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([
-    ERoleTeam.Townsfolk,
-    ERoleTeam.Outsider,
-    ERoleTeam.Minion,
-    ERoleTeam.Demon,
-    ERoleTeam.Traveller,
+    ERoleTeam.TOWNSFOLK,
+    ERoleTeam.OUTSIDER,
+    ERoleTeam.MINION,
+    ERoleTeam.DEMON,
+    ERoleTeam.TRAVELLER,
 ]));
 
 const suffix = useId();
 const roleStore = useRoleStore();
 const tokenStore = useTokenStore();
 const direction = defineModel<ETokenDirection>("direction", {
-    default: ETokenDirection.Clockwise,
+    default: ETokenDirection.CLOCKWISE,
 });
 const showAbilities = defineModel<boolean>("abilities", {
     default: true,

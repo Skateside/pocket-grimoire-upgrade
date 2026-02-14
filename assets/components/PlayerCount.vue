@@ -19,12 +19,12 @@
                 :key="team"
                 :class="[`count-row--${team}`, {
                     'count-row--good': (
-                        team === ERoleTeam.Townsfolk
-                        || team === ERoleTeam.Outsider
+                        team === ERoleTeam.TOWNSFOLK
+                        || team === ERoleTeam.OUTSIDER
                     ),
                     'count-row--evil': (
-                        team === ERoleTeam.Minion
-                        || team === ERoleTeam.Demon
+                        team === ERoleTeam.MINION
+                        || team === ERoleTeam.DEMON
                     ),
                 }]"
             >
@@ -48,10 +48,10 @@ import { computed } from "vue";
 const store = useGameStore();
 const table = computed(() => store.getTable());
 const labels = { // TODO: i18n
-    [ERoleTeam.Townsfolk]: "Townsfolk",
-    [ERoleTeam.Outsider]: "Outsiders",
-    [ERoleTeam.Minion]: "Minions",
-    [ERoleTeam.Demon]: "Demons",
+    [ERoleTeam.TOWNSFOLK]: "Townsfolk",
+    [ERoleTeam.OUTSIDER]: "Outsiders",
+    [ERoleTeam.MINION]: "Minions",
+    [ERoleTeam.DEMON]: "Demons",
 };
 </script>
 

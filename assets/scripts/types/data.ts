@@ -61,9 +61,9 @@ export type IInfoTokenColours = (
 // Jinxes.
 
 export enum EJinxState {
-    Theoretical,
-    Potential,
-    Active,
+    THEORETICAL,
+    POTENTIAL,
+    ACTIVE,
 };
 // state: "theoretical" = this jinx exists but only the target is in the script.
 // state: "potential" = the target and trick are both in the script.
@@ -83,13 +83,13 @@ export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 // Roles.
 
 export enum ERoleIds {
-    Meta = "_meta",
-    NoRole = "__no_role__",
-    Universal = "universalinfo",
+    META = "_meta",
+    NO_ROLE = "__no_role__",
+    UNIVERSAL = "universalinfo",
 };
 
 export enum ERoleEditions {
-    Special = "special",
+    SPECIAL = "special",
 };
 
 export type IRoleRaw = {
@@ -121,41 +121,41 @@ export type IRoleDeprecatedReminders = IRole & {
 };
 
 export enum ERoleTeam {
-    Townsfolk = "townsfolk",
-    Outsider = "outsider",
-    Minion = "minion",
-    Demon = "demon",
-    Traveller = "traveller",
-    Fabled = "fabled",
-    Loric = "loric",
+    TOWNSFOLK = "townsfolk",
+    OUTSIDER = "outsider",
+    MINION = "minion",
+    DEMON = "demon",
+    TRAVELLER = "traveller",
+    FABLED = "fabled",
+    LORIC = "loric",
 };
 
 export type IRoleCoreTeam = (
-    ERoleTeam.Townsfolk
-    | ERoleTeam.Outsider
-    | ERoleTeam.Minion
-    | ERoleTeam.Demon
+    ERoleTeam.TOWNSFOLK
+    | ERoleTeam.OUTSIDER
+    | ERoleTeam.MINION
+    | ERoleTeam.DEMON
 );
-export type IRolePlayTeam = IRoleCoreTeam | ERoleTeam.Traveller;
-export type IRoleTeam = IRolePlayTeam | ERoleTeam.Fabled | ERoleTeam.Loric;
+export type IRolePlayTeam = IRoleCoreTeam | ERoleTeam.TRAVELLER;
+export type IRoleTeam = IRolePlayTeam | ERoleTeam.FABLED | ERoleTeam.LORIC;
 
 export enum ERoleReminderFlag {
-    Global = "global",
-    Public = "public",
-    Kill = "kill",
-    Dead = "dead",
-    Role = "role",
+    GLOBAL = "global",
+    PUBLIC = "public",
+    KILL = "kill",
+    DEAD = "dead",
+    ROLE = "role",
 }
 
 export type IRoleReminderRaw = {
     name: string,
     count?: number,
     flags?: (
-        ERoleReminderFlag.Global
-        | ERoleReminderFlag.Public
-        | ERoleReminderFlag.Kill
-        | ERoleReminderFlag.Dead
-        | ERoleReminderFlag.Role
+        ERoleReminderFlag.GLOBAL
+        | ERoleReminderFlag.PUBLIC
+        | ERoleReminderFlag.KILL
+        | ERoleReminderFlag.DEAD
+        | ERoleReminderFlag.ROLE
     )[],
 };
 
@@ -171,7 +171,7 @@ export type IRoleJinxRaw = {
 };
 
 export type IRoleMeta = {
-    id: ERoleIds.Meta,
+    id: ERoleIds.META,
     name: string,
     author?: string,
     firstNight?: string[],
@@ -179,10 +179,10 @@ export type IRoleMeta = {
 };
 
 export enum ERoleAlignment {
-    Default,
-    TravellerGood,
-    Inverse = 1,
-    TravellerEvil,
+    DEFAULT,
+    TRAVELLER_GOOD,
+    INVERSE = 1,
+    TRAVELLER_EVIL,
 }
 
 /*
@@ -277,14 +277,14 @@ export type IRoleNightOrder = Record<"first" | "other", {
 // Tokens.
 
 export enum ETokenType {
-    Seat,
-    Role,
-    Reminder,
+    SEAT,
+    ROLE,
+    REMINDER,
 };
 
 export enum ETokenDirection {
-    Clockwise,
-    Anticlockwise,
+    CLOCKWISE,
+    ANTICLOCKWISE,
 };
 
 export type IToken = Required<ICoordinates> & {
@@ -293,7 +293,7 @@ export type IToken = Required<ICoordinates> & {
 };
 
 export type ITokenSeat = IToken & {
-    type: ETokenType.Seat,
+    type: ETokenType.SEAT,
     index?: number,
     role?: IRole["id"],
     name?: string,
@@ -305,12 +305,12 @@ export type ITokenSeat = IToken & {
 
 // NOTE: This is for something like a Fabled - on the grimoire pad but not a player.
 export type ITokenRole = IToken & {
-    type: ETokenType.Role,
+    type: ETokenType.ROLE,
     role: IRole["id"],
 };
 
 export type ITokenReminder = IToken & {
-    type: ETokenType.Reminder,
+    type: ETokenType.REMINDER,
     reminder: IRoleReminder["id"],
 };
 

@@ -30,17 +30,11 @@ const useBluffsStore = defineStore("bluffs", () => {
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "bluffs";
 
-    const innerMakeNewGroup = (name = "") => {
-
-        const group: IDemonBluffGroup = {
-            name,
-            id: randomId("bluffs-"),
-            roles: [null, null, null],
-        };
-
-        return group;
-
-    };
+    const innerMakeNewGroup = (name = "") => ({
+        name,
+        id: randomId("bluffs-"),
+        roles: [null, null, null],
+    } satisfies IDemonBluffGroup);
 
     const bluffs = ref<IDemonBluffs>([
         ...storage.get<IDemonBluffs>(STORAGE_KEY, [innerMakeNewGroup()]),

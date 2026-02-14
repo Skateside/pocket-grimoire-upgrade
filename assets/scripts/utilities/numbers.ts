@@ -6,7 +6,7 @@
  * @returns Positive integer.
  */
 export function toPosInt(number: number|`${number}`) {
-    return Math.floor(Math.abs(number as number));
+    return Math.trunc(Math.abs(number as number));
 }
 
 /**

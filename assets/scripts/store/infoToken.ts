@@ -53,17 +53,11 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     };
 
-    const innerReduceToRaw = (infoToken: IInfoToken) => {
-
-        const raw: IInfoTokenRaw = {
-            id: infoToken.id,
-            markdown: infoToken.markdown,
-            colour: infoToken.colour,
-        };
-
-        return raw;
-
-    };
+    const innerReduceToRaw = (infoToken: IInfoToken) => ({
+        id: infoToken.id,
+        markdown: infoToken.markdown,
+        colour: infoToken.colour,
+    } satisfies IInfoTokenRaw);
 
     const innerSetAsCustom = (infoToken: IInfoToken) => {
         infoToken.isCustom = true;

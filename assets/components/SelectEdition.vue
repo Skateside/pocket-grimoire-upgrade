@@ -148,11 +148,11 @@ const emit = defineEmits<{
 const store = useRoleStore();
 const suffix = useId();
 const form = useTemplateRef("form");
-const isLoading = ref<boolean>(false);
-const errorMessage = ref<string>("");
+const isLoading = ref(false);
+const errorMessage = ref("");
 const botcScripts = ref<Record<string, IRoleScriptImport>>({});
 const botcLookup = defineModel<string>();
-const datalist = computed<string[]>(() => Object.keys(botcScripts.value));
+const datalist = computed(() => Object.keys(botcScripts.value));
 
 const handleTabmounted = ({ tabs, index }: ITabsUIMounted) => {
 

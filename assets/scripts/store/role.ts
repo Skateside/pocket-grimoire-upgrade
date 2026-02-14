@@ -46,10 +46,10 @@ const useRoleStore = defineStore("role", () => {
     // TODO: Work out how to augment the reminders.
 
     const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => {
-        return role.id === ERoleIds.Meta;
+        return role.id === ERoleIds.META;
     };
     const innerIsUniversal = (role: IRole) => {
-        return role.id === ERoleIds.Universal;
+        return role.id === ERoleIds.UNIVERSAL;
     };
 
     const innerSetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
@@ -91,7 +91,7 @@ const useRoleStore = defineStore("role", () => {
         deepThaw(window.PG.roles).map(innerSetRemindersRole)
     );
     const specialRoles = computed(() => roles.value.filter(({ edition }) => (
-        edition === ERoleEditions.Special
+        edition === ERoleEditions.SPECIAL
     )));
     const scripts = ref<Record<string, IRoleScriptImport>>(
         deepThaw(window.PG.scripts)
@@ -114,7 +114,7 @@ const useRoleStore = defineStore("role", () => {
 
     const scriptByType = computed(() => Object.groupBy(
         script.value.filter((role) => (
-            !innerIsMeta(role) && role.edition !== ERoleEditions.Special
+            !innerIsMeta(role) && role.edition !== ERoleEditions.SPECIAL
         )),
         (role) => (role as IRole).team || "",
     ) as Record<ERoleTeam, IRole[]>);
@@ -266,7 +266,7 @@ const useRoleStore = defineStore("role", () => {
 
     const innerGetImage = (
         role: IRole,
-        index: ERoleAlignment = ERoleAlignment.Default,
+        index: ERoleAlignment = ERoleAlignment.DEFAULT,
     ) => {
 
         if (!role || !role.image) {
@@ -287,14 +287,14 @@ const useRoleStore = defineStore("role", () => {
 
     const getReminderImage = computed(() => (
         reminder: IRoleReminder,
-        index: ERoleAlignment = ERoleAlignment.Default,
+        index: ERoleAlignment = ERoleAlignment.DEFAULT,
     ) => {
         return reminder.image || innerGetImage(reminder.role, index);
     });
 
     const innerGetIsSpecialById = (id: IRole["id"]) => {
         const role = innerGetRole(id);
-        return role?.edition === ERoleEditions.Special;
+        return role?.edition === ERoleEditions.SPECIAL;
     };
 
     const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
@@ -347,13 +347,13 @@ const useRoleStore = defineStore("role", () => {
         });
 
         roles.value
-            .filter(({ team }) => team === ERoleTeam.Fabled)
+            .filter(({ team }) => team === ERoleTeam.FABLED)
             .forEach((role) => {
                 reminders.push(...((role as IRole).reminders || []));
             });
 
         roles.value
-            .filter(({ team }) => team === ERoleTeam.Loric)
+            .filter(({ team }) => team === ERoleTeam.LORIC)
             .forEach((role) => {
                 reminders.push(...((role as IRole).reminders || []));
             });
@@ -488,7 +488,7 @@ const useRoleStore = defineStore("role", () => {
                     id: `${role.id}:${reminderCount + index}`,
                     role, // needed for TypeScript, gets set again in the next step.
                     name: reminder as string,
-                    flags: [ERoleReminderFlag.Global],
+                    flags: [ERoleReminderFlag.GLOBAL],
                 };
                 reminders.push(newReminder);
 
@@ -513,13 +513,13 @@ const useRoleStore = defineStore("role", () => {
                 return groups;
 
             }, [
-                [ERoleTeam.Townsfolk, []],
-                [ERoleTeam.Outsider, []],
-                [ERoleTeam.Minion, []],
-                [ERoleTeam.Demon, []],
-                [ERoleTeam.Traveller, []],
-                [ERoleTeam.Fabled, []],
-                [ERoleTeam.Loric, []],
+                [ERoleTeam.TOWNSFOLK, []],
+                [ERoleTeam.OUTSIDER, []],
+                [ERoleTeam.MINION, []],
+                [ERoleTeam.DEMON, []],
+                [ERoleTeam.TRAVELLER, []],
+                [ERoleTeam.FABLED, []],
+                [ERoleTeam.LORIC, []],
             ] as [IRoleTeam, IRole[]][])
             .map(([_team, roles]) => roles)
             .flat();
@@ -575,7 +575,7 @@ const useRoleStore = defineStore("role", () => {
             // TODO: test to make sure this doesn't cause serious errors.
             // Intention is to allow a script containing a role that hasn't been
             // added to the data yet without the entire system crashing.
-            return { id: ERoleIds.NoRole } as IRole;
+            return { id: ERoleIds.NO_ROLE } as IRole;
 
         }));
 

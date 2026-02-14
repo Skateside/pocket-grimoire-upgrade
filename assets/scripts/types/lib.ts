@@ -5,9 +5,9 @@ export type AnyFunction<TParameters extends any[] = any[], TReturn = any> = (
 export type AnyObject<
     TKeys extends PropertyKey = PropertyKey,
     TValues = any
-> = Record<TKeys, TValues> | Readonly<Record<TKeys, TValues>>;
+> = Record<TKeys, TValues>;
 
-export type AnyArray<TValues> = Array<TValues> | ReadonlyArray<TValues>;
+export type AnyArray<TValues> = Array<TValues>;
 
 export type RequireOnly<Type, Keys extends keyof Type> = (
     Partial<Type> & Pick<Type, Keys>

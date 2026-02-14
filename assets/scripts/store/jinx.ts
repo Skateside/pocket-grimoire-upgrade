@@ -18,18 +18,12 @@ const useJinxStore = defineStore("jinx", () => {
     const roleStore = useRoleStore();
     const tokenStore = useTokenStore();
 
-    const innerConvertJinx = (jinx: IRoleJinxRaw, targetId: IRole) => {
-
-        const converted: IJinx = {
-            target: targetId,
-            trick: roleStore.getById(jinx.id),
-            reason: jinx.reason,
-            state: EJinxState.Theoretical,
-        };
-
-        return converted;
-
-    };
+    const innerConvertJinx = (jinx: IRoleJinxRaw, targetId: IRole) => ({
+        target: targetId,
+        trick: roleStore.getById(jinx.id),
+        reason: jinx.reason,
+        state: EJinxState.THEORETICAL,
+    } satisfies IJinx);
 
     const innerSetJinxState = (jinx: IJinx) => {
 
@@ -44,14 +38,14 @@ const useJinxStore = defineStore("jinx", () => {
             inScript.includes(targetId)
             && inScript.includes(trickId)
         ) {
-            jinx.state = EJinxState.Potential;
+            jinx.state = EJinxState.POTENTIAL;
         }
 
         if (
             Object.hasOwn(inPlay, targetId)
             && Object.hasOwn(inPlay, trickId)
         ) {
-            jinx.state = EJinxState.Active;
+            jinx.state = EJinxState.ACTIVE;
         }
 
         return jinx;
@@ -76,18 +70,18 @@ const useJinxStore = defineStore("jinx", () => {
 
         });
 
-        return jinxes.filter(({ state }) => state !== EJinxState.Theoretical);
+        return jinxes.filter(({ state }) => state !== EJinxState.THEORETICAL);
 
     });
 
     const active = computed(() => {
-        return jinxes.value.filter(({ state }) => state === EJinxState.Active);
+        return jinxes.value.filter(({ state }) => state === EJinxState.ACTIVE);
     });
 
     const hasJinxes = computed(() => jinxes.value.length > 0);
 
     const getIsActive = computed(() => (jinx: IJinx) => {
-        return jinx.state === EJinxState.Active;
+        return jinx.state === EJinxState.ACTIVE;
     });
 
     return {

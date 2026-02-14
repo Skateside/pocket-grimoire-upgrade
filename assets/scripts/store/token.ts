@@ -48,15 +48,15 @@ const useTokenStore = defineStore("token", () => {
 
     const byType = computed(() => {
         return Object.groupBy(tokens.value, ({ type }) => type) as {
-            [ETokenType.Seat]?: ITokenSeat[],
-            [ETokenType.Role]?: ITokenRole[],
-            [ETokenType.Reminder]?: ITokenReminder[],
+            [ETokenType.SEAT]?: ITokenSeat[],
+            [ETokenType.ROLE]?: ITokenRole[],
+            [ETokenType.REMINDER]?: ITokenReminder[],
         };
     });
 
-    const seats = computed(() => byType.value[ETokenType.Seat] || []);
-    const roles = computed(() => byType.value[ETokenType.Role] || []);
-    const reminders = computed(() => byType.value[ETokenType.Reminder] || []);
+    const seats = computed(() => byType.value[ETokenType.SEAT] || []);
+    const roles = computed(() => byType.value[ETokenType.ROLE] || []);
+    const reminders = computed(() => byType.value[ETokenType.REMINDER] || []);
 
     const nextZ = computed(() => (
         tokens.value.length
@@ -132,13 +132,13 @@ const useTokenStore = defineStore("token", () => {
 
     };
     const innerIsSeat = (token: IToken): token is ITokenSeat => (
-        token.type === ETokenType.Seat
+        token.type === ETokenType.SEAT
     );
     const innerIsReminder = (token: IToken): token is ITokenReminder => (
-        token.type === ETokenType.Reminder
+        token.type === ETokenType.REMINDER
     );
     const innerIsRole = (token: IToken): token is ITokenRole => (
-        token.type === ETokenType.Role
+        token.type === ETokenType.ROLE
     );
 
     const getById = computed(() => innerGetById);
@@ -154,7 +154,7 @@ const useTokenStore = defineStore("token", () => {
 
     const create = (
         settings: Partial<IToken> = {},
-        type: IToken["type"] = ETokenType.Seat,
+        type: IToken["type"] = ETokenType.SEAT,
     ) => {
 
         const token: IToken = Object.assign({
@@ -192,10 +192,10 @@ const useTokenStore = defineStore("token", () => {
     };
 
     const createSeat = (settings: Partial<ITokenSeat> = {}) => (
-        create(settings, ETokenType.Seat)
+        create(settings, ETokenType.SEAT)
     );
     const createReminder = (settings: Partial<ITokenReminder> = {}) => (
-        create(settings, ETokenType.Reminder)
+        create(settings, ETokenType.REMINDER)
     );
 
     const update = <TToken extends IToken = IToken>(
