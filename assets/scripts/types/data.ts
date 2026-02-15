@@ -1,3 +1,4 @@
+// TODO: move enums into an "enums" folder.
 // Co-ordinates - the base of seats and reminders.
 
 export type ICoordinates = {

@@ -110,7 +110,7 @@ import useRoleStore from "../scripts/store/role";
 import useTokenStore from "../scripts/store/token";
 import GridLayout from "./layouts/GridLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
-import BaseInputSpinner from "./BaseInputSpinner.vue";
+import BaseInputSpinner from "./base/BaseInputSpinner.vue"
 
 const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([
     ERoleTeam.TOWNSFOLK,

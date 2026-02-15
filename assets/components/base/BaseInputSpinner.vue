@@ -37,14 +37,14 @@
 </template>
 
 <script setup lang="ts">
-import { useAttrs, useTemplateRef } from "vue";
-import { clamp } from '../scripts/utilities/numbers';
-import SidebarLayout from "./layouts/SidebarLayout.vue";
+import type { IBaseLabelProvide } from '../../scripts/types/base';
+import { computed, inject, useAttrs, useTemplateRef } from "vue";
+import { clamp } from '../../scripts/utilities/numbers';
+import SidebarLayout from "../layouts/SidebarLayout.vue";
 
 defineOptions({
     inheritAttrs: false,
 });
-const attrs = useAttrs();
 const props = withDefaults(defineProps<{
     modelValue: number | string,
     step?: number,
@@ -57,6 +57,20 @@ const emit = defineEmits<{
     (e: "update:modelValue", value: string): void,
 }>();
 const input = useTemplateRef("input");
+
+const labelProvision = inject<IBaseLabelProvide>("label", {});
+const rawAttrs = useAttrs();
+const attrs = computed(() => {
+
+    const attrs = { ...rawAttrs };
+
+    if (!Object.hasOwn(attrs, "id") && labelProvision) {
+        attrs.id = labelProvision.id;
+    }
+
+    return attrs;
+
+});
 
 const setValue = (value: number) => {
 

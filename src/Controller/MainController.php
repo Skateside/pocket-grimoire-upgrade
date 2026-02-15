@@ -14,6 +14,7 @@ class MainController extends AbstractController
 {
 
     #[Route('/', name: 'home')]
+    #[Route('/{route}', name: 'vue', requirements: ['route' => '^.+'])]
     public function indexAction(): Response
     {
         return $this->render('app/index.html.twig');
