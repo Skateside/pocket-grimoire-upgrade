@@ -23,16 +23,25 @@
                 <BaseLabel text="Cluster">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
+                <BaseLabel text="Cluster Reverse" layout="cluster-reverse">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
                 <BaseLabel text="Cluster Inverse" layout="cluster-inverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Sidebar" layout="sidebar">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
+                <BaseLabel text="Sidebar Reverse" layout="sidebar-reverse">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
                 <BaseLabel text="Sidebar Inverse" layout="sidebar-inverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Stack" layout="stack">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
+                <BaseLabel text="Stack Reverse" layout="stack-reverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Stack Inverse" layout="stack-inverse">
@@ -45,16 +54,25 @@
                 <BaseLabel text="Cluster" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
+                <BaseLabel text="Cluster Reverse" layout="cluster-reverse" :nested="true">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
                 <BaseLabel text="Cluster Inverse" layout="cluster-inverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Sidebar" layout="sidebar" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
+                <BaseLabel text="Sidebar Reverse" layout="sidebar-reverse" :nested="true">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
                 <BaseLabel text="Sidebar Inverse" layout="sidebar-inverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Stack" layout="stack" :nested="true">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
+                <BaseLabel text="Stack Reverse" layout="stack-reverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Stack Inverse" layout="stack-inverse" :nested="true">

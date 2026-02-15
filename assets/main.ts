@@ -3,7 +3,7 @@ import { createPinia } from "pinia"
 import { router } from "./router";
 import Storage from "./scripts/classes/Storage";
 // import PocketGrimoire from "./components/PocketGrimoire.vue"
-import MainPage from "./components/MainPage.vue";
+import MainPage from "./components/pages/main/MainPage.vue";
 
 // const game = createApp(PocketGrimoire);
 const game = createApp(MainPage);

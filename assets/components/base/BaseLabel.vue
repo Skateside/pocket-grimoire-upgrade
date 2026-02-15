@@ -1,22 +1,22 @@
 <template>
     <template v-if="props.nested">
-        <component v-if="props.layout.endsWith('-inverse')" :is="node" class="label" v-bind="attrs">
-            <slot />
+        <component v-if="isLabelFirst" :is="node" class="label" v-bind="attrs">
             <span class="label__text">{{ text }}</span>
+            <slot />
         </component>
         <component v-else :is="node" class="label" v-bind="attrs">
-            <span class="label__text">{{ text }}</span>
             <slot />
+            <span class="label__text">{{ text }}</span>
         </component>
     </template>
     <template v-else>
-        <component v-if="props.layout.endsWith('-inverse')" :is="node" class="label" v-bind="attrs">
-            <slot />
+        <component v-if="isLabelFirst" :is="node" class="label" v-bind="attrs">
             <label class="label__text" v-bind="labelAttrs">{{ text }}</label>
+            <slot />
         </component>
         <component v-else :is="node" class="label" v-bind="attrs">
-            <label class="label__text" v-bind="labelAttrs">{{ text }}</label>
             <slot />
+            <label class="label__text" v-bind="labelAttrs">{{ text }}</label>
         </component>
     </template>
 </template>
@@ -42,19 +42,25 @@ const node = computed(() => {
 
     case "cluster":
     case "cluster-inverse":
+    case "cluster-reverse":
         return ClusterLayout;
 
     case "sidebar":
     case "sidebar-inverse":
+    case "sidebar-reverse":
         return SidebarLayout;
 
     case "stack":
     case "stack-inverse":
+    case "stack-reverse":
         return StackLayout;
 
     }
 
 });
+const isLabelFirst = computed(() => (
+    !props.layout.endsWith("-reverse") && !props.layout.endsWith("-inverse")
+));
 const suffix = useId();
 const rawAttrs = useAttrs();
 const attrs = computed(() => {
@@ -73,7 +79,7 @@ const attrs = computed(() => {
         attrs.gap = "0.5em";
     }
 
-    if (props.layout === "sidebar-inverse") {
+    if (props.layout === "sidebar-reverse") {
         attrs.side = "end";
     }
 

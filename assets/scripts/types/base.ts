@@ -1,10 +1,13 @@
 export type IBaseLabelLayouts = (
     "cluster"
     | "cluster-inverse"
+    | "cluster-reverse"
     | "sidebar"
+    | "sidebar-inverse"
+    | "sidebar-reverse"
     | "stack"
     | "stack-inverse"
-    | "sidebar-inverse"
+    | "stack-reverse"
 );
 
 export type IBaseLabelProvide = {

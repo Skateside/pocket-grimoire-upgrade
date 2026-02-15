@@ -6,7 +6,8 @@
         :id="makeId(props.name)"
         :hidden="!isTabSelected(props.name)"
     >
-        <slot v-if="!disabled && isTabSelected(props.name)"></slot>
+        <!-- <slot v-if="!disabled && isTabSelected(props.name)"></slot> -->
+        <slot />
     </div>
 </template>
 

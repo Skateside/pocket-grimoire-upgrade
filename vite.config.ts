@@ -34,6 +34,11 @@ export default defineConfig({
                 styles: "./assets/styles/index.scss",
                 ...getGeneratedInputs(),
             },
-        }
+        },
+    },
+    resolve: {
+        alias: {
+            "~": resolve(__dirname, "./assets"),
+        },
     },
 });
