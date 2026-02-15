@@ -1,12 +1,10 @@
 export type IBaseLabelLayouts = (
     "cluster"
-    | "cluster-inverse"
     | "cluster-reverse"
     | "sidebar"
     | "sidebar-inverse"
     | "sidebar-reverse"
     | "stack"
-    | "stack-inverse"
     | "stack-reverse"
 );
 
@@ -37,4 +35,5 @@ export type IBaseInputTypes = (
     | "time"
     | "url"
     | "week"
+    | "textarea"
 );

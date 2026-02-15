@@ -62,8 +62,8 @@ import { clamp } from "../../scripts/utilities/numbers";
 
 const props = defineProps<ITabsUIProps>();
 const emit = defineEmits<{
-    (e: "tabchange", tab: ITabsUIChange): void,
-    (e: "tabmounted", data: ITabsUIMounted): void,
+    (e: "tab-change", tab: ITabsUIChange): void,
+    (e: "tab-mounted", data: ITabsUIMounted): void,
 }>();
 const suffix = useId();
 const slots = useSlots();
@@ -187,7 +187,7 @@ watch(selectedIndex, (index, oldIndex) => {
         store.setTabIndex(props.memory, index);
     }
 
-    emit("tabchange", {
+    emit("tab-change", {
         index,
         oldIndex,
         tab: panels.value[index] ?? null,
@@ -202,7 +202,7 @@ onMounted(() => {
         setTabByIndex(store.getTabIndex(props.memory));
     }
 
-    emit("tabmounted", {
+    emit("tab-mounted", {
         tab: panels.value[selectedIndex.value] ?? null,
         index: selectedIndex.value,
         tabs: [...panels.value],

@@ -1,147 +1,114 @@
 <template>
 
-    <form
-        ref="form"
-        data-memory="select-edition"
-        @submit.prevent="handleSubmit"
-    >
+    <BaseForm memory="select-edition" @submit.prevent="handleSubmit">
 
         <div aria-live="polite">
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <TabsUI memory="edition" @tabmounted="handleTabmounted" @tabchange="handleTabchange">
+        <TabsUI memory="edition" @tab-mounted="handleTabMounted" @tab-change="handleTabChange">
             <TabUI name="official" title="Official scripts">
-                <!-- <fieldset>
-                    <legend>Official scripts</legend>
-                    <ul>
-                        <li v-for="(script, id) in store.scripts" :key="id">
-                            <label :for="`script-${id}-${suffix}`">
-                                <input type="radio" name="script" :value="id" :id="`script-${id}-${suffix}`">
-                                {{ store.getScriptMeta(script)?.name }}
-                            </label>
-                        </li>
-                    </ul>
-                </fieldset> -->
-                <BaseRadios label="Official scripts" :model-value="officialScript" :radios="officialScripts" />
+                <BaseRadios
+                    label="Official scripts"
+                    v-model="model.official"
+                    :radios="officialScripts"
+                />
             </TabUI>
 
             <TabUI name="upload" title="Upload a custom script">
-                <label :for="`upload-${suffix}`">Upload a custom script</label>
-                <input type="file" name="upload" :id="`upload-${suffix}`" accept="application/json">
+                <BaseLabel text="Upload a custom script">
+                    <BaseInput
+                        type="file"
+                        accept="application/json"
+                        v-model="model.upload"
+                    />
+                </BaseLabel>
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI name="url" title="Enter a URL">
-                <label :for="`url-${suffix}`">Enter a URL</label>
-                <input type="url" name="url" :id="`script-${suffix}`" class="input" placeholder="https://www.example.com/script.json">
+                <BaseLabel text="Enter a URL">
+                    <BaseInput
+                        type="url"
+                        placeholder="https://www.example.com/script.json"
+                        v-model="model.url"
+                    />
+                </BaseLabel>
                 <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI name="clipboard" title="Paste from clipboard">
-                <label :for="`paste-${suffix}`">Paste from clipboard</label>
-                <textarea name="paste" :id="`paste-${suffix}`" placeholder='["washerwoman","investigator","librarian","chef"]'></textarea>
+                <BaseLabel text="Paste from clipboard">
+                    <BaseInput
+                        type="textarea"
+                        placeholder='["washerwoman","investigator","librarian","chef"]'
+                        v-model="model.clipboard"
+                    />
+                </BaseLabel>
             </TabUI>
     
             <TabUI name="botc-scripts" title="Search BotC Scripts">
-                <fieldset>
-                    <legend>Script type</legend>
-                    <ul>
-                        <li>
-                            <label :for="`botc-type-any-${suffix}`">
-                                <input type="radio" name="botc-type" value="" :id="`botc-type-any-${suffix}`" checked>
-                                Any
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`botc-type-full-${suffix}`">
-                                <input type="radio" name="botc-type" value="Full" :id="`botc-type-full-${suffix}`">
-                                Full
-                            </label>
-                        </li>
-                        <li>
-                            <label :for="`botc-type-teensyville-${suffix}`">
-                                <input type="radio" name="botc-type" value="Teensyville" :id="`botc-type-teensyville-${suffix}`">
-                                Teensyville
-                            </label>
-                        </li>
-                    </ul>
-                </fieldset>
-                <div>
-<!-- TODO: improve this interface -->
-                    <label :for="`script-botc-${suffix}`">Search BotC Scripts</label>
-                    <!--
-                    <input type="text" name="botc" :id="`script-botc-${suffix}`" :list="`script-botc-list-${suffix}`" v-model="botcLookup">
-                    <datalist :id="`script-botc-list-${suffix}`">
-                        <option v-for="value in datalist" :key="value">{{ value }}</option>
-                    </datalist>
-                    -->
-                    <div>
-                        <input
-                            type="text"
-                            name="botc"
-                            :id="`script-botc-${suffix}`"
-                            v-model="botcLookup"
-                        >
-                        <ul>
-                            <template v-if="isLoading">
-                                <li>Loading</li>
-                            </template>
-                            <template v-else-if="datalist.length">
-                                <li v-for="value in datalist" :key="value">
-                                    <button type="button" @click="botcLookup = value">
-                                        {{ value }}
-                                    </button>
-                                </li>
-                            </template>
-                            <template v-else-if="botcLookup">
-                                <li>No results found for "{{ botcLookup }}"</li>
-                            </template>
-                        </ul>
-                    </div>
-                </div>
-                <!-- <p v-if="isLoading">Please wait ...</p> -->
+                <BaseRadios
+                    label="Script type"
+                    v-model="model.scriptsType"
+                    :radios="{
+                        '': 'Any',
+                        'Full': 'Full',
+                        'Teensyville': 'Teensyville',
+                    }"
+                />
+                <BaseLabel text="Search BotC Scripts">
+                    <BaseInput
+                        type="text"
+                        v-model="model.botcLookup"
+                    />
+                </BaseLabel>
+                
             </TabUI>
         </TabsUI>
 
         <p><button type="submit">Submit</button></p>
+        <p><code>tabId = "{{ tabId }}"</code></p>
+        <p><code>model = "{{ model }}"</code></p>
 
-    </form>
+    </BaseForm>
 
 </template>
 
 <script setup lang="ts">
-import type {
-    FieldElement,
-} from "~/scripts/types/lib";
-import type {
-    IBotcScriptResponse,
-    IRoleScriptImport,
-} from "~/scripts/types/data";
+// import type {
+//     // IBotcScriptResponse,
+//     IRoleScriptImport,
+// } from "~/scripts/types/data";
 import {
     computed,
-    onMounted,
+    // onMounted,
+    reactive,
     ref,
-    useId,
-    useTemplateRef,
-    watch,
+    // useId,
+    // useTemplateRef,
+    // watch,
 } from "vue";
 import useRoleStore from "~/scripts/store/role";
-import {
-    fetchTimeout,
-} from "~/scripts/utilities/fetch";
-import {
-    debounce,
-    memoise,
-} from "~/scripts/utilities/functions";
+// import {
+//     fetchTimeout,
+// } from "~/scripts/utilities/fetch";
+// import {
+//     debounce,
+//     memoise,
+// } from "~/scripts/utilities/functions";
+import { mapObject } from "~/scripts/utilities/objects";
 import {
     type ITabsUIChange,
     type ITabsUIMounted,
     TabsUI,
     TabUI,
 } from "~/components/ui/tabs";
-import useFieldSaver from "~/composables/useFieldSaver";
+// import useFieldSaver from "~/composables/useFieldSaver";
 import BaseRadios from "~/components/base/BaseRadios.vue";
+import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseInput from "~/components/base/BaseInput.vue";
+import BaseForm from "~/components/base/BaseForm.vue";
 
 const emit = defineEmits<{
     (e: "edition-selected"): void,
@@ -149,57 +116,46 @@ const emit = defineEmits<{
 
 const store = useRoleStore();
 
-const officialScripts = computed(() => {
+const officialScripts = computed(() => mapObject(store.scripts, ([id, script]) => [
+    id,
+    store.getScriptMeta(script)?.name ?? id,
+]));
 
-    const entries = Object.entries(store.scripts).map(([id, script]) => [
-        id,
-        store.getScriptMeta(script)?.name ?? id,
-    ]);
-
-    return Object.fromEntries(entries);
-
+const model = reactive({
+    official: "",
+    upload: "",
+    url: "",
+    clipboard: "",
+    scriptsType: "",
+    botcLookup: "",
 });
-const officialScript = defineModel<string>("official", { default: "" });
 
 
-const suffix = useId();
-const form = useTemplateRef("form");
+// const form = useTemplateRef("form");
 const isLoading = ref(false);
 const errorMessage = ref("");
-const botcScripts = ref<Record<string, IRoleScriptImport>>({});
-const botcLookup = defineModel<string>();
-const datalist = computed(() => Object.keys(botcScripts.value));
 
-const handleTabmounted = ({ tabs, index }: ITabsUIMounted) => {
+const tabId = ref("official");
 
-    tabs.forEach((tab, tabIndex) => {
+const setTabId = (tab: HTMLElement | null) => {
 
-        if (index === tabIndex) {
-            return; // leave current tab's inputs enabled.
-        }
+    const tabName = tab?.dataset.tabName;
 
-        tab
-            .querySelectorAll<FieldElement>("input,select,textarea")
-            .forEach((input) => input.disabled = true);
+    if (!tabName) {
+        return console.warn("can't identify the tab");
+    }
 
-    });
+    tabId.value = tab.dataset.tabName!;
 
 };
 
-const handleTabchange = ({ tab, oldTab }: ITabsUIChange) => {
-
-    tab
-        ?.querySelectorAll<FieldElement>("input,select,textarea")
-        .forEach((input) => input.disabled = false);
-
-    oldTab
-        ?.querySelectorAll<FieldElement>("input,select,textarea")
-        .forEach((input) => input.disabled = true);
-
-};
+const handleTabMounted = ({ tabs, index }: ITabsUIMounted) => setTabId(tabs[index]);
+const handleTabChange = ({ tab }: ITabsUIChange) => setTabId(tab);
 
 const handleSubmit = (event: Event) => {
+    console.log({ event });
 
+    /*
     if (isLoading.value) {
         return; // can't submit, still loading.
     }
@@ -230,9 +186,10 @@ const handleSubmit = (event: Event) => {
             errorMessage.value = error;
         })
         .then(() => isLoading.value = false);
+    */
 
 };
-
+/*
 const processScriptId = (id: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
 
     const script = store.getScriptById(id);
@@ -349,6 +306,7 @@ watch(botcLookup, debounce((value) => {
         .then(() => isLoading.value = false);
 
 }, 150));
+*/
 
-onMounted(() => useFieldSaver(form, true));
+// onMounted(() => useFieldSaver(form, true));
 </script>

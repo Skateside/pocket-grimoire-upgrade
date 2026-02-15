@@ -3,11 +3,12 @@
         class="tabs__tab"
         role="tabpanel"
         :tabindex="tabindex"
+        :data-tab-name="props.name"
         :id="makeId(props.name)"
         :hidden="!isTabSelected(props.name)"
     >
         <!-- <slot v-if="!disabled && isTabSelected(props.name)"></slot> -->
-        <slot />
+        <slot></slot>
     </div>
 </template>
 

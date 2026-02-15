@@ -14,6 +14,9 @@ import type { ILayoutsNode } from "../../scripts/types/layouts";
 import { type Component, computed, useAttrs, useSlots } from "vue";
 import { RouterLink } from "vue-router";
 
+defineOptions({
+    inheritAttrs: false,
+});
 const props = withDefaults(defineProps<{
     node?: ILayoutsNode,
     text?: string,

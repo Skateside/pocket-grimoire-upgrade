@@ -26,9 +26,6 @@
                 <BaseLabel text="Cluster Reverse" layout="cluster-reverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Cluster Inverse" layout="cluster-inverse">
-                    <BaseInput v-model="basicString" />
-                </BaseLabel>
                 <BaseLabel text="Sidebar" layout="sidebar">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
@@ -44,9 +41,6 @@
                 <BaseLabel text="Stack Reverse" layout="stack-reverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Stack Inverse" layout="stack-inverse">
-                    <BaseInput v-model="basicString" />
-                </BaseLabel>
             </StackLayout>
 
             <h3>Nested</h3>
@@ -55,9 +49,6 @@
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Cluster Reverse" layout="cluster-reverse" :nested="true">
-                    <BaseInput v-model="basicString" />
-                </BaseLabel>
-                <BaseLabel text="Cluster Inverse" layout="cluster-inverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
                 <BaseLabel text="Sidebar" layout="sidebar" :nested="true">
@@ -75,9 +66,6 @@
                 <BaseLabel text="Stack Reverse" layout="stack-reverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Stack Inverse" layout="stack-inverse" :nested="true">
-                    <BaseInput v-model="basicString" />
-                </BaseLabel>
             </StackLayout>
         </article>
 
@@ -93,6 +81,12 @@
             <BaseLabel text="Input number spinner">
                 <BaseInputSpinner v-model="basicNumeric" />
             </BaseLabel>
+
+            <BaseRadios label="Radio buttons" v-model="basicString" :radios="{
+                'a': 'Alpha',
+                'b': 'Bravo',
+                'c': 'Charlie',
+            }" />
         </article>
 
     </StackLayout>
@@ -104,6 +98,7 @@ import BaseButton from "./base/BaseButton.vue";
 import BaseLabel from "./base/BaseLabel.vue";
 import BaseInput from "./base/BaseInput.vue";
 import BaseInputSpinner from "./base/BaseInputSpinner.vue";
+import BaseRadios from "./base/BaseRadios.vue";
 
 const basicString = defineModel<string>("basic-string", { default: "" });
 const basicNumeric = defineModel<string>("basic-numeric", { default: "" });

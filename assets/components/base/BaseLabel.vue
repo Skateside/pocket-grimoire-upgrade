@@ -28,6 +28,9 @@ import ClusterLayout from "../layouts/ClusterLayout.vue";
 import SidebarLayout from "../layouts/SidebarLayout.vue";
 import StackLayout from "../layouts/StackLayout.vue";
 
+defineOptions({
+    inheritAttrs: false,
+});
 const props = withDefaults(defineProps<{
     layout?: IBaseLabelLayouts,
     nested?: boolean,
@@ -41,7 +44,6 @@ const node = computed(() => {
     switch (props.layout) {
 
     case "cluster":
-    case "cluster-inverse":
     case "cluster-reverse":
         return ClusterLayout;
 
@@ -51,7 +53,6 @@ const node = computed(() => {
         return SidebarLayout;
 
     case "stack":
-    case "stack-inverse":
     case "stack-reverse":
         return StackLayout;
 

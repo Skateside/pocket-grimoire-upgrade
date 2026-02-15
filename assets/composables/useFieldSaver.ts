@@ -26,7 +26,9 @@ export default function useFieldSaver(
             return console.warn("heard input event on non-existing target");
         }
 
-        store.saveField(memory, target as FieldElement);
+        if (!store.saveField(memory, target as FieldElement)) {
+            console.warn("Unable to save input - file input or missing name", target);
+        }
 
     };
 

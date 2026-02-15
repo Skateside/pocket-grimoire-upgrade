@@ -15,9 +15,9 @@ import type {
  * @param object Object to thaw.
  * @returns Writable copy of the object.
  */
-export function deepThaw<
-    TObject extends AnyObject = AnyObject
->(object: TObject): DeepWritable<TObject> {
+export function deepThaw<TObject extends AnyObject = AnyObject>(
+    object: TObject
+): DeepWritable<TObject> {
     return window.structuredClone(object);
 }
 
@@ -40,4 +40,22 @@ export function deepFreeze<TObject = any>(object: TObject): DeepReadonly<TObject
 
     return Object.freeze(object) as DeepReadonly<TObject>;
 
+}
+
+type IObjectMapCallback<TObject extends AnyObject, TResult = any> = (
+    entry: [keyof TObject, TObject[keyof TObject]],
+) => [keyof TObject, TResult];
+
+/**
+ * Converts the given object as defined by the map.
+ * 
+ * @param object Object to convert.
+ * @param callback Function to modify the object.
+ * @returns Modified object.
+ */
+export function mapObject<TObject extends AnyObject = AnyObject, TResult = any>(
+    object: TObject,
+    callback: IObjectMapCallback<TObject, TResult>,
+) {
+    return Object.fromEntries(Object.entries(object).map(callback));
 }

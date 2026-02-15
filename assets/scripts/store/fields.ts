@@ -65,7 +65,7 @@ const useFieldsStore = defineStore("fields", () => {
         }
 
         const value = (
-            type === "checkbox"
+            (type === "checkbox" || type === "radio")
             ? (field as HTMLInputElement).checked
             : field.value
         );
@@ -109,6 +109,10 @@ const useFieldsStore = defineStore("fields", () => {
                     input.value = String(value);
 
                 }
+
+                input.dispatchEvent(new Event("input", {
+                    bubbles: true,
+                }));
 
             });
 
