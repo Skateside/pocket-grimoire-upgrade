@@ -9,6 +9,7 @@
         <TabsUI memory="edition" @tab-mounted="handleTabMounted" @tab-change="handleTabChange">
             <TabUI name="official" title="Official scripts">
                 <BaseRadios
+                    name="official"
                     label="Official scripts"
                     v-model="model.official"
                     :radios="officialScripts"
@@ -18,6 +19,7 @@
             <TabUI name="upload" title="Upload a custom script">
                 <BaseLabel text="Upload a custom script">
                     <BaseInput
+                        name="custom"
                         type="file"
                         accept="application/json"
                         v-model="model.upload"
@@ -29,6 +31,7 @@
             <TabUI name="url" title="Enter a URL">
                 <BaseLabel text="Enter a URL">
                     <BaseInput
+                        name="url"
                         type="url"
                         placeholder="https://www.example.com/script.json"
                         v-model="model.url"
@@ -40,6 +43,7 @@
             <TabUI name="clipboard" title="Paste from clipboard">
                 <BaseLabel text="Paste from clipboard">
                     <BaseInput
+                        name="clipboard"
                         type="textarea"
                         placeholder='["washerwoman","investigator","librarian","chef"]'
                         v-model="model.clipboard"
@@ -49,6 +53,7 @@
     
             <TabUI name="botc-scripts" title="Search BotC Scripts">
                 <BaseRadios
+                    name="botc-type"
                     label="Script type"
                     v-model="model.scriptsType"
                     :radios="{
@@ -59,6 +64,7 @@
                 />
                 <BaseLabel text="Search BotC Scripts">
                     <BaseInput
+                        name="botc-scripts"
                         type="text"
                         v-model="model.botcLookup"
                     />

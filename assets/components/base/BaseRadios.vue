@@ -27,10 +27,13 @@ const props = defineProps<{
     label: string,
     radios: Record<string, string>,
     modelValue: string,
+    name?: string,
 }>();
 const emit = defineEmits<{
     (e: "update:modelValue", value: string): void,
 }>();
 const modelValue = reactive(mapObject(props.radios, ([id]) => [id, id]));
-const name = computed(() => props.label.toLowerCase().trim().replaceAll(/\s+/g, "-"));
+const name = computed(() => (
+    props.name ?? props.label.toLowerCase().trim().replaceAll(/\s+/g, "-")
+));
 </script>

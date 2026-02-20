@@ -8,9 +8,6 @@
         <li><RouterLink :to="{ name: 'info-tokens' }">Info Tokens</RouterLink></li>
         <li><RouterLink :to="{ name: 'night-order' }">Night Order</RouterLink></li>
         <li><RouterLink :to="{ name: 'jinxes' }">Jinxes</RouterLink></li> -->
-
-        <li><RouterLink :to="{ name: 'original' }">(Original)</RouterLink></li>
-        <li><RouterLink :to="{ name: 'kitchen-sink' }">(Kitchen Sink)</RouterLink></li>
     </ReelLayout>
 
     <RouterView />
