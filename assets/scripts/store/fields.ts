@@ -50,11 +50,19 @@ const useFieldsStore = defineStore("fields", () => {
 
     };
 
+    const canSaveFieldType = (field: FieldElement) => {
+
+        const { type } = field;
+
+        return type !== "file";
+
+    };
+
     const saveField = (memory: string, field: FieldElement) => {
 
         const { name, type } = field;
 
-        if (!name || type === "file") {
+        if (!name || !canSaveFieldType(field)) {
             return false;
         }
 
@@ -122,6 +130,7 @@ const useFieldsStore = defineStore("fields", () => {
         // State.
         inputs,
         // Action.
+        canSaveFieldType,
         clear,
         saveField,
         populateFields,

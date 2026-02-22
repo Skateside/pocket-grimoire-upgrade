@@ -5,25 +5,24 @@ namespace App\Controller;
 use App\Model\BotcScriptModel;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-// use Symfony\Component\HttpFoundation\Request;
+// use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
-// use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
-class MainController extends AbstractController
+#[Route('/api', name: 'api_')]
+class ApiController extends AbstractController
 {
 
-    #[Route('/', name: 'home')]
-    // #[Route('/{route}', name: 'vue', requirements: ['route' => '^.+'])]
-    #[Route('/{route}', name: 'vue', requirements: ['route' => '^(?!api).+'])]
-    public function indexAction(): Response
+    #[Route('/test', name: 'test')]
+    public function test(): JsonResponse
     {
-        return $this->render('app/index.html.twig');
+        return $this->json([
+            'success' => true,
+            'body' => 'Hello world',
+        ]);
     }
 
-    // TODO: Route for the sheet/summary
-
-    /*
     #[Route('/get-url', name: 'get_url', methods: ['POST'])]
     public function getUrlAction(Request $request): JsonResponse
     {
@@ -108,6 +107,5 @@ class MainController extends AbstractController
     {
         return $this->jsonResponse($body, false);
     }
-    */
 
 }

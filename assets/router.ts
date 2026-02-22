@@ -14,7 +14,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: "setup",
                 name: "setup",
-                component: () => import("./components/views/setup/Wrapper.vue"),
+                component: () => import("./components/views/setup/PageWrapper.vue"),
                 redirect: { name: "select-edition" },
                 children: [
                     {

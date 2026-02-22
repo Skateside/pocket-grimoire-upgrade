@@ -325,4 +325,11 @@ export type ITokenReminder = IToken & {
 
 // BotC Scripts.
 
-export type IBotcScriptResponse = Record<string, IRoleScriptImport>;
+export type IBotcScriptResponse = {
+    id: number,
+    author: string,
+    name: string,
+    version: string,
+    script: IRoleScriptImport,
+    type: 'full' | 'teensyvilly' | 'unknown',
+};

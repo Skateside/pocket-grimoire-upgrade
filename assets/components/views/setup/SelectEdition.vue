@@ -1,12 +1,16 @@
 <template>
 
-    <BaseForm memory="select-edition" @submit.prevent="handleSubmit">
+    <BaseForm ref="form" memory="select-edition" @submit.prevent="handleSubmit">
 
         <div aria-live="polite">
             <p v-if="errorMessage">{{ errorMessage }}</p>
         </div>
 
-        <TabsUI memory="edition" @tab-mounted="handleTabMounted" @tab-change="handleTabChange">
+        <TabsUI
+            memory="select-edition"
+            @tab-mounted="handleTabMounted"
+            @tab-change="handleTabChange"
+        >
             <TabUI name="official" title="Official scripts">
                 <BaseRadios
                     name="official"
@@ -19,13 +23,12 @@
             <TabUI name="upload" title="Upload a custom script">
                 <BaseLabel text="Upload a custom script">
                     <BaseInput
-                        name="custom"
+                        name="upload"
                         type="file"
                         accept="application/json"
                         v-model="model.upload"
                     />
                 </BaseLabel>
-                <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI name="url" title="Enter a URL">
@@ -37,7 +40,6 @@
                         v-model="model.url"
                     />
                 </BaseLabel>
-                <p v-if="isLoading">Please wait ...</p>
             </TabUI>
 
             <TabUI name="clipboard" title="Paste from clipboard">
@@ -67,66 +69,75 @@
                         name="botc-scripts"
                         type="text"
                         v-model="model.botcLookup"
+                        @input="handleBotcInput"
                     />
                 </BaseLabel>
-                
+
+                <div aria-live="polite">
+                    <p v-if="botcScriptsLoading">Loading</p>
+                    <ul v-else-if="botcScripts.length">
+                        <li v-for="{ id, name, author, version, type } in botcScripts">
+                            <button type="button" @click="() => handleBotcClick(id)">
+                                <strong>{{ name }}</strong> by {{ author }}
+                                <small>{{ type }} v{{ version }}</small>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </TabUI>
         </TabsUI>
 
-        <p><button type="submit">Submit</button></p>
-        <p><code>tabId = "{{ tabId }}"</code></p>
-        <p><code>model = "{{ model }}"</code></p>
+        <SidebarLayout>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+            <div v-if="isSuccess">
+                Success
+            </div>
+        </SidebarLayout>
+
+        <div v-if="isLoading">
+            Loading
+        </div>
 
     </BaseForm>
 
 </template>
 
 <script setup lang="ts">
-// import type {
-//     // IBotcScriptResponse,
-//     IRoleScriptImport,
-// } from "~/scripts/types/data";
-import {
-    computed,
-    // onMounted,
-    reactive,
-    ref,
-    // useId,
-    // useTemplateRef,
-    // watch,
-} from "vue";
+import type {
+    IBotcScriptResponse,
+    IRoleScriptImport,
+} from "~/scripts/types/data";
+import type {
+    IBaseFormExpose,
+} from "~/scripts/types/base";
+import type { AnyFunction } from "~/scripts/types/lib";
+import { computed, reactive, ref, useTemplateRef } from "vue";
+import usePathsStore from "~/scripts/store/paths";
 import useRoleStore from "~/scripts/store/role";
-// import {
-//     fetchTimeout,
-// } from "~/scripts/utilities/fetch";
-// import {
-//     debounce,
-//     memoise,
-// } from "~/scripts/utilities/functions";
+import { abortableFetch } from "~/scripts/utilities/fetch";
+import {
+    debounce,
+    noop,
+} from "~/scripts/utilities/functions";
 import { mapObject } from "~/scripts/utilities/objects";
+import { isValidURL } from "~/scripts/utilities/strings";
 import {
     type ITabsUIChange,
     type ITabsUIMounted,
     TabsUI,
     TabUI,
 } from "~/components/ui/tabs";
-// import useFieldSaver from "~/composables/useFieldSaver";
 import BaseRadios from "~/components/base/BaseRadios.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
+import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 
-const emit = defineEmits<{
-    (e: "edition-selected"): void,
-}>();
-
-const store = useRoleStore();
-
-const officialScripts = computed(() => mapObject(store.scripts, ([id, script]) => [
-    id,
-    store.getScriptMeta(script)?.name ?? id,
-]));
-
+const pathsStore = usePathsStore();
+const roleStore = useRoleStore();
+const formInterface = useTemplateRef<IBaseFormExpose>("form");
 const model = reactive({
     official: "",
     upload: "",
@@ -135,13 +146,18 @@ const model = reactive({
     scriptsType: "",
     botcLookup: "",
 });
-
-
-// const form = useTemplateRef("form");
-const isLoading = ref(false);
 const errorMessage = ref("");
-
+const isLoading = ref(false);
+const isSuccess = ref(false);
 const tabId = ref("official");
+const officialScripts = computed(() => mapObject(roleStore.scripts, ([id, script]) => [
+    id,
+    roleStore.getScriptMeta(script)?.name ?? id,
+]));
+const abortPrevious = ref<AnyFunction>(noop);
+const botcScriptsLoading = ref(false);
+const botcScripts = ref<IBotcScriptResponse[]>([]);
+const UNRECOGNISED_TAB_ID = Symbol("unrecognised-tab-id");
 
 const setTabId = (tab: HTMLElement | null) => {
 
@@ -155,164 +171,224 @@ const setTabId = (tab: HTMLElement | null) => {
 
 };
 
-const handleTabMounted = ({ tabs, index }: ITabsUIMounted) => setTabId(tabs[index]);
-const handleTabChange = ({ tab }: ITabsUIChange) => setTabId(tab);
-
-const handleSubmit = (event: Event) => {
-    console.log({ event });
-
-    /*
-    if (isLoading.value) {
-        return; // can't submit, still loading.
-    }
-
-    isLoading.value = true;
-    
-    const data = new FormData(event.target as HTMLFormElement);
-    const promises: [string, (_value: any) => Promise<IRoleScriptImport>][] = [
-        ["", () => Promise.reject("Empty form")], // TODO: i18n
-        ["script", processScriptId],
-        ["upload", processUploadedScript],
-        ["url", processURLScript],
-        ["paste", processPastedScript],
-        ["botc", processBotcScript],
-    ];
-    const [
-        name,
-        promiseMaker,
-    ] = promises.find(([name]) => data.has(name)) || promises[0];
-
-    promiseMaker(data.get(name))
-        .then((script) => {
-            store.setScript(script);
-            emit("edition-selected");
-        })
-        .catch((error) => {
-            console.error(error);
-            errorMessage.value = error;
-        })
-        .then(() => isLoading.value = false);
-    */
-
-};
-/*
-const processScriptId = (id: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
-
-    const script = store.getScriptById(id);
-
-    if (script) {
-        resolve(script);
-    } else {
-        reject(`Unrecognised script ID "${id}"`); // TODO: i18n
-    }
-
-});
-
-const handleScript = (data: string): { script?: IRoleScriptImport, error?: string } => {
+const parseScript = (data: string): { script?: IRoleScriptImport, error?: string } => {
 
     let script = [];
 
     try {
         script = JSON.parse(data);
     } catch (error) {
-        return { error: "Unable to parse script." }  // TODO: i18n
+        return { error: "Unable to parse script." }; // TODO: i18n
     }
 
-    if (!store.getIsValidImport(script)) {
-        return { error: "Script is not valid." }  // TODO: i18n
+    if (!roleStore.getIsValidImport(script)) {
+        return { error: "Script is not valid." }; // TODO: i18n
     }
 
     return { script };
 
 };
 
-const processUploadedScript = (file: File) => new Promise<IRoleScriptImport>((resolve, reject) => {
+const performAjax = <TResponse = IRoleScriptImport>(
+    url: string,
+    data: Record<string, any>,
+) => {
+
+    const { abort, promise } = abortableFetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+        timeout: 10_000,
+    });
+    const then = promise
+        .then((response) => response.json())
+        .then(({ success, body }) => {
+            if (success) {
+                return body as TResponse;
+            }
+            throw body;
+        });
+    
+    return {
+        abort,
+        promise: then,
+    };
+
+};
+
+const lookupBotcScript = () => {
+
+    abortPrevious.value("Replaced with new lookup");
+
+    // Don't look anything up if there's nothing to look up or the user is
+    // looking at a different tab - useFieldSaver() might have re-populated the
+    // lookup but we might not need to look anything up.
+    if (!model.botcLookup || tabId.value !== "botc-scripts") {
+        return; // Don't do a lookup.
+    }
+
+    const data: { term: string, type?: string } = {
+        term: model.botcLookup,
+    };
+
+    if (model.scriptsType) {
+        data.type = model.scriptsType;
+    }
+
+    const { abort, promise } = performAjax<IBotcScriptResponse[]>(
+        pathsStore.get("apiGetBotc"),
+        data,
+    );
+    abortPrevious.value = abort;
+    botcScriptsLoading.value = true;
+    botcScripts.value = [];
+
+    promise.then((scripts) => {
+        botcScriptsLoading.value = false;
+        botcScripts.value = scripts;
+    });
+
+};
+
+const processOfficial = () => new Promise<IRoleScriptImport>((resolve, reject) => {
+
+    if (!model.official) {
+        return reject("Please select a script");
+    }
+
+    const script = roleStore.getScriptById(model.official);
+
+    if (script) {
+        return resolve(script);
+    }
+     
+    reject(`Unrecognised script ID "${model.official}"`); // TODO: i18n
+
+});
+
+const processUpload = () => new Promise<IRoleScriptImport>((resolve, reject) => {
+
+    if (!formInterface.value) {
+        return reject("Unable to detect form. Please reload and try again."); // TODO: i18n
+    }
+
+    const formData = formInterface.value.getData();
+    const file = formData.get("upload");
+
+    if (!model.upload || !file) {
+        return reject("Please upload a script"); // TODO: i18n
+    }
 
     const reader = new FileReader();
 
     reader.addEventListener("load", ({ target }) => {
 
-        const { script, error } = handleScript(target!.result as string);
+        const { script, error } = parseScript(target!.result as string);
 
         if (script) {
-            resolve(script);
-        } else {
-            reject(error);
+            return resolve(script);
         }
+        
+        reject(error);
 
     });
 
-    reader.readAsText(file);
+    reader.readAsText(file as File);
 
 });
 
-const processPastedScript = (data: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
+const processURL = () => new Promise<IRoleScriptImport>((resolve, reject) => {
 
-    const { script, error } = handleScript(data);
+    if (!model.url || !isValidURL(model.url)) {
+        return reject("Please enter a valid URL"); // TODO: i18n
+    }
+
+    performAjax(pathsStore.get("apiGetUrl"), {
+        url: model.url,
+    }).promise.then((value) => resolve(value), (error) => reject(error));
+
+});
+
+const processClipboard = () => new Promise<IRoleScriptImport>((resolve, reject) => {
+
+    if (!model.clipboard) {
+        reject("Please paste a script"); // TODO: i18n
+    }
+
+    const { script, error } = parseScript(model.clipboard);
 
     if (script) {
-        resolve(script);
-    } else {
-        reject(error);
+        return resolve(script);
     }
+
+    reject(error);
 
 });
 
-const handleAjax = <TResponse = IRoleScriptImport>(url: string, data: Record<string, any>): Promise<TResponse> => fetchTimeout(url, {
-        method: "POST",
-        body: JSON.stringify(data),
-        timeout: 10000,
-    })
-    .then((response) => response.json())
-    .then(({ success, body }) => {
-        if (success) {
-            return body;
-        }
-        throw body;
-    });
+const processBotcScripts = (event: Event) => new Promise<IRoleScriptImport>((resolve) => {
 
-const processURLScript = (url: string) => handleAjax("/get-url", { url });
-
-const processBotcScript = (name: string) => new Promise<IRoleScriptImport>((resolve, reject) => {
-
-    if (!Object.hasOwn(botcScripts.value, name)) {
-        return reject(`Unrecognised script "${name}"`); // TODO: i18n
-    }
-
-    resolve(botcScripts.value[name]);
+    event?.preventDefault();
+    lookupBotcScript();
+    resolve([]);
 
 });
 
-const getBotcScripts = memoise(
-    (term: string, type: string) => handleAjax<IBotcScriptResponse>("/get-botc", {
-        term,
-        type,
-    }),
-    (term, type) => `${term}|${type}`,
-);
+const processes: Record<string | symbol, (event: Event) => Promise<IRoleScriptImport>> = {
+    [UNRECOGNISED_TAB_ID]: () => Promise.reject("The tab wasn't recognised. Please try again."), // TODO: i18n
+    "official": processOfficial,
+    "upload": processUpload,
+    "url": processURL,
+    "clipboard": processClipboard,
+    "botc-scripts": processBotcScripts,
+};
 
-watch(botcLookup, () => isLoading.value = true);
-watch(botcLookup, debounce((value) => {
+const handleSubmit = (event: Event) => {
 
-    if (!value?.trim()) {
-        isLoading.value = false;
-        return; // nothing to look up.
+    if (isLoading.value) {
+        return; // Can't submit, form still loading
     }
 
-    const type = document
-        .querySelector<HTMLInputElement>(`[name="botc-type"][id$="-${suffix}"]:checked`)
-        ?.value || "";
+    const process = processes[tabId.value] || processes[UNRECOGNISED_TAB_ID];
 
-    getBotcScripts(value, type)
-        .then((results) => {
-            const { value } = botcScripts;
-            Object.keys(value).forEach((key) => delete value[key]);
-            Object.entries(results).forEach(([name, script]) => value[name] = script);
-        }, () => {})
-        .then(() => isLoading.value = false);
+    isLoading.value = true;
 
-}, 150));
-*/
+    process(event)
+        .then((scriptImport) => {
 
-// onMounted(() => useFieldSaver(form, true));
+            if (!scriptImport.length) {
+                return; // No script, but this might be intentional (BotC Scripts).
+            }
+
+            roleStore.setScript(scriptImport);
+            isSuccess.value = true;
+            window.setTimeout(() => isSuccess.value = false, 5000);
+
+        })
+        .catch((error) => {
+            errorMessage.value = error;
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
+
+};
+
+const handleBotcInput = debounce(lookupBotcScript, 150);
+
+const handleBotcClick = (id: number) => {
+
+    const botcScript = botcScripts.value.find(({ id: scriptId }) => scriptId === id);
+
+    if (!botcScript) {
+        errorMessage.value = "Unable to find script, please try again."; // TODO: i18n
+        return;
+    }
+
+    roleStore.setScript(botcScript.script);
+    isSuccess.value = true;
+    window.setTimeout(() => isSuccess.value = false, 5000);
+
+};
+
+const handleTabMounted = ({ tabs, index }: ITabsUIMounted) => setTabId(tabs[index]);
+const handleTabChange = ({ tab }: ITabsUIChange) => setTabId(tab);
 </script>

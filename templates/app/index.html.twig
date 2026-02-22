@@ -53,6 +53,12 @@
         // });
     </script>
     #}
+    <script>
+    var PATHS = Object.freeze({
+        apiGetBotc: "{{ path('api_get_botc')|escape('js') }}",
+        apiGetUrl: "{{ path('api_get_url')|escape('js') }}",
+    });
+    </script>
     {{ vite_entry_script_tags('data/en_GB') }}
     {{ vite_entry_script_tags('main') }}
 {% endblock %}

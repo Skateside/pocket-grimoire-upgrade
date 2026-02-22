@@ -5,6 +5,7 @@
 </template>
 
 <script setup lang="ts">
+import type { IBaseFormExpose } from "~/scripts/types/base";
 import { computed, onMounted, useAttrs, useTemplateRef } from "vue";
 import useFieldSaver from "~/composables/useFieldSaver";
 
@@ -34,4 +35,17 @@ onMounted(() => {
     }
 
 });
+
+defineExpose({
+    getData() {
+
+        if (!form.value) {
+            throw new ReferenceError("Form not mounted");
+        }
+
+        return new FormData(form.value);
+
+    },
+    // TODO: isValid()
+} satisfies IBaseFormExpose);
 </script>

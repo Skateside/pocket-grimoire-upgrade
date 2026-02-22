@@ -1,3 +1,7 @@
+export type IBaseFormExpose = {
+    getData: () => FormData,
+};
+
 export type IBaseLabelLayouts = (
     "cluster"
     | "cluster-reverse"

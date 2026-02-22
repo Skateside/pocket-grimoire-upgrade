@@ -8,6 +8,7 @@ import type {
 
 declare global {
     interface Window {
+        PATHS: Readonly<Record<string, string>>,
         PG: DeepReadonly<{
             i18n: II18nData,
             infoTokens: IInfoToken[],

@@ -1,6 +1,6 @@
 <template>
     <fieldset>
-        <legend>{{ props.label }} ({{ props.modelValue }})</legend>
+        <legend>{{ props.label }}</legend>
         <ul>
             <li v-for="(label, id) in props.radios" :key="id">
                 <BaseLabel :text="label" :nested="true" layout="sidebar-inverse">

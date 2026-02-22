@@ -65,10 +65,10 @@ const swap = (array: any[], indexA: number, indexB: number) => {
     if (
         indexA < 0
         || indexA >= length
-        || Math.trunc(indexA) !== indexA
+        || !Number.isInteger(indexA)
         || indexB < 0
         || indexB >= length
-        || Math.trunc(indexB) !== indexB
+        || !Number.isInteger(indexB)
     ) {
 
         return console.warn(

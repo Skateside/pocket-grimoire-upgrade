@@ -98,3 +98,23 @@ export function removeMarkup(string: string) {
     const doc = new DOMParser().parseFromString(string, "text/html");
     return doc.body.textContent;
 };
+
+/**
+ * Checks to see if the given string is a valid URL.
+ *
+ * @param string String to test.
+ * @returns `true` if the given string is a valid URL, `false` otherwise.
+ */
+export function isValidURL(string: string) {
+
+    let url: URL | null = null;
+
+    try {
+        url = new URL(string);
+    } catch (ignore) {
+        return false;
+    }
+
+    return (/^https?:$/).test(url.protocol);
+
+};
