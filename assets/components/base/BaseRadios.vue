@@ -1,4 +1,5 @@
 <template>
+    <!-- TODO: make this a more generic "BaseChoice" -->
     <fieldset>
         <legend>{{ props.label }}</legend>
         <ul>
@@ -9,6 +10,7 @@
                         type="radio"
                         :name="name"
                         :checked="props.modelValue === id"
+                        :required="props.required && id === firstId"
                         @input="() => emit('update:modelValue', id)"
                     />
                 </BaseLabel>
@@ -28,6 +30,7 @@ const props = defineProps<{
     radios: Record<string, string>,
     modelValue: string,
     name?: string,
+    required?: boolean,
 }>();
 const emit = defineEmits<{
     (e: "update:modelValue", value: string): void,
@@ -36,4 +39,5 @@ const modelValue = reactive(mapObject(props.radios, ([id]) => [id, id]));
 const name = computed(() => (
     props.name ?? props.label.toLowerCase().trim().replaceAll(/\s+/g, "-")
 ));
+const firstId = computed(() => Object.keys(props.radios)[0]);
 </script>

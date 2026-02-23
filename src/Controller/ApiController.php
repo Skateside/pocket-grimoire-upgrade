@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Model\BotcScriptModel;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-// use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -60,7 +59,7 @@ class ApiController extends AbstractController
         ];
 
         if ($type = $payload->get('type')) {
-            $query['type'] = $type;
+            $query['script_type'] = $type;
         }
 
         $url = 'https://botcscripts.com/api/scripts/?' . http_build_query($query);

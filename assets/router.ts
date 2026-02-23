@@ -17,10 +17,46 @@ const routes: RouteRecordRaw[] = [
                 component: () => import("./components/views/setup/PageWrapper.vue"),
                 redirect: { name: "select-edition" },
                 children: [
+                    /*
                     {
                         path: "select-edition",
                         name: "select-edition",
                         component: () => import("./components/views/setup/SelectEdition.vue"),
+                    },
+                    */
+                    {
+                        path: "select-edition",
+                        name: "select-edition",
+                        component: () => import("./components/views/setup/select-edition/SelectEdition.vue"),
+                        redirect: { name: "select-edition-official" },
+                        children: [
+                            {
+                                path: "official",
+                                name: "select-edition-official",
+                                component: () => import("./components/views/setup/select-edition/OfficialScripts.vue"),
+                            },
+                            {
+                                path: "upload",
+                                name: "select-edition-upload",
+                                component: () => import("./components/views/setup/select-edition/UploadScript.vue"),
+                            },
+                            {
+                                path: "url",
+                                name: "select-edition-url",
+                                component: () => import("./components/views/setup/select-edition/URLLookup.vue"),
+                            },
+                            {
+                                path: "clipboard",
+                                name: "select-edition-clipboard",
+                                component: () => import("./components/views/setup/select-edition/ClipboardPaste.vue"),
+                            },
+                            {
+                                path: "botc-scripts",
+                                name: "select-edition-botc-scripts",
+                                component: () => import("./components/views/setup/select-edition/BotcLookup.vue"),
+                            },
+
+                        ],
                     },
                     {
                         path: "set-players",

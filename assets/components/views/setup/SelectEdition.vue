@@ -1,5 +1,5 @@
 <template>
-
+    <!-- TODO: remove, after testing -->
     <BaseForm ref="form" memory="select-edition" @submit.prevent="handleSubmit">
 
         <div aria-live="polite">
