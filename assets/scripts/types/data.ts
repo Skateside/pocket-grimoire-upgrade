@@ -1,4 +1,12 @@
-// TODO: move enums into an "enums" folder.
+import {
+    EJinxState,
+    ERoleAlignment,
+    ERoleIds,
+    ERoleReminderFlag,
+    ERoleTeam,
+    ETokenType,
+} from "../enums/data";
+
 // Co-ordinates - the base of seats and reminders.
 
 export type ICoordinates = {
@@ -27,13 +35,6 @@ export type IFields = Record<string, Record<string, boolean | string>>;
 
 export type IGameBreakdown = Record<IRoleCoreTeam, number>;
 export type IGameCounts = Record<number, IGameBreakdown>;
-
-export enum EGameValues {
-    MIN_PLAYERS = 5,
-    DEFAULT_NEW_GAME = 10,
-    MAX_NON_TRAVELLER_PLAYERS = 15,
-    MAX_PLAYERS = 20,
-};
 
 // Internationalisation information.
 
@@ -68,15 +69,6 @@ export type IInfoTokenColours = (
 
 // Jinxes.
 
-export enum EJinxState {
-    THEORETICAL,
-    POTENTIAL,
-    ACTIVE,
-};
-// state: "theoretical" = this jinx exists but only the target is in the script.
-// state: "potential" = the target and trick are both in the script.
-// state: "active" = the target and trick are both in play.
-
 export type IJinx = {
     target: IRole,
     trick: IRole,
@@ -89,17 +81,6 @@ export type IJinx = {
 export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 // Roles.
-
-export enum ERoleIds {
-    META = "_meta",
-    NO_ROLE = "_norole",
-    UNIVERSAL = "_universal",
-    UNRECOGNISED = "_unrecognised",
-};
-
-export enum ERoleEditions {
-    SPECIAL = "special",
-};
 
 export type IRoleRaw = {
     id: string,
@@ -129,16 +110,6 @@ export type IRoleDeprecatedReminders = IRole & {
     remindersGlobal?: string[],
 };
 
-export enum ERoleTeam {
-    TOWNSFOLK = "townsfolk",
-    OUTSIDER = "outsider",
-    MINION = "minion",
-    DEMON = "demon",
-    TRAVELLER = "traveller",
-    FABLED = "fabled",
-    LORIC = "loric",
-};
-
 export type IRoleCoreTeam = (
     ERoleTeam.TOWNSFOLK
     | ERoleTeam.OUTSIDER
@@ -147,14 +118,6 @@ export type IRoleCoreTeam = (
 );
 export type IRolePlayTeam = IRoleCoreTeam | ERoleTeam.TRAVELLER;
 export type IRoleTeam = IRolePlayTeam | ERoleTeam.FABLED | ERoleTeam.LORIC;
-
-export enum ERoleReminderFlag {
-    GLOBAL = "global",
-    PUBLIC = "public",
-    KILL = "kill",
-    DEAD = "dead",
-    ROLE = "role",
-}
 
 export type IRoleReminderRaw = {
     name: string,
@@ -186,13 +149,6 @@ export type IRoleMeta = {
     firstNight?: string[],
     otherNight?: string[],
 };
-
-export enum ERoleAlignment {
-    DEFAULT = 0,
-    INVERSE = 1,
-    TRAVELLER_GOOD = 1,
-    TRAVELLER_EVIL = 2,
-}
 
 /*
 export type IRoleSpecial = {
@@ -284,17 +240,6 @@ export type IRoleNightOrder = Record<"first" | "other", {
 }[]>;
 
 // Tokens.
-
-export enum ETokenType {
-    SEAT,
-    ROLE,
-    REMINDER,
-};
-
-export enum ETokenDirection {
-    CLOCKWISE,
-    ANTICLOCKWISE,
-};
 
 export type IToken = Required<ICoordinates> & {
     id: string,

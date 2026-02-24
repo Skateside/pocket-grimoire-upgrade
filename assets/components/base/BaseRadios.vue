@@ -1,5 +1,6 @@
 <template>
     <!-- TODO: make this a more generic "BaseChoice" -->
+    <!-- TODO: choices: [ { text: "", value: any }, ... ] -->
     <fieldset>
         <legend>{{ props.label }}</legend>
         <ul>
@@ -28,7 +29,7 @@ import { mapObject } from "~/scripts/utilities/objects";
 const props = defineProps<{
     label: string,
     radios: Record<string, string>,
-    modelValue: string,
+    modelValue: any,
     name?: string,
     required?: boolean,
 }>();

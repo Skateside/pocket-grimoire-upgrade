@@ -4,7 +4,7 @@ import type {
 } from "../types/data";
 import {
     ERoleAlignment,
-} from "../types/data";
+} from "../enums/data";
 import {
     defineStore,
 } from "pinia";

@@ -1,9 +1,11 @@
+import type {
+    IJinx,
+    IRole,
+    IRoleJinxRaw,
+} from "../types/data";
 import {
     EJinxState,
-    type IJinx,
-    type IRole,
-    type IRoleJinxRaw,
-} from "../types/data";
+} from "../enums/data";
 import {
     defineStore,
 } from "pinia";

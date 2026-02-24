@@ -6,7 +6,7 @@ import type {
 import {
     EGameValues,
     ERoleTeam,
-} from "../types/data";
+} from "../enums/data";
 import {
     defineStore,
 } from "pinia";
@@ -175,13 +175,13 @@ const useGameStore = defineStore("game", () => {
         return number === playerCount.value;
     });
 
-    const getRange = computed(() => () => {
-        const counts = innerGetSortedCounts();
-        return {
-            max: Math.max(...counts),
-            min: Math.min(...counts),
-        };
-    });
+    // const getRange = computed(() => () => {
+    //     const counts = innerGetSortedCounts();
+    //     return {
+    //         max: Math.max(...counts),
+    //         min: Math.min(...counts),
+    //     };
+    // });
 
     const setPlayerCount = (number: number) => {
         playerCount.value = clamp(
@@ -197,7 +197,7 @@ const useGameStore = defineStore("game", () => {
         // Getters.
         breakdown,
         getIsPlayerCount,
-        getRange,
+        // getRange,
         getTable,
         // Actions.
         clear,

@@ -8,7 +8,7 @@ import type {
 } from "../types/data";
 import {
     ETokenType,
-} from "../types/data";
+} from "../enums/data";
 import {
     defineStore,
 } from "pinia";

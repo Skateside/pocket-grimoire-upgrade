@@ -16,7 +16,7 @@ import {
     ERoleIds,
     ERoleReminderFlag,
     ERoleTeam,
-} from "../types/data";
+} from "../enums/data";
 import {
     defineStore,
 } from "pinia";

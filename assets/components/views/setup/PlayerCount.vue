@@ -7,7 +7,7 @@
                     v-for="[count, text] in table.players"
                     :key="count"
                     scope="col"
-                    :class="{ 'is-count': store.getIsPlayerCount(count) }"
+                    :class="{ 'is-count': count === props.count }"
                 >
                     {{ text }}
                 </th>
@@ -31,7 +31,7 @@
                 <th scope="row">{{ labels[team] || team }}</th>
                 <td
                     v-for="{ count, number } in data"
-                    :class="{ 'is-count': store.getIsPlayerCount(count) }"
+                    :class="{ 'is-count': count === props.count }"
                 >
                     {{ number }}
                 </td>
@@ -41,9 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import { ERoleTeam } from "~/scripts/types/data";
+import { ERoleTeam } from "~/scripts/enums/data";
 import useGameStore from "~/scripts/store/game";
 import { computed } from "vue";
+
+const props = defineProps<{
+    count?: number,
+}>();
 
 const store = useGameStore();
 const table = computed(() => store.getTable());

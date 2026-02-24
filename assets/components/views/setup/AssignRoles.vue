@@ -1,27 +1,33 @@
 <template>
-    <form>
-        <p>
-            <label :for="`abilities-${suffix}`">
-                Show character abilities
-                <input
+    <BaseForm>
+        <p style="color: fuchsia;">TODO: Change <code>BaseRadios</code> into <code>BaseChoice</code>.</p>
+        <StackLayout>
+            <BaseLabel text="Show character abilities">
+                <BaseInput
                     v-model="showAbilities"
                     type="checkbox"
                     name="abilities"
-                    :id="`abilities-${suffix}`"
-                >
-            </label>
-        </p>
-        <p>
-            <label :for="`duplicates-${suffix}`">
-                Allow duplicate characters
-                <input
+                />
+            </BaseLabel>
+            <BaseLabel text="Allow duplicate characters">
+                <BaseInput
                     v-model="allowDuplicates"
                     type="checkbox"
                     name="duplicates"
-                    :id="`duplicates-${suffix}`"
-                >
-            </label>
-        </p>
+                />
+            </BaseLabel>
+            <BaseRadios
+                v-model="direction"
+                label="Direction"
+                name="direction"
+                :radios="{
+                    [String(ETokenDirection.CLOCKWISE)]: 'Clockwise',
+                    [String(ETokenDirection.ANTICLOCKWISE)]: 'Anti-clockwise',
+                }"
+            />
+        </StackLayout>
+    </BaseForm>
+    <form>
 
         <template v-for="team in ORDER">
             <fieldset v-if="roleStore.scriptByType[team]?.length">
@@ -97,19 +103,25 @@
 </template>
 
 <script setup lang="ts">
+import type {
+    IRole,
+    IRoleCoreTeam,
+    ITokenSeat,
+} from "~/scripts/types/data";
 import {
     ERoleTeam,
     ETokenDirection,
-    type IRole,
-    type IRoleCoreTeam,
-    type ITokenSeat,
-} from "~/scripts/types/data";
+} from "~/scripts/enums/data";
 import { computed, reactive, ref, useId, watch } from "vue";
 import useGameStore from "~/scripts/store/game";
 import useRoleStore from "~/scripts/store/role";
 import useTokenStore from "~/scripts/store/token";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
+import BaseForm from "~/components/base/BaseForm.vue";
+import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseInput from "~/components/base/BaseInput.vue";
+import BaseRadios from "~/components/base/BaseRadios.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
 
 const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([

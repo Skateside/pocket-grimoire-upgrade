@@ -18,7 +18,7 @@ defineOptions({
 });
 const props = withDefaults(defineProps<{
     type?: IBaseInputTypes,
-    modelValue: string,
+    modelValue: boolean | number | string,
 }>(), {
     type: "text",
 });
