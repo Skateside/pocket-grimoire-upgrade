@@ -1,17 +1,7 @@
-import type {
-    IJinx,
-    IRole,
-    IRoleJinxRaw,
-} from "../types/data";
-import {
-    EJinxState,
-} from "../enums/data";
-import {
-    defineStore,
-} from "pinia";
-import {
-    computed,
-} from "vue";
+import type { IJinx, IRole, IRoleJinxRaw } from "../types/data";
+import { EJinxState } from "../enums/data";
+import { defineStore } from "pinia";
+import { computed } from "vue";
 import useRoleStore from "./role";
 import useTokenStore from "./token";
 

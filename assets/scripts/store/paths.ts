@@ -1,11 +1,30 @@
+import { defineStore } from "pinia";
+import { computed } from "vue";
 import {
-    defineStore,
-} from "pinia";
-import { ref } from "vue";
+    filterObject,
+    getFromGlobal,
+    isObject,
+    isString,
+} from "../utilities/objects";
+import { isValidLocalURL } from "../utilities/strings";
 
 const usePathsStore = defineStore("paths", () => {
 
-    const paths = ref(Object.freeze({ ...window.PATHS }));
+    const paths = computed(() => {
+
+        const globalPaths = getFromGlobal(
+            window.PATHS,
+            isObject,
+            Object.create(null),
+        );
+        const filteredPaths = filterObject(
+            globalPaths,
+            ([_key, value]) => isString(value) && isValidLocalURL(value),
+        );
+
+        return Object.freeze(filteredPaths)
+
+    });
 
     const get = (key: string) => {
 
@@ -13,12 +32,11 @@ const usePathsStore = defineStore("paths", () => {
             return paths.value[key];
         }
 
-        throw new ReferenceError(`Unrecognised path "${key}"`);
+        throw new ReferenceError(`Unrecognised or invalid path "${key}"`);
 
     };
 
     return {
-        paths,
         get,
     };
 

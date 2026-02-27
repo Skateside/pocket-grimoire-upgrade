@@ -3,41 +3,24 @@ import type {
     IDemonBluffGroup,
     IDemonBluffs,
 } from "../types/data";
-import {
-    defineStore,
-} from "pinia";
-import {
-    computed,
-    inject,
-    ref,
-    watch,
-} from "vue";
-import type {
-    IStorage,
-} from "../classes/Storage";
-import {
-    removeAtIndex,
-} from "../utilities/arrays";
-import {
-    randomId,
-} from "../utilities/strings";
-import {
-    UnrecognisedBluffGroupError,
-} from "../../errors";
+import type { IStorage } from "../classes/Storage";
+import { defineStore } from "pinia";
+import { computed, inject, ref, watch } from "vue";
+import { isValidBluffGroup, makeNewGroup } from "../helpers/bluffs";
+import { removeAtIndex } from "../utilities/arrays";
+import { UnrecognisedBluffGroupError } from "../../errors";
 
 const useBluffsStore = defineStore("bluffs", () => {
 
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "bluffs";
 
-    const innerMakeNewGroup = (name = "") => ({
-        name,
-        id: randomId("bluffs-"),
-        roles: [null, null, null],
-    } satisfies IDemonBluffGroup);
-
     const bluffs = ref<IDemonBluffs>([
-        ...storage.get<IDemonBluffs>(STORAGE_KEY, [innerMakeNewGroup()]),
+        ...storage.get<IDemonBluffs>(
+            STORAGE_KEY,
+            (raw) => Array.isArray(raw) && raw.every(isValidBluffGroup),
+            [makeNewGroup()]
+        ),
     ]);
 
     watch(bluffs, (value) => {
@@ -47,7 +30,7 @@ const useBluffsStore = defineStore("bluffs", () => {
     const clear = () => {
 
         bluffs.value.length = 0;
-        bluffs.value.push(innerMakeNewGroup());
+        bluffs.value.push(makeNewGroup());
 
     };
 
@@ -66,24 +49,13 @@ const useBluffsStore = defineStore("bluffs", () => {
     const getGroup = computed(() => innerGetGroup);
 
     const addGroup = (name = "") => {
-        bluffs.value.push(innerMakeNewGroup(name));
+        bluffs.value.push(makeNewGroup(name));
     };
 
     const removeGroup = (groupId: IDemonBluffGroup["id"]) => removeAtIndex(
         bluffs.value,
         bluffs.value.findIndex(({ id }) => id === groupId),
     );
-
-    //     const index = bluffs.value.findIndex(({ id }) => id === groupId);
-
-    //     if (index < 0) {
-    //         return false;
-    //     }
-
-    //     bluffs.value.splice(index, 1);
-    //     return true;
-
-    // };
 
     const renameGroup = (groupId: IDemonBluffGroup["id"], name: string) => {
         innerGetGroup(groupId).name = name;

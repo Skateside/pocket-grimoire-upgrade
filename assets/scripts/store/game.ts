@@ -1,30 +1,10 @@
-import type {
-    IGameBreakdown,
-    IGameCounts,
-    IRoleCoreTeam,
-} from "../types/data";
-import {
-    EGameValues,
-    ERoleTeam,
-} from "../enums/data";
-import {
-    defineStore,
-} from "pinia";
-import {
-    computed,
-    inject,
-    ref,
-    watch,
-} from "vue";
-import type {
-    IStorage,
-} from "../classes/Storage";
-import {
-    clamp,
-} from "../utilities/numbers";
-import {
-    deepFreeze,
-} from "../utilities/objects";
+import type { IGameBreakdown, IGameCounts, IRoleCoreTeam } from "../types/data";
+import type { IStorage } from "../classes/Storage";
+import { EGameValues, ERoleTeam } from "../enums/data";
+import { defineStore } from "pinia";
+import { computed, inject, ref, watch } from "vue";
+import { clamp } from "../utilities/numbers";
+import { deepFreeze, isNumber } from "../utilities/objects";
 
 const useGameStore = defineStore("game", () => {
 
@@ -105,7 +85,7 @@ const useGameStore = defineStore("game", () => {
         ERoleTeam.DEMON,
     ]);
     const playerCount = ref<number>(
-        storage.get(STORAGE_KEY, EGameValues.DEFAULT_NEW_GAME)
+        storage.get(STORAGE_KEY, isNumber, EGameValues.DEFAULT_NEW_GAME)
     );
     const breakdown = computed<IGameBreakdown>(() => NUMBERS[playerCount.value]);
 

@@ -1,35 +1,16 @@
-import type {
-    IInfoToken,
-    IInfoTokenRaw,
-    IRole,
-} from "../types/data";
-import type {
-    IStorage,
-} from "../classes/Storage";
+import type { IInfoToken, IInfoTokenRaw, IRole } from "../types/data";
+import type { IStorage } from "../classes/Storage";
 import {
-    defineStore,
-} from "pinia";
-import {
-    computed,
-    inject,
-    ref,
-    watch,
-} from "vue";
-import {
-    removeAtIndex,
-    removeItem,
-} from "../utilities/arrays";
-import {
-    strip,
-    toHTML,
-} from "../utilities/markdown";
-import {
-    deepThaw,
-} from "../utilities/objects";
-import {
-    randomId,
-    removeMarkup,
-} from "../utilities/strings";
+    convertFromRaw,
+    isValidRawInfoToken,
+    makeRawInfoToken,
+    reduceToRaw,
+    setAsCustom,
+} from "../helpers/infoTokens";
+import { defineStore } from "pinia";
+import { computed, inject, ref, watch } from "vue";
+import { removeAtIndex, removeItem } from "../utilities/arrays";
+import { deepThaw, getFromGlobal } from "../utilities/objects";
 import {
     CannotChangeOfficialIntoTokenError,
     UnrecognisedInfoTokenError,
@@ -40,36 +21,15 @@ const useInfoTokenStore = defineStore("info-token", () => {
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "info-tokens";
 
-    const innerConvertFromRaw = (raw: IInfoToken | IInfoTokenRaw) => {
-
-        const infoToken = Object.assign({}, raw) as IInfoToken;
-
-        infoToken.text = strip(raw.markdown);
-        infoToken.markup = toHTML(removeMarkup(raw.markdown));
-        infoToken.isCustom = Boolean(raw.isCustom);
-        infoToken.roleIds = (raw as IInfoToken).roleIds ?? [];
-
-        return infoToken;
-
-    };
-
-    const innerReduceToRaw = (infoToken: IInfoToken) => ({
-        id: infoToken.id,
-        markdown: infoToken.markdown,
-        colour: infoToken.colour,
-    } satisfies IInfoTokenRaw);
-
-    const innerSetAsCustom = (infoToken: IInfoToken) => {
-        infoToken.isCustom = true;
-        return infoToken;
-    };
-
     const infoTokens = ref<IInfoToken[]>([
-        ...deepThaw(window.PG.infoTokens).map(innerConvertFromRaw),
+        ...deepThaw(getFromGlobal(window.PG.infoTokens, Array.isArray, []))
+            .filter(isValidRawInfoToken)
+            .map(convertFromRaw),
         ...storage
-            .get<IInfoToken[]>(STORAGE_KEY, [])
-            .map(innerConvertFromRaw)
-            .map(innerSetAsCustom),
+            .get<IInfoToken[]>(STORAGE_KEY, Array.isArray, [])
+            .filter(isValidRawInfoToken)
+            .map(convertFromRaw)
+            .map(setAsCustom),
     ]);
     const activeId = ref<IInfoToken["id"] | null>(null);
     const active = computed<IInfoToken | null>(() => {
@@ -87,12 +47,11 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
     watch(infoTokens, (value) => {
 
-        storage.set(
-            STORAGE_KEY,
-            value
-                .filter(({ isCustom }) => isCustom)
-                .map(innerReduceToRaw),
-        );
+        const raw = value
+            .filter(({ isCustom }) => isCustom)
+            .map(reduceToRaw);
+
+        storage.set(STORAGE_KEY, raw);
 
     }, { deep: true });
 
@@ -134,16 +93,7 @@ const useInfoTokenStore = defineStore("info-token", () => {
     };
 
     const addInfoToken = (markdown: IInfoTokenRaw["markdown"]) => {
-
-        const infoToken: IInfoToken = innerConvertFromRaw({
-            id: randomId("info-token-"),
-            markdown,
-            colour: "grey",
-            isCustom: true,
-        });
-
-        infoTokens.value.push(infoToken);
-
+        infoTokens.value.push(makeRawInfoToken(markdown));
     };
 
     const updateInfoToken = (
@@ -153,7 +103,7 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
         const index = getCustomIndex(id);
 
-        infoTokens.value[index] = innerConvertFromRaw({
+        infoTokens.value[index] = convertFromRaw({
             ...infoTokens.value[index],
             markdown,
         });

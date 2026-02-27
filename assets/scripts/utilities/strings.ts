@@ -27,7 +27,7 @@ export function randomId(prefix = "") {
  * `length` and there are `groups` number of groups. The string that joins them
  * into a single string is `glue`. For a function that generates IDs that are
  * more random (to be consumed by machines) use {@link randomId}.
- * 
+ *
  * @param settings Optional settings to create the ID.
  * @param settings.groups Number of groups - defaults to `3`.
  * @param settings.length Length of each group - defaults to `3`.
@@ -80,7 +80,7 @@ export function supplant(
 
 /**
  * Splits the given string up into a collection of words.
- * 
+ *
  * @param words String to break up into words.
  * @returns Array of words.
  */
@@ -90,7 +90,7 @@ export function words<TWord = string>(words: string) {
 
 /**
  * Removes any markup from the string and returns it.
- * 
+ *
  * @param string String containing potential markup.
  * @returns String without the markup.
  */
@@ -118,3 +118,40 @@ export function isValidURL(string: string) {
     return (/^https?:$/).test(url.protocol);
 
 };
+
+/**
+ * Checks to see if the given string is a valid local URL.
+ *
+ * @param string String to check.
+ * @returns `true` if the string is a valid local URL, `false` otherwise.
+ */
+export function isValidLocalURL(string: string) {
+
+    try {
+        const url = new URL(string, window.location.href);
+        return url.href.includes(string);
+    } catch (ignore) {
+        return false;
+    }
+
+}
+
+const fragment = document.createDocumentFragment();
+
+/**
+ * Checks to see if the given string is a valid CSS selector.
+ *
+ * @param string String to check.
+ * @returns `true` if the given string is a valid CSS selector, `false`
+ * otherwise.
+ */
+export function isValidCSSSelector(string: string) {
+
+    try {
+        fragment.querySelector(string);
+        return true;
+    } catch (ignore) {
+        return false;
+    }
+
+}
