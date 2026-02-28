@@ -14,14 +14,17 @@ export enum EJinxState {
 // state: "potential" = the target and trick are both in the script.
 // state: "active" = the target and trick are both in play.
 
-export enum ERoleIds {
+export enum ERoleIds { // TODO: "ERoleId"
     META = "_meta",
     NO_ROLE = "_norole",
     UNIVERSAL = "_universal",
     UNRECOGNISED = "_unrecognised",
 };
 
-export enum ERoleEditions {
+export enum ERoleEditions { // TODO: "ERoleEdition"
+    TROUBLE_BREWING = "tb",
+    BAD_MOON_RISING = "bmr",
+    SECTS_AND_VIOLETS = "snv",
     SPECIAL = "special",
 };
 
@@ -35,7 +38,7 @@ export enum ERoleTeam {
     LORIC = "loric",
 };
 
-export enum ERoleReminderFlag {
+export enum ERoleReminderFlag { // TODO: "EReminderFlag"
     GLOBAL = "global",
     PUBLIC = "public",
     KILL = "kill",
@@ -43,7 +46,7 @@ export enum ERoleReminderFlag {
     ROLE = "role",
 };
 
-export enum ERoleAlignment {
+export enum ERoleAlignment { // TODO: "ETokenAlignment"
     DEFAULT = 0,
     INVERSE = 1,
     TRAVELLER_GOOD = 1,

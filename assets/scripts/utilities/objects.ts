@@ -74,6 +74,19 @@ export function isPropertyString<
 }
 
 /**
+ * Returns a copy of the given object such that modifying the clone will not
+ * affect the original.
+ *
+ * @param object Object to clone.
+ * @returns Clone of the object.
+ */
+export function clone<TObject extends AnyObject = AnyObject>(
+    object: TObject,
+): TObject {
+    return window.structuredClone(object);
+};
+
+/**
  * Creates a copy of the given object so that it can be modified. The original
  * object remains unchanged. If the original object is frozen, it remains frozen
  * and the copy is not frozen.
@@ -87,7 +100,7 @@ export function isPropertyString<
 export function deepThaw<TObject extends AnyObject = AnyObject>(
     object: TObject
 ): DeepWritable<TObject> {
-    return window.structuredClone(object);
+    return clone(object);
 }
 
 /**

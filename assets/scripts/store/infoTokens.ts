@@ -17,12 +17,12 @@ import {
     UnrecognisedInfoTokenError,
 } from "../../errors";
 
-const useInfoTokenStore = defineStore("info-token", () => {
+const useInfoTokensStore = defineStore("info-tokens", () => {
 
     const storage = inject<IStorage>("storage");
 
     if (!storage) {
-        throw new StorageNotFoundError("info-token store");
+        throw new StorageNotFoundError("info-tokens store");
     }
 
     const STORAGE_KEY = "info-tokens";
@@ -193,4 +193,4 @@ const useInfoTokenStore = defineStore("info-token", () => {
 
 });
 
-export default useInfoTokenStore;
+export default useInfoTokensStore;

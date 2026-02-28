@@ -82,6 +82,7 @@ export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 // Roles.
 
+/*
 export type IRoleRaw = {
     id: string,
     team: IRoleTeam,
@@ -150,7 +151,7 @@ export type IRoleMeta = {
     otherNight?: string[],
 };
 
-/*
+/ *
 export type IRoleSpecial = {
     type: (
         "ability"
@@ -187,7 +188,7 @@ export type IRoleSpecial = {
     ),
     global?: IRolePlayTeam | "dead",
 };
-*/
+* /
 // NOTE: Would it make sense to turn these into `enum`s?
 export type IRoleSpecialTime = (
     "pregame"
@@ -238,7 +239,7 @@ export type IRoleNightOrder = Record<"first" | "other", {
     role: IRole,
     order: number,
 }[]>;
-
+*/
 // Tokens.
 
 export type IToken = Required<ICoordinates> & {
