@@ -13,12 +13,18 @@ import { removeAtIndex, removeItem } from "../utilities/arrays";
 import { deepThaw, getFromGlobal } from "../utilities/objects";
 import {
     CannotChangeOfficialIntoTokenError,
+    StorageNotFoundError,
     UnrecognisedInfoTokenError,
 } from "../../errors";
 
 const useInfoTokenStore = defineStore("info-token", () => {
 
-    const storage = inject<IStorage>("storage")!;
+    const storage = inject<IStorage>("storage");
+
+    if (!storage) {
+        throw new StorageNotFoundError("info-token store");
+    }
+
     const STORAGE_KEY = "info-tokens";
 
     const infoTokens = ref<IInfoToken[]>([

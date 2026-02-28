@@ -56,7 +56,21 @@ export function isObject(object: unknown): object is AnyObject {
  * @returns `true` if the given object is a string, `false` otherwise.
  */
 export function isString(object: unknown): object is string {
-    return typeof object === "string";
+    return typeof object === "string" && object.trim() !== "";
+}
+
+/**
+ * Checks to see if the given object has a non-empty string at the given key.
+ *
+ * @param object Object to check.
+ * @param key Key to check.
+ * @returns `true` if the given object is a non-empty string, `false` otherwise.
+ */
+export function isPropertyString<
+    TObject extends AnyObject = AnyObject,
+    TKey extends keyof TObject = keyof TObject,
+>(object: TObject, key: TKey): object is TObject & Record<TKey, string> {
+    return Object.hasOwn(object, key) && isString(object[key]);
 }
 
 /**

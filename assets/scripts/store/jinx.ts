@@ -3,12 +3,12 @@ import { EJinxState } from "../enums/data";
 import { defineStore } from "pinia";
 import { computed } from "vue";
 import useRoleStore from "./role";
-import useTokenStore from "./token";
+import useTokensStore from "./tokens";
 
 const useJinxStore = defineStore("jinx", () => {
 
     const roleStore = useRoleStore();
-    const tokenStore = useTokenStore();
+    const tokensStore = useTokensStore();
 
     const innerConvertJinx = (jinx: IRoleJinxRaw, targetId: IRole) => ({
         target: targetId,
@@ -22,7 +22,7 @@ const useJinxStore = defineStore("jinx", () => {
         const inScript = roleStore.script
             .filter((role) => !roleStore.getIsMeta(role))
             .map(({ id }) => id);
-        const { inPlay } = tokenStore;
+        const { inPlay } = tokensStore;
         const targetId = jinx.target.id;
         const trickId = jinx.trick.id;
 

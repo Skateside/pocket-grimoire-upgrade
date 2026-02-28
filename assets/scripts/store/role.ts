@@ -10,6 +10,7 @@ import type {
     IRoleJinxRaw,
     IRoleSpecial,
 } from "../types/data";
+import type { IStorage } from "../classes/Storage";
 import {
     ERoleAlignment,
     ERoleEditions,
@@ -17,25 +18,19 @@ import {
     ERoleReminderFlag,
     ERoleTeam,
 } from "../enums/data";
+import { defineStore } from "pinia";
+import { computed, inject, ref, watch } from "vue";
 import {
-    defineStore,
-} from "pinia";
-import {
-    computed,
-    inject,
-    ref,
-    watch,
-} from "vue";
-import type {
-    IStorage,
-} from "../classes/Storage";
-import {
-    deepThaw,
-} from "../utilities/objects";
-import {
-    UnrecognisedRoleError,
-    UnrecognisedReminderError,
-} from "../../errors";
+    isMeta,
+    isUniversal,
+    setRemindersRole,
+    unsetRemindersRole,
+} from "../helpers/role";
+import { deepThaw } from "../utilities/objects";
+import { UnrecognisedRoleError, UnrecognisedReminderError } from "../../errors";
+
+// TODO: Re-write this so that it can better handle imports.
+// TODO: Re-write the types as well.
 
 const useRoleStore = defineStore("role", () => {
 
@@ -45,50 +40,10 @@ const useRoleStore = defineStore("role", () => {
     // TODO: Add functionality for augments.
     // TODO: Work out how to augment the reminders.
 
-    const innerIsMeta = (role: IRole | IRoleMeta): role is IRoleMeta => {
-        return role.id === ERoleIds.META;
-    };
-    const innerIsUniversal = (role: IRole) => {
-        return role.id === ERoleIds.UNIVERSAL;
-    };
-
-    const innerSetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
-
-        if (!innerIsMeta(role)) {
-
-            role.reminders?.forEach((reminder, index) => {
-                reminder.role = role;
-                reminder.id = `${role.id}:${index}`;
-            });
-
-        }
-
-        return role;
-
-    };
-
-    const innerUnsetRemindersRole = <TRole extends IRoleScript[0]>(role: TRole) => {
-
-        const clone = { ...role } as IRole;
-
-        if (!clone.reminders) {
-            return clone;
-        }
-
-        clone.reminders = clone.reminders.map((reminder) => {
-            const updated = { ...reminder };
-            delete (updated as any).role;
-            return updated;
-        });
-
-        return clone;
-
-    };
-
     const roles = ref<IRole[]>(
         // Create each reminder's role reference here so that we can always
         // access it.
-        deepThaw(window.PG.roles).map(innerSetRemindersRole)
+        // deepThaw(window.PG.roles).map(setRemindersRole)
     );
     const specialRoles = computed(() => roles.value.filter(({ edition }) => (
         edition === ERoleEditions.SPECIAL
@@ -99,13 +54,13 @@ const useRoleStore = defineStore("role", () => {
     const script = ref<IRoleScript>([
         ...storage
             .get<IRoleScript>(STORAGE_KEY, [])
-            .map(innerSetRemindersRole),
+            .map(setRemindersRole),
     ]);
 
     watch(script, (value) => {
         // When saving a script, remove each reminder's role to prevent a
         // circular reference.
-        storage.set(STORAGE_KEY, value.map(innerUnsetRemindersRole));
+        storage.set(STORAGE_KEY, value.map(unsetRemindersRole));
     });
 
     const clear = () => {
@@ -114,7 +69,7 @@ const useRoleStore = defineStore("role", () => {
 
     const scriptByType = computed(() => Object.groupBy(
         script.value.filter((role) => (
-            !innerIsMeta(role) && role.edition !== ERoleEditions.SPECIAL
+            !isMeta(role) && role.edition !== ERoleEditions.SPECIAL
         )),
         (role) => (role as IRole).team || "",
     ) as Record<ERoleTeam, IRole[]>);
@@ -130,7 +85,7 @@ const useRoleStore = defineStore("role", () => {
 
         script.value.forEach((role) => {
 
-            if (innerIsMeta(role)) {
+            if (isMeta(role)) {
                 return; // ignore meta role.
             }
 
@@ -181,7 +136,7 @@ const useRoleStore = defineStore("role", () => {
 
             const { id: roleId } = role;
 
-            if (roleId === id && !innerIsMeta(role)) {
+            if (roleId === id && !isMeta(role)) {
                 return true;
             }
 
@@ -194,7 +149,7 @@ const useRoleStore = defineStore("role", () => {
     const innerGetMeta = (script: IRoleScriptImport) => {
 
         return script.find((item) => {
-            return innerIsMeta(innerAsRoleObject(item));
+            return isMeta(innerAsRoleObject(item));
         }) as IRoleMeta | void;
 
     };
@@ -307,11 +262,11 @@ const useRoleStore = defineStore("role", () => {
             return roles.value.find(({ id }) => id === ERoleIds.NO_ROLE)!;
         }
 
-        if (role === ERoleIds.META || innerIsMeta(role as IRole)) {
+        if (role === ERoleIds.META || isMeta(role as IRole)) {
             return roles.value.find(({ id }) => id === ERoleIds.META)!;
         }
 
-        if (role === ERoleIds.UNIVERSAL || innerIsUniversal(role as IRole)) {
+        if (role === ERoleIds.UNIVERSAL || isUniversal(role as IRole)) {
             return roles.value.find(({ id }) => id === ERoleIds.UNIVERSAL)!;
         }
 
@@ -337,8 +292,8 @@ const useRoleStore = defineStore("role", () => {
 
     });
 
-    const getIsMeta = computed(() => (role: IRole | IRoleMeta) => innerIsMeta(role));
-    const getIsUniversal = computed(() => (role: IRole) => innerIsUniversal(role));
+    const getIsMeta = computed(() => (role: IRole | IRoleMeta) => isMeta(role));
+    const getIsUniversal = computed(() => (role: IRole) => isUniversal(role));
     const getScriptMeta = computed(() => innerGetMeta);
     const getIsSpecialById = computed(() => innerGetIsSpecialById);
     const getIsSpecial = computed(() => ({ id }: IRole) => innerGetIsSpecialById(id));
@@ -379,7 +334,7 @@ const useRoleStore = defineStore("role", () => {
         const reminders: IRoleReminder[] = [];
 
         reminders.push(
-            ...(roles.value.find(innerIsUniversal)?.reminders || [])
+            ...(roles.value.find(isUniversal)?.reminders || [])
         );
 
         script.value.forEach((role) => {
@@ -546,7 +501,7 @@ const useRoleStore = defineStore("role", () => {
 
         const sorted: (IRole | IRoleMeta)[] = roles.reduce((groups, role) => {
 
-                if (!innerIsMeta(role)) {
+                if (!isMeta(role)) {
                     groups.find(([team]) => team === role.team)?.[1].push(role);
                 }
 
@@ -564,7 +519,7 @@ const useRoleStore = defineStore("role", () => {
             .map(([_team, roles]) => roles)
             .flat();
 
-        const meta = roles.find(innerIsMeta);
+        const meta = roles.find(isMeta);
 
         if (meta) {
             sorted.unshift(meta);
@@ -605,7 +560,7 @@ const useRoleStore = defineStore("role", () => {
 
                 return [
                     innerUpdateReminders,
-                    innerSetRemindersRole,
+                    setRemindersRole,
                 ].reduce((updated, func) => func(updated), role);
 
             }

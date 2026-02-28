@@ -114,7 +114,7 @@ import useGameStore from "../scripts/store/game";
 import useInfoTokenStore from "../scripts/store/infoToken";
 import useJinxStore from "../scripts/store/jinx";
 import useRoleStore from "../scripts/store/role";
-import useTokenStore from "../scripts/store/token";
+import useTokensStore from "../scripts/store/tokens";
 import useUiStore from "../scripts/store/ui";
 import {
     type ITabsUIInterface,
@@ -145,7 +145,7 @@ const gameStore = useGameStore();
 const jinxStore = useJinxStore();
 const infoTokenStore = useInfoTokenStore();
 const roleStore = useRoleStore();
-const tokenStore = useTokenStore();
+const tokensStore = useTokensStore();
 const uiStore = useUiStore();
 const layout = useTemplateRef<ITabsUIInterface>("layout");
 // const setup = useTemplateRef<ITabsUIInterface>("setup");
@@ -160,8 +160,8 @@ const handleCountConfirm = () => {
     layout.value?.setTab("grimoire");
 
     times(
-        gameStore.playerCount - tokenStore.tokens.length,
-        () => tokenStore.create(),
+        gameStore.playerCount - tokensStore.tokens.length,
+        () => tokensStore.create(),
     );
 
     nextTick(() => grimoirePad.value?.setPositions());
@@ -176,7 +176,7 @@ const roleListClickActions: Record<string, (id: IRole["id"]) => void> = {
             return console.warn("uiStore doesn't have seat menu token set");
         }
 
-        tokenStore.update<ITokenRole>(uiStore.seatMenuToken, {
+        tokensStore.update<ITokenRole>(uiStore.seatMenuToken, {
             role: id,
         });
         uiStore.hideAllPopovers();
@@ -252,7 +252,7 @@ const handleShowReminderDialog = () => {
 
 const handleReminderListClick = (id: IRoleReminder["id"]) => {
 
-    tokenStore.createReminder({
+    tokensStore.createReminder({
         reminder: id,
     });
     uiStore.previousPopover();

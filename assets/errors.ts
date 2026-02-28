@@ -12,6 +12,17 @@ export class PocketGrimoireError extends Error {
 }
 
 /**
+ * General
+ */
+
+export class StorageNotFoundError extends PocketGrimoireError {
+    constructor(message: string) {
+        super(message);
+        this.name = "StorageNotFound";
+    }
+}
+
+/**
  * Demon Bluff Store
  */
 

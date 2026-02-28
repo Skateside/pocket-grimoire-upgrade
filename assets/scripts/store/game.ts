@@ -5,10 +5,16 @@ import { defineStore } from "pinia";
 import { computed, inject, ref, watch } from "vue";
 import { clamp } from "../utilities/numbers";
 import { deepFreeze, isNumber } from "../utilities/objects";
+import { StorageNotFoundError } from "~/errors";
 
 const useGameStore = defineStore("game", () => {
 
-    const storage = inject<IStorage>("storage")!;
+    const storage = inject<IStorage>("storage");
+
+    if (!storage) {
+        throw new StorageNotFoundError("game store");
+    }
+
     const STORAGE_KEY = "game";
     const NUMBERS = deepFreeze<IGameCounts>({
         5: {

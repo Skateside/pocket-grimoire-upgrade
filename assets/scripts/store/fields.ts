@@ -4,10 +4,16 @@ import type { IStorage } from "../classes/Storage";
 import { defineStore } from "pinia";
 import { inject, ref, watch } from "vue";
 import { isValidFields } from "../helpers/fields";
+import { StorageNotFoundError } from "../../errors";
 
 const useFieldsStore = defineStore("fields", () => {
 
-    const storage = inject<IStorage>("storage")!;
+    const storage = inject<IStorage>("storage");
+
+    if (!storage) {
+        throw new StorageNotFoundError("fields store");
+    }
+
     const STORAGE_KEY = "inputs";
     const inputs = ref<IFields>({
         ...storage.get<IFields>(STORAGE_KEY, isValidFields, Object.create(null)),

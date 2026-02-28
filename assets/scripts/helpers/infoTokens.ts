@@ -1,6 +1,11 @@
 import type { IInfoToken, IInfoTokenRaw } from "../types/data";
 import { toHTML, strip } from "../utilities/markdown";
-import { isBoolean, isObject, isString } from "../utilities/objects";
+import {
+    filterObject,
+    isBoolean,
+    isObject,
+    isPropertyString,
+} from "../utilities/objects";
 import { randomId, removeMarkup } from "../utilities/strings";
 
 const PREFIX = "info-token-";
@@ -24,7 +29,16 @@ const COLOURS = Object.freeze([
  */
 export function convertFromRaw(raw: IInfoToken | IInfoTokenRaw) {
 
-    const infoToken = Object.assign({}, raw) as IInfoToken;
+    const rawKeys: (keyof IInfoTokenRaw)[] = [
+        "colour",
+        "id",
+        "isCustom",
+        "markdown",
+    ];
+    const infoToken = Object.assign(
+        Object.create(null),
+        filterObject(raw, ([key]) => rawKeys.includes(key)),
+    ) as IInfoToken;
 
     infoToken.text = strip(raw.markdown);
     infoToken.markup = toHTML(removeMarkup(raw.markdown));
@@ -45,11 +59,10 @@ export function isValidRawInfoToken(raw: unknown): raw is IInfoTokenRaw {
 
     const isValid = (
         isObject(raw)
-        && (Object.hasOwn(raw, "id") && isString(raw.id))
-        && (Object.hasOwn(raw, "markdown") && isString(raw.markdown))
+        && isPropertyString(raw, "id")
+        && isPropertyString(raw, "markdown")
         && (
-            Object.hasOwn(raw, "colour")
-            && isString(raw.colour)
+            isPropertyString(raw, "colour")
             && COLOURS.includes(raw.colour)
         )
     );

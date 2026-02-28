@@ -8,11 +8,19 @@ import { defineStore } from "pinia";
 import { computed, inject, ref, watch } from "vue";
 import { isValidBluffGroup, makeNewGroup } from "../helpers/bluffs";
 import { removeAtIndex } from "../utilities/arrays";
-import { UnrecognisedBluffGroupError } from "../../errors";
+import {
+    StorageNotFoundError,
+    UnrecognisedBluffGroupError,
+} from "../../errors";
 
 const useBluffsStore = defineStore("bluffs", () => {
 
-    const storage = inject<IStorage>("storage")!;
+    const storage = inject<IStorage>("storage");
+
+    if (!storage) {
+        throw new StorageNotFoundError("bluffs store");
+    }
+
     const STORAGE_KEY = "bluffs";
 
     const bluffs = ref<IDemonBluffs>([

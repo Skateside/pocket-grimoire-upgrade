@@ -1,24 +1,10 @@
-import type {
-    IRole,
-    IToken,
-} from "../types/data";
-import {
-    ERoleAlignment,
-} from "../enums/data";
-import {
-    defineStore,
-} from "pinia";
-import {
-    computed,
-    inject,
-    nextTick,
-    ref,
-    shallowReactive,
-    watch,
-} from "vue";
-import type {
-    IStorage,
-} from "../classes/Storage";
+import type { IRole, IToken } from "../types/data";
+import type { IStorage } from "../classes/Storage";
+import { ERoleAlignment } from "../enums/data";
+import { defineStore } from "pinia";
+import { computed, inject, nextTick, ref, shallowReactive, watch } from "vue";
+import { StorageNotFoundError } from "../../errors";
+import { filterObject, isNumber, isObject } from "../utilities/objects";
 
 const useUiStore = defineStore("ui", () => {
 
@@ -38,10 +24,24 @@ const useUiStore = defineStore("ui", () => {
         alignment?: ERoleAlignment,
     }>({});
 
-    const storage = inject<IStorage>("storage")!;
+    const storage = inject<IStorage>("storage");
+
+    if (!storage) {
+        throw new StorageNotFoundError("ui store");
+    }
+
     const STORAGE_KEY = "tabs";
     const tabs = shallowReactive<Record<string, number>>(
-        Object.assign(Object.create(null), { ...storage.get(STORAGE_KEY, {}) })
+        Object.assign(Object.create(null), {
+            ...filterObject(
+                storage.get(
+                    STORAGE_KEY,
+                    isObject,
+                    Object.create(null),
+                ),
+                ([_key, value]) => isNumber(value),
+            )
+        })
     );
 
     watch(tabs, (value) => {
