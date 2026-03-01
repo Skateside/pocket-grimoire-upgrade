@@ -322,6 +322,11 @@ export type IRoleImport = {
     special?: IRoleSpecialImport[],
 };
 
+export type IRoleNightOrder = Record<"first" | "other", {
+    role: IRole,
+    order: number,
+}[]>;
+
 export type IRoleSpecialImport = {
     name: string,
     type: string,

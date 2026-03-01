@@ -1,6 +1,7 @@
 import type {
     IRole,
     IRoleImport,
+    IRoleNightOrder,
     IScriptData,
     IScriptDataEntry,
     IScriptFull,
@@ -84,6 +85,9 @@ const rolesStore = defineStore("roles", () => {
         return deepFreeze(scripts);
 
     });
+    const specialRoles = computed(() => roles.value.filter(({ edition }) => (
+        edition === ERoleEdition.SPECIAL
+    )));
     const script = ref<IScriptFull>([]);
     const scriptByType = computed(() => {
 
@@ -95,14 +99,47 @@ const rolesStore = defineStore("roles", () => {
         ) as Record<ERoleTeam, IRole[]>;
 
     });
-    /*
-    const scriptByType = computed(() => Object.groupBy(
-        script.value.filter((role) => (
-            !isMeta(role) && role.edition !== ERoleEditions.SPECIAL
-        )),
-        (role) => (role as IRole).team || "",
-    ) as Record<ERoleTeam, IRole[]>);
-    */
+    const nightOrder = computed(() => {
+
+        const nightOrder: IRoleNightOrder = {
+            first: [],
+            other: [],
+        };
+
+        script.value.forEach((role) => {
+
+            if (isMetaEntry(role)) {
+                return; // ignore meta role.
+            }
+
+            const { firstNight, otherNight } = role;
+
+            if (firstNight) {
+
+                nightOrder.first.push({
+                    role,
+                    order: firstNight,
+                });
+
+            }
+
+            if (otherNight) {
+
+                nightOrder.other.push({
+                    role,
+                    order: otherNight,
+                });
+
+            }
+
+        });
+
+        nightOrder.first.sort((roleA, roleB) => roleA.order - roleB.order);
+        nightOrder.other.sort((roleA, roleB) => roleA.order - roleB.order);
+
+        return nightOrder;
+
+    });
 
     const innerGetRoleById = (roleId: IRole["id"]) => {
         return roles.value.find(({ id }) => id === roleId);
@@ -117,6 +154,11 @@ const rolesStore = defineStore("roles", () => {
     const getScriptMeta = computed(() => helperGetScriptMeta);
     const getSpecial = computed(() => helperGetSpecial);
 
+    const getIsSpecialById = computed(() => (roleId: IRole["id"]) => {
+        const role = innerGetRoleById(roleId);
+        return role?.edition === ERoleEdition.SPECIAL;
+    });
+
     const setScript = (
         scriptImport: (
             IScriptImport
@@ -129,8 +171,9 @@ const rolesStore = defineStore("roles", () => {
             return;
         }
         
-// TODO: add special roles.
-        const entries: IScriptFull = [];
+        const entries: IScriptFull = [
+            ...deepThaw(specialRoles.value),
+        ];
         const filtered = scriptImport.filter((item) => {
             return isValidScriptImportEntry(item);
         });
@@ -200,10 +243,12 @@ const rolesStore = defineStore("roles", () => {
         // Getters.
         roles,
         scripts,
+        nightOrder,
         scriptByType,
         // getRoleById,
         getImage,
         getIsMeta,
+        getIsSpecialById,
         getIsValidScriptImport,
         getScriptById,
         getScriptMeta,

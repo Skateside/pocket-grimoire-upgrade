@@ -75,6 +75,11 @@ const routes: RouteRecordRaw[] = [
                     },
                 ],
             },
+            {
+                path: "night-order",
+                name: "night-order",
+                component: () => import("./components/views/night-order/NightOrder.vue"),
+            },
         ],
     },
     {
