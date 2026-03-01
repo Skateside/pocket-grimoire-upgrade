@@ -24,22 +24,22 @@ import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseRadios from "~/components/base/BaseRadios.vue";
 import { mapObject } from "~/scripts/utilities/objects";
-import useRoleStore from "~/scripts/store/role";
+import useRolesStore from "~/scripts/store/roles";
 
 const model = defineModel<string>({ default: "" });
-const roleStore = useRoleStore();
+const rolesStore = useRolesStore();
 const errorMessage = ref("");
-const officialScripts = computed(() => mapObject(roleStore.scripts, ([id, script]) => [
+const officialScripts = computed(() => mapObject(rolesStore.scripts, ([id, script]) => [
     id,
-    roleStore.getScriptMeta(script)?.name ?? id,
+    rolesStore.getScriptMeta(script)?.name ?? id,
 ]));
 
 const handleSubmit = () => {
 
-    const script = roleStore.getScriptById(model.value);
+    const script = rolesStore.getScriptById(model.value);
 
     if (script) {
-        return roleStore.setScript(script);
+        return rolesStore.setScript(script);
     }
      
     errorMessage.value = `Unrecognised script ID "${model.value}"`; // TODO: i18n

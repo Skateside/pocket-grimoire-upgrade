@@ -14,18 +14,30 @@ export enum EJinxState {
 // state: "potential" = the target and trick are both in the script.
 // state: "active" = the target and trick are both in play.
 
-export enum ERoleIds { // TODO: "ERoleId"
-    META = "_meta",
-    NO_ROLE = "_norole",
-    UNIVERSAL = "_universal",
-    UNRECOGNISED = "_unrecognised",
+export enum EReminderFlag {
+    DEAD = "dead",
+    GLOBAL = "global",
+    KILL = "kill",
+    PUBLIC = "public",
+    ROLE = "role",
 };
 
-export enum ERoleEditions { // TODO: "ERoleEdition"
+export enum ERoleEdition {
     TROUBLE_BREWING = "tb",
     BAD_MOON_RISING = "bmr",
     SECTS_AND_VIOLETS = "snv",
     SPECIAL = "special",
+};
+
+export enum ERoleId {
+    DAWN = "dawn",
+    DEMON_INFO = "demoninfo",
+    DUSK = "dusk",
+    META = "_meta",
+    MINION_INFO = "minioninfo",
+    NO_ROLE = "_norole",
+    UNIVERSAL = "_universal",
+    UNRECOGNISED = "_unrecognised",
 };
 
 export enum ERoleTeam {
@@ -38,25 +50,55 @@ export enum ERoleTeam {
     LORIC = "loric",
 };
 
-export enum ERoleReminderFlag { // TODO: "EReminderFlag"
-    GLOBAL = "global",
-    PUBLIC = "public",
-    KILL = "kill",
+export enum ERoleSpecialGlobal {
     DEAD = "dead",
-    ROLE = "role",
+    DEMON = ERoleTeam.DEMON,
+    MINION = ERoleTeam.MINION,
+    OUTSIDER = ERoleTeam.OUTSIDER,
+    TOWNSFOLK = ERoleTeam.TOWNSFOLK,
+    TRAVELLER = ERoleTeam.TRAVELLER,
 };
 
-export enum ERoleAlignment { // TODO: "ETokenAlignment"
+export enum ERoleSpecialName {
+    BAG_DISABLED = "bag-disabled",
+    BAG_DUPLICATE = "bag-duplicate",
+    CARD = "card",
+    DISTRIBUTE_ROLES = "distribute-roles",
+    GHOST_VOTES = "ghost-votes",
+    GOOD_DUPLICATE = "good-duplicate",
+    GRIMOIRE = "grimoire",
+    HIDDEN = "hidden",
+    MULTIPLIER = "multiplier",
+    OPEN_EYES = "open-eyes",
+    PLAYER = "player",
+    POINTING = "pointing",
+    REPLACE_CHARACTER = "replace-character",    
+};
+
+export enum ERoleSpecialTime {
+    DAY = "day",
+    FIRST_NIGHT = "firstNight",
+    FIRST_DAY = "firstDay",
+    OTHER_NIGHT = "otherNight",
+    OTHER_DAY = "otherDay",
+    PREGAME = "pregame",
+    NIGHT = "night",
+};
+
+export enum ERoleSpecialType {
+    ABILITY = "ability",
+    PLAYER = "player",
+    REVEAL = "reveal",
+    SELECTION ="selection",
+    SIGNAL = "signal",
+    VOTE = "vote",
+};
+
+export enum ETokenAlignment {
     DEFAULT = 0,
     INVERSE = 1,
     TRAVELLER_GOOD = 1,
     TRAVELLER_EVIL = 2,
-};
-
-export enum ETokenType {
-    SEAT,
-    ROLE,
-    REMINDER,
 };
 
 export enum ETokenDirection {
@@ -64,4 +106,8 @@ export enum ETokenDirection {
     ANTICLOCKWISE,
 };
 
-
+export enum ETokenType {
+    SEAT,
+    ROLE,
+    REMINDER,
+};

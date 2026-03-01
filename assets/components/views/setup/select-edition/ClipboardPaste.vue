@@ -26,11 +26,11 @@ import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
-import useRoleStore from "~/scripts/store/role";
+import useRolesStore from "~/scripts/store/roles";
 import { parseScript } from "./helpers";
 
 const model = defineModel<string>({ default: "" });
-const roleStore = useRoleStore();
+const rolesStore = useRolesStore();
 const errorMessage = ref("");
 
 const handleSubmit = () => {
@@ -42,7 +42,7 @@ const handleSubmit = () => {
     const { script, error } = parseScript(model.value);
 
     if (script) {
-        roleStore.setScript(script);
+        rolesStore.setScript(script);
     }
 
     errorMessage.value = error as string;

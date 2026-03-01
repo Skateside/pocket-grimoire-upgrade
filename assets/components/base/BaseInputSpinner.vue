@@ -59,10 +59,9 @@ const emit = defineEmits<{
 const input = useTemplateRef("input");
 
 const labelProvision = inject<IBaseLabelProvide>("label", {});
-const rawAttrs = useAttrs();
 const attrs = computed(() => {
 
-    const attrs = { ...rawAttrs };
+    const attrs = { ...useAttrs() };
 
     if (!Object.hasOwn(attrs, "id") && labelProvision) {
         attrs.id = labelProvision.id;

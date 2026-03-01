@@ -16,9 +16,8 @@ defineOptions({
 const props = defineProps<{
     memory?: string,
 }>();
-const rawAttrs = useAttrs();
 const attrs = computed(() => {
-    const attrs = { ...rawAttrs };
+    const attrs = { ...useAttrs() };
 
     if (props.memory) {
         attrs["data-memory"] = props.memory;

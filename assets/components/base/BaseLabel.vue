@@ -63,10 +63,9 @@ const isLabelFirst = computed(() => (
     !props.layout.endsWith("-reverse") && !props.layout.endsWith("-inverse")
 ));
 const suffix = useId();
-const rawAttrs = useAttrs();
 const attrs = computed(() => {
 
-    const attrs = { ...rawAttrs };
+    const attrs = { ...useAttrs() };
 
     if (props.nested && !Object.hasOwn(attrs, "node")) {
         attrs.node = "label";

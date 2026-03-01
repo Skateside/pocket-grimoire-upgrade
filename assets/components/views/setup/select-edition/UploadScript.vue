@@ -1,12 +1,11 @@
 <template>
-    <BaseForm ref="form" memory="select-edition-upload" @submit.prevent="handleSubmit">
+    <BaseForm ref="form" @submit.prevent="handleSubmit">
         <StackLayout>
             <BaseLabel text="Upload a custom script">
                 <BaseInput
                     name="upload"
                     type="file"
                     accept="application/json"
-                    v-model="model"
                     :required="true"
                 />
             </BaseLabel>
@@ -33,11 +32,10 @@ import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
-import useRoleStore from "~/scripts/store/role";
+import useRolesStore from "~/scripts/store/roles";
 import { parseScript } from "./helpers";
 
-const model = defineModel<string>({ default: "" });
-const roleStore = useRoleStore();
+const rolesStore = useRolesStore();
 const form = useTemplateRef("form");
 const errorMessage = ref("");
 const isLoading = ref(false);
@@ -56,7 +54,7 @@ const handleSubmit = () => {
     const formData = form.value.getData();
     const file = formData.get("upload");
 
-    if (!model.value || !file) {
+    if (!file) {
         errorMessage.value = "Please upload a script."; // TODO: i18n
         return;
     }
@@ -68,7 +66,7 @@ const handleSubmit = () => {
         const { script, error } = parseScript(target!.result as string);
 
         if (script) {
-            roleStore.setScript(script);
+            rolesStore.setScript(script);
             isLoading.value = false;
             return;
         }

@@ -58,14 +58,14 @@ import BaseInput from "~/components/base/BaseInput.vue";
 import BaseRadios from "~/components/base/BaseRadios.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
 import usePathsStore from "~/scripts/store/paths";
-import useRoleStore from "~/scripts/store/role";
+import useRolesStore from "~/scripts/store/roles";
 import { performAjax } from "./helpers";
 import { debounce, noop } from "~/scripts/utilities/functions";
 
 const scriptType = defineModel<string>("script-type", { default: "" });
 const term = defineModel<string>("term", { default: "" });
 const pathsStore = usePathsStore();
-const roleStore = useRoleStore();
+const rolesStore = useRolesStore();
 const previousTerm = ref("");
 const errorMessage = ref("");
 const isLoading = ref(false);
@@ -132,7 +132,7 @@ const handleClick = (id: number) => {
         return;
     }
 
-    roleStore.setScript(botcScript.script);
+    rolesStore.setScript(botcScript.script);
 
 };
 </script>

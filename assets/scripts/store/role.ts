@@ -1,39 +1,42 @@
-import type {
-    IRole,
-    IRoleMeta,
-    IRoleReminder,
-    IRoleScript,
-    IRoleScriptImport,
-    IRoleDeprecatedReminders,
-    IRoleTeam,
-    IRoleNightOrder,
-    IRoleJinxRaw,
-    IRoleSpecial,
-} from "../types/data";
-import type { IStorage } from "../classes/Storage";
-import {
-    ERoleAlignment,
-    ERoleEditions,
-    ERoleIds,
-    ERoleReminderFlag,
-    ERoleTeam,
-} from "../enums/data";
+// import type {
+//     IRole,
+//     IRoleMeta,
+//     IRoleReminder,
+//     IRoleScript,
+//     IRoleScriptImport,
+//     IRoleDeprecatedReminders,
+//     IRoleTeam,
+//     IRoleNightOrder,
+//     IRoleJinxRaw,
+//     IRoleSpecial,
+// } from "../types/data";
+// import type { IStorage } from "../classes/Storage";
+// import {
+//     ERoleAlignment,
+//     ERoleEditions,
+//     ERoleIds,
+//     ERoleReminderFlag,
+//     ERoleTeam,
+// } from "../enums/data";
 import { defineStore } from "pinia";
-import { computed, inject, ref, watch } from "vue";
-import {
-    isMeta,
-    isUniversal,
-    setRemindersRole,
-    unsetRemindersRole,
-} from "../helpers/role";
-import { deepThaw } from "../utilities/objects";
-import { UnrecognisedRoleError, UnrecognisedReminderError } from "../../errors";
+// import { computed, inject, ref, watch } from "vue";
+// import {
+//     isMeta,
+//     isUniversal,
+//     setRemindersRole,
+//     unsetRemindersRole,
+// } from "../helpers/role";
+// import { deepThaw } from "../utilities/objects";
+// import { UnrecognisedRoleError, UnrecognisedReminderError } from "../../errors";
 
 // TODO: Re-write this so that it can better handle imports.
 // TODO: Re-write the types as well.
 
+/** @deprecated */
 const useRoleStore = defineStore("role", () => {
-
+    console.error("useRoleStore() is deprecated - use useRolesStore() instead");
+    return {};
+    /*
     const storage = inject<IStorage>("storage")!;
     const STORAGE_KEY = "script";
 
@@ -615,6 +618,7 @@ const useRoleStore = defineStore("role", () => {
         setScript,
         setScriptById,
     };
+    */
 
 });
 

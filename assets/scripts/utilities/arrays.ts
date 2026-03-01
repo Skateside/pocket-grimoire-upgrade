@@ -13,6 +13,26 @@ export function unique<T = any>(array: T[]) {
 };
 
 /**
+ * Removes any duplicated from the given array, but converts the array items
+ * before checking for duplicates.
+ *
+ * @param array Array to reduce.
+ * @param map Conversion function.
+ * @returns Array with duplicates removed.
+ */
+export function uniqueMap<T = any>(
+    array: T[],
+    map: (item: T, index: number) => any,
+) {
+
+    const mapped = array.map(map);
+    const deduped = unique(mapped);
+
+    return deduped.map((item) => array[mapped.indexOf(item)]);
+
+}
+
+/**
  * Removes the item at the given index from the given array. `true` is returned
  * if the item was removed, `false` is returned if it was not.
  * 

@@ -34,13 +34,13 @@ import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
 import usePathsStore from "~/scripts/store/paths";
-import useRoleStore from "~/scripts/store/role";
+import useRolesStore from "~/scripts/store/roles";
 import { isValidURL } from "~/scripts/utilities/strings";
 import { performAjax } from "./helpers";
 
 const model = defineModel<string>({ default: "" });
 const pathsStore = usePathsStore();
-const roleStore = useRoleStore();
+const rolesStore = useRolesStore();
 const errorMessage = ref("");
 const isLoading = ref(false);
 
@@ -60,7 +60,7 @@ const handleSubmit = () => {
     performAjax(pathsStore.get("apiGetUrl"), {
         url: model.value,
     }).promise.then(
-        (value) => roleStore.setScript(value),
+        (value) => rolesStore.setScript(value),
         (error) => errorMessage.value = error,
     ).finally(() => isLoading.value = false);
 

@@ -5,7 +5,7 @@ import type {
     ITokenRole,
     ITokenSeat,
 } from "../types/data";
-import { ERoleAlignment, ETokenType } from "../enums/data";
+import { ETokenAlignment, ETokenType } from "../enums/data";
 import {
     filterObject,
     isBoolean,
@@ -15,7 +15,6 @@ import {
     isString,
 } from "../utilities/objects";
 import { randomId } from "../utilities/strings";
-// import type { AnyObject } from "../types/lib";
 
 const PREFIX = "token-";
 
@@ -161,7 +160,7 @@ export function getDistance(item: ICoordinates, centre: ICoordinates) {
 
 const updateDataWhitelist: Record<string, (object: unknown) => boolean> = {
     alignment: (object: unknown) => {
-        return Object.values(ERoleAlignment).includes(object as ERoleAlignment);
+        return Object.values(ETokenAlignment).includes(object as ETokenAlignment);
     },
     dead: isBoolean,
     ghostVote: isBoolean,
@@ -190,6 +189,13 @@ export function filterUpdateData<TToken extends Partial<IToken>>(object: TToken)
 
 }
 
+/**
+ * Creates a token for a specific type.
+ *
+ * @param settings Settings for the token.
+ * @param type Type of token.
+ * @returns Created token.
+ */
 export function createToken(
     settings: Partial<IToken> = {},
     type: IToken["type"] = ETokenType.SEAT,

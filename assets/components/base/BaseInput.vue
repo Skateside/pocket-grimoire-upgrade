@@ -3,7 +3,7 @@
         ref="input"
         :is="node"
         class="input"
-        :value="props.modelValue"
+        :value="value"
         v-bind="attrs"
         @input="handleInput"
     ></component>
@@ -18,14 +18,21 @@ defineOptions({
 });
 const props = withDefaults(defineProps<{
     type?: IBaseInputTypes,
-    modelValue: boolean | number | string,
+    modelValue?: boolean | number | string,
 }>(), {
     type: "text",
+    modelValue: "",
 });
 const emit = defineEmits<{
     (e: "update:modelValue", value: string): void,
 }>();
 const input = useTemplateRef<HTMLInputElement | HTMLTextAreaElement>("input");
+const value = computed(() => {
+    if (props.type === "file") {
+        return undefined; // removes the value.
+    }
+    return props.modelValue;
+});
 
 const node = computed(() => (
     props.type === "textarea"
@@ -34,10 +41,9 @@ const node = computed(() => (
 ));
 
 const labelProvision = inject<IBaseLabelProvide>("label", {});
-const rawAttrs = useAttrs();
 const attrs = computed(() => {
 
-    const attrs = { ...rawAttrs };
+    const attrs = { ...useAttrs() };
 
     if (props.type !== "textarea") {
         attrs.type = props.type;

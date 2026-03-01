@@ -1,3 +1,5 @@
+/** @deprecated - use /assets/scripts/helpers/roles.ts */
+/*
 import type {
     IRole,
     IRoleMeta,
@@ -156,12 +158,8 @@ export function isValidRole(value: unknown): value is IRole {
     return isValid;
 
 }
-/*
-    reminders?: IRoleReminderRaw[],
-    jinxes?: IRoleJinxRaw[],
-    special?: IRoleSpecial[],
-*/
 
 // export function isValidRawRole(value: unknown): value is IRoleRaw {
 //     return false;
 // }
+*/

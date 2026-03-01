@@ -1,15 +1,23 @@
-import type { IRoleScriptImport } from "~/scripts/types/data";
-import useRoleStore from "~/scripts/store/role";
+import type { IScriptImport } from "~/scripts/types/data";
+import useRolesStore from "~/scripts/store/roles";
 import { abortableFetch } from "~/scripts/utilities/fetch";
 
 type IParseScriptResponse = {
-    script?: IRoleScriptImport,
+    script?: IScriptImport,
     error?: string,
 };
 
-const roleStore = useRoleStore();
+const rolesStore = useRolesStore();
 
-export const performAjax = <TResponse = IRoleScriptImport>(
+/**
+ * Performs an AJAX lookup but provides both the promise (which resolves/rejects
+ * based on the AJAX call) and an abort function that can cancel the lookup.
+ *
+ * @param url URL to which to post data.
+ * @param data Data to post.
+ * @returns AJAX promise and abort function.
+ */
+export const performAjax = <TResponse = IScriptImport>(
     url: string,
     data: Record<string, any>,
 ) => {
@@ -35,9 +43,17 @@ export const performAjax = <TResponse = IRoleScriptImport>(
 
 };
 
+/**
+ * Parses the given script, returning an object with either a `script` property
+ * (if the parsing was successful) or an `error` property if something went 
+ * wrong.
+ *
+ * @param data Stringified data to parse.
+ * @returns Parse results.
+ */
 export const parseScript = (data: string): IParseScriptResponse => {
 
-    let script = [];
+    let script: IScriptImport = [];
 
     try {
         script = JSON.parse(data);
@@ -45,7 +61,7 @@ export const parseScript = (data: string): IParseScriptResponse => {
         return { error: "Unable to parse script." }; // TODO: i18n
     }
 
-    if (!roleStore.getIsValidImport(script)) {
+    if (!rolesStore.getIsValidScriptImport(script)) {
         return { error: "Script is not valid." }; // TODO: i18n
     }
 

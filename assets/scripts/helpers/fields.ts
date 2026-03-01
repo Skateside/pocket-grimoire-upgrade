@@ -16,7 +16,7 @@ export function isValidForm(form: unknown): form is IFields[string] {
         && Object.entries(form).every(([selector, value]) => {
             return (
                 isValidCSSSelector(selector)
-                && (isBoolean(value) || isString(value) || value === "")
+                && (isBoolean(value) || isString(value))
             );
         })
     );

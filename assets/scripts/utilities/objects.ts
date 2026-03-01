@@ -56,7 +56,7 @@ export function isObject(object: unknown): object is AnyObject {
  * @returns `true` if the given object is a string, `false` otherwise.
  */
 export function isString(object: unknown): object is string {
-    return typeof object === "string" && object.trim() !== "";
+    return typeof object === "string";
 }
 
 /**
@@ -71,6 +71,48 @@ export function isPropertyString<
     TKey extends keyof TObject = keyof TObject,
 >(object: TObject, key: TKey): object is TObject & Record<TKey, string> {
     return Object.hasOwn(object, key) && isString(object[key]);
+}
+
+/**
+ * Checks to see if the given object either doesn't have the given key, or that
+ * the related property is a string if it does exist.
+ *
+ * @param object Object to check.
+ * @param key Key to check.
+ * @returns `true` if either the key doesn't exist or it references a string,
+ * `false` otherwise.
+ */
+export function isPropertyOptionalString<
+    TObject extends AnyObject = AnyObject,
+    TKey extends PropertyKey = keyof TObject
+>(object: TObject, key: TKey): object is AnyObject & Partial<Record<TKey, string>> {
+    return !Object.hasOwn(object, key) || isString(object[key]);
+}
+
+/**
+ * Checks to see if the given object either doesn't have the given key, or that
+ * the related property is an array that matches the given checker function.
+ *
+ * @param object Object to check.
+ * @param key Key to check.
+ * @param checker Validator for the property.
+ * @returns `true` if either the key doesn't exist or it references an array
+ * where every item matches the given checker, `false` otherwise.
+ */
+export function isPropertyOptionalArrayOf(
+    object: AnyObject,
+    key: string,
+    checker: (value: unknown) => boolean,
+) {
+ 
+    return (
+        !Object.hasOwn(object, key)
+        || (
+            Array.isArray(object[key])
+            && object[key].every((item) => checker(item))
+        )
+    );
+
 }
 
 /**

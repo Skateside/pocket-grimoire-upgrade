@@ -24,10 +24,9 @@ const props = withDefaults(defineProps<{
     node: "button",
 });
 const slots = useSlots();
-const rawAttrs = useAttrs();
 const attrs = computed(() => {
 
-    const attrs = { ...rawAttrs };
+    const attrs = { ...useAttrs() };
 
     if (
         props.node === "button"
