@@ -29,6 +29,9 @@ import BaseInput from "~/components/base/BaseInput.vue";
 import useRolesStore from "~/scripts/store/roles";
 import { parseScript } from "./helpers";
 
+const emit = defineEmits<{
+    (e: "success"): void,
+}>();
 const model = defineModel<string>({ default: "" });
 const rolesStore = useRolesStore();
 const errorMessage = ref("");
@@ -43,6 +46,7 @@ const handleSubmit = () => {
 
     if (script) {
         rolesStore.setScript(script);
+        emit("success");
     }
 
     errorMessage.value = error as string;

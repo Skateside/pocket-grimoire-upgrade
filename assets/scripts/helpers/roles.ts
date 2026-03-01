@@ -28,6 +28,7 @@ import {
     ERoleSpecialTime,
     ERoleSpecialType,
     ERoleTeam,
+    ETokenAlignment,
 } from "../enums/data";
 import { unique, uniqueMap } from "../utilities/arrays";
 import {
@@ -607,6 +608,40 @@ export function convertSpecialEntry(special: IRoleSpecialImport) {
 }
 
 /**
+ * Gets the image for the given role, optionally changing it to the specified
+ * alignment. If the image doesn't exist at that alignment, the first image will
+ * be returned. If the image isn't a valid URL (either remote or local) then an
+ * empty string is returned.
+ *
+ * @param role Role whose image should be returned.
+ * @param alignment The alignment for the image.
+ * @returns The image, if it can be found.
+ */
+export function getImage(
+    role: IRole,
+    alignment: ETokenAlignment = ETokenAlignment.DEFAULT,
+) {
+
+    if (!role || !role.image) {
+        return "";
+    }
+
+    const { image } = role;
+    const source = (
+        Array.isArray(image)
+        ? (image[alignment] || image[0])
+        : image
+    );
+
+    return (
+        (isValidURL(source) || isValidLocalURL(source))
+        ? source
+        : ""
+    );
+
+};
+
+/**
  * Gets the meta entry from the given script (if it exists).
  *
  * @param script Script to check through.
@@ -616,6 +651,48 @@ export function getScriptMeta(
     script: DeepReadonly<IScriptData[string]> | IScriptFull,
 ) {
     return script.find((item) => isMetaEntry(item));
+}
+
+/**
+ * Gets any specials that have the given type. Returns an empty array if no
+ * matching specials can be found.
+ *
+ * @param role Role whose specials should be returned.
+ * @param type Type of specials to find.
+ */
+export function getSpecial(
+    role: IRole,
+    type: ERoleSpecialType,
+): IRoleSpecial[];
+/**
+ * Gets a special that matches the given type and name. Returns `undefined` if
+ * no matching special can be found.
+ *
+ * @param role Role whose special should be returned.
+ * @param type Type of special to find.
+ * @param name Name of the special to find.
+ */
+export function getSpecial(
+    role: IRole,
+    type: ERoleSpecialType,
+    name: ERoleSpecialName,
+): IRoleSpecial | undefined;
+export function getSpecial(
+    role: IRole,
+    type: ERoleSpecialType,
+    name?: ERoleSpecialName,
+) {
+
+    const specials = role.special?.filter(({ type: specialType }) => {
+        return specialType === type;
+    }) || [];
+
+    return (
+        name
+        ? specials.find(({ name: specialName }) => specialName === name)
+        : specials
+    );
+
 }
 
 /**
@@ -753,7 +830,6 @@ export function isValidRoleImport(object: unknown): object is IRoleImport {
     const isValid = (
         isObject(object)
         && isPropertyString(object, "id")
-        && isPropertyString(object, "edition")
     );
 
     if (!isValid) {
@@ -769,6 +845,7 @@ export function isValidRoleImport(object: unknown): object is IRoleImport {
 
     return (
         isPropertyString(object, "name")
+        && isPropertyOptionalString(object, "edition")
         && isPropertyString(object, "team")
         && isPropertyString(object, "ability")
         && (!Object.hasOwn(object, "firstNight") || isNumber(object.firstNight))
@@ -805,7 +882,7 @@ export function isValidRoleImport(object: unknown): object is IRoleImport {
  */
 export function isValidScriptImport(
     object: unknown,
-): object is IScriptImport[] {
+): object is IScriptImport {
 
     return (
         Array.isArray(object)
@@ -939,10 +1016,14 @@ export function sortByTeam(script: IScriptFull) {
 
     });
 
-    const metaEntry = sorted.find(isMetaEntry);
+    const metaIndex = sorted.findIndex(isMetaEntry);
 
-    if (metaEntry) {
+    if (metaIndex > -1) {
+
+        const metaEntry = sorted[metaIndex];
+        sorted.splice(metaIndex, 1);
         sorted.unshift(metaEntry);
+
     }
 
     return sorted;

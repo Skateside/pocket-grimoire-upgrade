@@ -35,6 +35,9 @@ import BaseSpinner from "~/components/base/BaseSpinner.vue";
 import useRolesStore from "~/scripts/store/roles";
 import { parseScript } from "./helpers";
 
+const emit = defineEmits<{
+    (e: "success"): void,
+}>();
 const rolesStore = useRolesStore();
 const form = useTemplateRef("form");
 const errorMessage = ref("");
@@ -66,9 +69,12 @@ const handleSubmit = () => {
         const { script, error } = parseScript(target!.result as string);
 
         if (script) {
+
             rolesStore.setScript(script);
             isLoading.value = false;
+            emit("success");
             return;
+
         }
         
         errorMessage.value = error as string;

@@ -1,7 +1,7 @@
 <template>
     <BaseForm memory="select-edition-url" @submit.prevent="handleSubmit">
         <StackLayout>
-            <BaseLabel text="Upload a custom script">
+            <BaseLabel text="Enter a URL">
                 <BaseInput
                     name="url"
                     type="url"
@@ -38,6 +38,9 @@ import useRolesStore from "~/scripts/store/roles";
 import { isValidURL } from "~/scripts/utilities/strings";
 import { performAjax } from "./helpers";
 
+const emit = defineEmits<{
+    (e: "success"): void,
+}>();
 const model = defineModel<string>({ default: "" });
 const pathsStore = usePathsStore();
 const rolesStore = useRolesStore();
@@ -60,7 +63,10 @@ const handleSubmit = () => {
     performAjax(pathsStore.get("apiGetUrl"), {
         url: model.value,
     }).promise.then(
-        (value) => rolesStore.setScript(value),
+        (value) => {
+            rolesStore.setScript(value)
+            emit("success");
+        },
         (error) => errorMessage.value = error,
     ).finally(() => isLoading.value = false);
 

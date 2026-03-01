@@ -1,5 +1,5 @@
 import type { AnyObject } from "../types/lib";
-import { isObject } from "../utilities/objects";
+import { isString } from "../utilities/objects";
 
 //*
 export type IStorage = {
@@ -23,7 +23,7 @@ export default class Storage<TDefault extends AnyObject = AnyObject> implements 
 
         const stored = localStorage.getItem(key);
 
-        if (Object.hasOwn(localStorage, key) && isObject(stored)) {
+        if (Object.hasOwn(localStorage, key) && isString(stored)) {
 
             try {
                 const parsed = JSON.parse(stored);

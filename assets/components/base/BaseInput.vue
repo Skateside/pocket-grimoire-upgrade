@@ -21,7 +21,6 @@ const props = withDefaults(defineProps<{
     modelValue?: boolean | number | string,
 }>(), {
     type: "text",
-    modelValue: "",
 });
 const emit = defineEmits<{
     (e: "update:modelValue", value: string): void,
@@ -29,7 +28,7 @@ const emit = defineEmits<{
 const input = useTemplateRef<HTMLInputElement | HTMLTextAreaElement>("input");
 const value = computed(() => {
     if (props.type === "file") {
-        return undefined; // removes the value.
+        return undefined; // Removes property.
     }
     return props.modelValue;
 });

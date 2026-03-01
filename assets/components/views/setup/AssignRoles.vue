@@ -30,10 +30,10 @@
     <form>
 
         <template v-for="team in ORDER">
-            <fieldset v-if="roleStore.scriptByType[team]?.length">
-                <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.breakdown[team as IRoleCoreTeam] ?? "X" }})</legend>
+            <fieldset v-if="rolesStore.scriptByType[team]?.length">
+                <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.breakdown[team] ?? "X" }})</legend>
                 <GridLayout min-width="10ch">
-                    <div v-for="role in roleStore.scriptByType[team]" :key="role.id">
+                    <div v-for="role in rolesStore.scriptByType[team]" :key="role.id">
                         <BaseInputSpinner
                             v-if="allowDuplicates && included[role.id]"
                             v-model="counts[role.id]"
@@ -47,11 +47,11 @@
                                 type="checkbox"
                                 :name="`role[${role.id}]`"
                                 :id="`role-${role.id}-${suffix}`"
-                                :disabled="Boolean(roleStore.getSpecial(role, 'selection', 'bag-disabled'))"
+                                :disabled="Boolean(rolesStore.getSpecial(role, ERoleSpecialType.SELECTION, ERoleSpecialName.BAG_DISABLED))"
                                 @change="() => handleSelection(role)"
                             >
                             <StackLayout node="span">
-                                <img :src="roleStore.getImage(role)" alt="" width="50" height="50">
+                                <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
                                 <strong>{{ role.name }}</strong>
                                 <span v-if="showAbilities">{{ role.ability }}</span>
                             </StackLayout>
@@ -105,17 +105,20 @@
 <script setup lang="ts">
 import type {
     IRole,
-    IRoleCoreTeam,
+    // IRoleCoreTeam,
     ITokenSeat,
 } from "~/scripts/types/data";
 import {
+    ERoleSpecialType,
+    ERoleSpecialName,
     ERoleTeam,
     ETokenDirection,
 } from "~/scripts/enums/data";
-import { computed, reactive, ref, useId, watch } from "vue";
+import { computed, reactive, useId, watch } from "vue";
+import { ORDER } from "~/scripts/helpers/roles";
 import useGameStore from "~/scripts/store/game";
-import useRoleStore from "~/scripts/store/role";
-import useTokenStore from "~/scripts/store/token";
+import useRolesStore from "~/scripts/store/roles";
+import useTokensStore from "~/scripts/store/tokens";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
@@ -124,18 +127,10 @@ import BaseInput from "~/components/base/BaseInput.vue";
 import BaseRadios from "~/components/base/BaseRadios.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
 
-const ORDER = ref<ReadonlyArray<ERoleTeam>>(Object.freeze([
-    ERoleTeam.TOWNSFOLK,
-    ERoleTeam.OUTSIDER,
-    ERoleTeam.MINION,
-    ERoleTeam.DEMON,
-    ERoleTeam.TRAVELLER,
-]));
-
 const suffix = useId();
 const gameStore = useGameStore();
-const roleStore = useRoleStore();
-const tokenStore = useTokenStore();
+const rolesStore = useRolesStore();
+const tokensStore = useTokensStore();
 const direction = defineModel<ETokenDirection>("direction", {
     default: ETokenDirection.CLOCKWISE,
 });
@@ -146,19 +141,19 @@ const allowDuplicates = defineModel<boolean>("duplicates", {
     default: false,
 });
 const included = reactive<Record<IRole["id"], boolean>>(
-    Object.fromEntries(roleStore.script.map(({ id }) => [id, false]))
+    Object.fromEntries(rolesStore.script.map(({ id }) => [id, false]))
 );
 const counts = reactive<Record<IRole["id"], number>>(
-    Object.fromEntries(roleStore.script.map(({ id }) => [id, 0]))
+    Object.fromEntries(rolesStore.script.map(({ id }) => [id, 0]))
 );
 const teams = computed<Record<IRole["id"], ERoleTeam>>(() => Object.fromEntries(
-    roleStore.script
-        .filter((role) => !roleStore.getIsMeta(role))
+    rolesStore.script
+        .filter((role) => !rolesStore.getIsMeta(role))
         .map((role) => [role.id, (role as IRole).team])
 ));
 const teamCounts = computed(() => {
 
-    const teamCounts = Object.fromEntries(ORDER.value.map((team) => [team, 0]));
+    const teamCounts = Object.fromEntries(ORDER.map((team) => [team, 0]));
 
     Object.entries(counts).forEach(([id, count]) => {
 
@@ -197,8 +192,16 @@ const handleSelection = (role: IRole) => {
     if (
         included[id]
         && (
-            roleStore.getSpecial(role, "selection", "bag-duplicate")
-            || roleStore.getSpecial(role, "selection", "good-duplicate")
+            rolesStore.getSpecial(
+                role,
+                ERoleSpecialType.SELECTION,
+                ERoleSpecialName.BAG_DUPLICATE,
+            )
+            || rolesStore.getSpecial(
+                role,
+                ERoleSpecialType.SELECTION,
+                ERoleSpecialName.GOOD_DUPLICATE,
+            )
         )
     ) {
         allowDuplicates.value = true;
@@ -207,9 +210,9 @@ const handleSelection = (role: IRole) => {
 };
 
 const sorted = computed(() => {
-    return tokenStore
+    return tokensStore
         .getSortedSeats()
-        .map((id) => tokenStore.getById(id))
+        .map((id) => tokensStore.getById(id))
         .filter(Boolean) as ITokenSeat[];
 });
 </script>

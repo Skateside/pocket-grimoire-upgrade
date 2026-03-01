@@ -7,13 +7,15 @@ import type {
     IScriptImport,
 } from "../types/data";
 import type { IStorage } from "../classes/Storage";
-import { ERoleEdition } from "../enums/data";
+import { ERoleEdition, ERoleTeam } from "../enums/data";
 import { defineStore } from "pinia";
 import { computed, inject, ref, watch, type DeepReadonly } from "vue";
 import {
     convertRole,
     convertScriptToData,
+    getImage as helperGetImage,
     getScriptMeta as helperGetScriptMeta,
+    getSpecial as helperGetSpecial,
     isDeprecatedScriptEntry,
     isMetaEntry,
     isValidRoleImport,
@@ -34,7 +36,6 @@ const rolesStore = defineStore("roles", () => {
     }
 
     const STORAGE_KEY = "script";
-    const script = ref<IScriptFull>([]);
     const roles = computed(() => {
 
         const roles: IRole[] = [];
@@ -83,6 +84,25 @@ const rolesStore = defineStore("roles", () => {
         return deepFreeze(scripts);
 
     });
+    const script = ref<IScriptFull>([]);
+    const scriptByType = computed(() => {
+
+        return Object.groupBy(
+            script.value.filter((role) => (
+                !isMetaEntry(role) && role.edition !== ERoleEdition.SPECIAL
+            )),
+            (role) => (role as IRole).team || "",
+        ) as Record<ERoleTeam, IRole[]>;
+
+    });
+    /*
+    const scriptByType = computed(() => Object.groupBy(
+        script.value.filter((role) => (
+            !isMeta(role) && role.edition !== ERoleEditions.SPECIAL
+        )),
+        (role) => (role as IRole).team || "",
+    ) as Record<ERoleTeam, IRole[]>);
+    */
 
     const innerGetRoleById = (roleId: IRole["id"]) => {
         return roles.value.find(({ id }) => id === roleId);
@@ -90,9 +110,12 @@ const rolesStore = defineStore("roles", () => {
 
     // const getRoleById = computed(() => innerGetRoleById);
 
+    const getImage = computed(() => helperGetImage);
+    const getIsMeta = computed(() => isMetaEntry);
+    const getIsValidScriptImport = computed(() => isValidScriptImport);
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
     const getScriptMeta = computed(() => helperGetScriptMeta);
-    const getIsValidScriptImport = computed(() => isValidScriptImport);
+    const getSpecial = computed(() => helperGetSpecial);
 
     const setScript = (
         scriptImport: (
@@ -105,10 +128,14 @@ const rolesStore = defineStore("roles", () => {
         if (!Array.isArray(scriptImport)) {
             return;
         }
-
-        const entries: IScriptFull = [];
         
-        scriptImport.filter(isValidScriptImportEntry).forEach((entry) => {
+// TODO: add special roles.
+        const entries: IScriptFull = [];
+        const filtered = scriptImport.filter((item) => {
+            return isValidScriptImportEntry(item);
+        });
+
+        filtered.forEach((entry) => {
 
             if (isMetaEntry(entry)) {
                 entries.push(entry);
@@ -173,10 +200,14 @@ const rolesStore = defineStore("roles", () => {
         // Getters.
         roles,
         scripts,
+        scriptByType,
         // getRoleById,
+        getImage,
+        getIsMeta,
         getIsValidScriptImport,
         getScriptById,
         getScriptMeta,
+        getSpecial,
         // Actions.
         setScript,
     }

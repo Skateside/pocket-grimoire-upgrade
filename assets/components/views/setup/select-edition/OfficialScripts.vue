@@ -26,6 +26,9 @@ import BaseRadios from "~/components/base/BaseRadios.vue";
 import { mapObject } from "~/scripts/utilities/objects";
 import useRolesStore from "~/scripts/store/roles";
 
+const emit = defineEmits<{
+    (e: "success"): void,
+}>();
 const model = defineModel<string>({ default: "" });
 const rolesStore = useRolesStore();
 const errorMessage = ref("");
@@ -39,7 +42,11 @@ const handleSubmit = () => {
     const script = rolesStore.getScriptById(model.value);
 
     if (script) {
-        return rolesStore.setScript(script);
+
+        rolesStore.setScript(script);
+        emit("success");
+        return;
+
     }
      
     errorMessage.value = `Unrecognised script ID "${model.value}"`; // TODO: i18n

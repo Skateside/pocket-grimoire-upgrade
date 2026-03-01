@@ -62,6 +62,9 @@ import useRolesStore from "~/scripts/store/roles";
 import { performAjax } from "./helpers";
 import { debounce, noop } from "~/scripts/utilities/functions";
 
+const emit = defineEmits<{
+    (e: "success"): void,
+}>();
 const scriptType = defineModel<string>("script-type", { default: "" });
 const term = defineModel<string>("term", { default: "" });
 const pathsStore = usePathsStore();
@@ -133,6 +136,7 @@ const handleClick = (id: number) => {
     }
 
     rolesStore.setScript(botcScript.script);
+    emit("success");
 
 };
 </script>
