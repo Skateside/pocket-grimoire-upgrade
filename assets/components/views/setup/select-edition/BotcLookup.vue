@@ -1,17 +1,18 @@
 <template>
     <BaseForm memory="select-edition-botc-lookup" @submit.prevent="handleSubmit">
         <StackLayout>
-            <BaseRadios
+            <BaseChoice
                 name="botc-type"
                 label="Script type"
                 v-model="scriptType"
-                :radios="{
-                    '': 'Any',
-                    'Full': 'Full',
-                    'Teensyville': 'Teensyville',
-                }"
+                empty-text="Any"
+                :open="true"
+                :choices="[
+                    { text: 'Full', value: 'Full' },
+                    { text: 'Teensyville', value: 'Teensyville' },
+                ]"
             />
-            <BaseLabel text="Search BotC Scripts">
+            <BaseLabel label="Search BotC Scripts">
                 <BaseInput
                     name="botc-scripts"
                     type="text"
@@ -32,7 +33,7 @@
             </div>
             <SidebarLayout>
                 <div>
-                    <button type="submit">Select</button>
+                    <BaseButton type="submit" text="Select" />
                 </div>
                 <div>
                     <BaseSpinner v-if="isLoading" />
@@ -55,8 +56,9 @@ import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
-import BaseRadios from "~/components/base/BaseRadios.vue";
+import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import usePathsStore from "~/scripts/store/paths";
 import useRolesStore from "~/scripts/store/roles";
 import { performAjax } from "./helpers";

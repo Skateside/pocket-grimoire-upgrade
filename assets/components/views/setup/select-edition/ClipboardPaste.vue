@@ -1,7 +1,7 @@
 <template>
     <BaseForm memory="select-edition-clipboard" @submit.prevent="handleSubmit">
         <StackLayout>
-            <BaseLabel text="Paste from clipboard">
+            <BaseLabel label="Paste from clipboard">
                 <BaseInput
                     name="clipboard"
                     type="textarea"
@@ -11,7 +11,7 @@
                 />
             </BaseLabel>
             <div>
-                <button type="submit">Select</button>
+                <BaseButton type="submit" text="Select" />
             </div>
         </StackLayout>
         <div aria-live="polite">
@@ -26,6 +26,7 @@ import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import useRolesStore from "~/scripts/store/roles";
 import { parseScript } from "./helpers";
 

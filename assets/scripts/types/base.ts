@@ -1,5 +1,11 @@
+import type { ComputedRef, HTMLAttributes } from "vue";
+
 export type IBaseFormExpose = {
     getData: () => FormData,
+};
+
+export type IBaseLabelAttributes = {
+    "id"?: HTMLAttributes["id"],
 };
 
 export type IBaseLabelLayouts = (
@@ -13,13 +19,11 @@ export type IBaseLabelLayouts = (
 );
 
 export type IBaseLabelProvide = {
-    id?: string,
+    id?: ComputedRef<string>,
 };
 
 export type IBaseInputTypes = (
-    "button"
-    | "checkbox"
-    | "color"
+    "color"
     | "date"
     | "datetime-local"
     | "email"
@@ -31,7 +35,6 @@ export type IBaseInputTypes = (
     | "password"
     | "radio"
     | "range"
-    | "reset"
     | "search"
     | "submit"
     | "tel"
@@ -41,3 +44,8 @@ export type IBaseInputTypes = (
     | "week"
     | "textarea"
 );
+
+export type IBaseChoice = {
+    text: string,
+    value: string,
+};

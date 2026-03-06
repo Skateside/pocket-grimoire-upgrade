@@ -1,29 +1,32 @@
 <template>
     <template v-if="props.nested">
         <component v-if="isLabelFirst" :is="node" class="label" v-bind="attrs">
-            <span class="label__text">{{ text }}</span>
+            <span class="label__text">{{ props.label }}</span>
             <slot />
         </component>
         <component v-else :is="node" class="label" v-bind="attrs">
             <slot />
-            <span class="label__text">{{ text }}</span>
+            <span class="label__text">{{ props.label }}</span>
         </component>
     </template>
     <template v-else>
         <component v-if="isLabelFirst" :is="node" class="label" v-bind="attrs">
-            <label class="label__text" v-bind="labelAttrs">{{ text }}</label>
+            <label class="label__text" v-bind="labelAttrs">{{ props.label }}</label>
             <slot />
         </component>
         <component v-else :is="node" class="label" v-bind="attrs">
             <slot />
-            <label class="label__text" v-bind="labelAttrs">{{ text }}</label>
+            <label class="label__text" v-bind="labelAttrs">{{ props.label }}</label>
         </component>
     </template>
 </template>
 
 <script setup lang="ts">
-import { type SetupContext, computed, provide, reactive, useAttrs, useId } from "vue";
-import type { IBaseLabelLayouts, IBaseLabelProvide } from "../../scripts/types/base";
+import { type SetupContext, computed, provide, useAttrs, useId } from "vue";
+import type {
+    IBaseLabelLayouts,
+    IBaseLabelProvide,
+} from "../../scripts/types/base";
 import ClusterLayout from "../layouts/ClusterLayout.vue";
 import SidebarLayout from "../layouts/SidebarLayout.vue";
 import StackLayout from "../layouts/StackLayout.vue";
@@ -32,9 +35,9 @@ defineOptions({
     inheritAttrs: false,
 });
 const props = withDefaults(defineProps<{
+    label: string,
     layout?: IBaseLabelLayouts,
     nested?: boolean,
-    text: string,
 }>(), {
     layout: "cluster",
 });
@@ -76,7 +79,7 @@ const attrs = computed(() => {
     }
 
     if (!Object.hasOwn(attrs, "gap")) {
-        attrs.gap = "0.5em";
+        attrs.gap = "0.5em"; // TODO: turn this inso a CSS custom property.
     }
 
     if (props.layout === "sidebar-reverse") {
@@ -98,9 +101,9 @@ const labelAttrs = computed(() => {
 
 });
 
-const provision = reactive<IBaseLabelProvide>({
-    id: (attrs.value.for ?? labelAttrs.value.for ?? "") as string,
-});
+const provision: IBaseLabelProvide = {
+    id: computed(() => (attrs.value.for ?? labelAttrs.value.for ?? "") as string),
+};
 
 provide("label", provision);
 </script>

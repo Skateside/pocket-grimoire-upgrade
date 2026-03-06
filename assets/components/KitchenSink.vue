@@ -20,50 +20,50 @@
             <h2>Labels</h2>
             <h3>Unnested (default)</h3>
             <StackLayout gap="0.5em">
-                <BaseLabel text="Cluster">
+                <BaseLabel label="Cluster">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Cluster Reverse" layout="cluster-reverse">
+                <BaseLabel label="Cluster Reverse" layout="cluster-reverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Sidebar" layout="sidebar">
+                <BaseLabel label="Sidebar" layout="sidebar">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Sidebar Reverse" layout="sidebar-reverse">
+                <BaseLabel label="Sidebar Reverse" layout="sidebar-reverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Sidebar Inverse" layout="sidebar-inverse">
+                <BaseLabel label="Sidebar Inverse" layout="sidebar-inverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Stack" layout="stack">
+                <BaseLabel label="Stack" layout="stack">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Stack Reverse" layout="stack-reverse">
+                <BaseLabel label="Stack Reverse" layout="stack-reverse">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
             </StackLayout>
 
             <h3>Nested</h3>
             <StackLayout gap="0.5em">
-                <BaseLabel text="Cluster" :nested="true">
+                <BaseLabel label="Cluster" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Cluster Reverse" layout="cluster-reverse" :nested="true">
+                <BaseLabel label="Cluster Reverse" layout="cluster-reverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Sidebar" layout="sidebar" :nested="true">
+                <BaseLabel label="Sidebar" layout="sidebar" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Sidebar Reverse" layout="sidebar-reverse" :nested="true">
+                <BaseLabel label="Sidebar Reverse" layout="sidebar-reverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Sidebar Inverse" layout="sidebar-inverse" :nested="true">
+                <BaseLabel label="Sidebar Inverse" layout="sidebar-inverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Stack" layout="stack" :nested="true">
+                <BaseLabel label="Stack" layout="stack" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
-                <BaseLabel text="Stack Reverse" layout="stack-reverse" :nested="true">
+                <BaseLabel label="Stack Reverse" layout="stack-reverse" :nested="true">
                     <BaseInput v-model="basicString" />
                 </BaseLabel>
             </StackLayout>
@@ -74,32 +74,35 @@
             
             <h3>Stand-alone inputs</h3>
 
-            <BaseLabel text="Basic input">
+            <BaseLabel label="Basic input">
                 <BaseInput v-model="basicString" />
             </BaseLabel>
 
-            <BaseLabel text="Input number spinner">
+            <BaseLabel label="Input number spinner">
                 <BaseInputSpinner v-model="basicNumeric" />
             </BaseLabel>
 
-            <BaseRadios label="Radio buttons" v-model="basicString" :radios="{
-                'a': 'Alpha',
-                'b': 'Bravo',
-                'c': 'Charlie',
-            }" />
+            <BaseChoice label="Choice" v-model="basicString" :choices="choices" name="choice" empty-text="Please select" />
+            <BaseChoice label="Choice (open)" v-model="basicString" :choices="choices" name="choice" :open="true" />
         </article>
 
     </StackLayout>
 </template>
 
 <script setup lang="ts">
+import type { IBaseChoice } from "~/scripts/types/base";
 import StackLayout from "./layouts/StackLayout.vue";
 import BaseButton from "./base/BaseButton.vue";
 import BaseLabel from "./base/BaseLabel.vue";
 import BaseInput from "./base/BaseInput.vue";
 import BaseInputSpinner from "./base/BaseInputSpinner.vue";
-import BaseRadios from "./base/BaseRadios.vue";
+import BaseChoice from "./base/BaseChoice.vue";
 
 const basicString = defineModel<string>("basic-string", { default: "" });
 const basicNumeric = defineModel<string>("basic-numeric", { default: "" });
+const choices: IBaseChoice[] = [
+    { value: "a", text: "Alpha" },
+    { value: "b", text: "Bravo" },
+    { value: "c", text: "Charlie" },
+];
 </script>

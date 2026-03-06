@@ -1,15 +1,16 @@
 <template>
     <BaseForm memory="select-edition-official" @submit.prevent="handleSubmit">
         <StackLayout>
-            <BaseRadios
+            <BaseChoice
                 name="official"
                 label="Official scripts"
                 v-model="model"
-                :radios="officialScripts"
                 :required="true"
+                :open="true"
+                :choices="officialScripts"
             />
             <p>
-                <button type="submit">Select</button>
+                <BaseButton type="submit" text="Select" />
             </p>
         </StackLayout>
         <div aria-live="polite">
@@ -22,8 +23,8 @@
 import { computed, ref } from "vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
-import BaseRadios from "~/components/base/BaseRadios.vue";
-import { mapObject } from "~/scripts/utilities/objects";
+import BaseChoice from "~/components/base/BaseChoice.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import useRolesStore from "~/scripts/store/roles";
 
 const emit = defineEmits<{
@@ -32,10 +33,18 @@ const emit = defineEmits<{
 const model = defineModel<string>({ default: "" });
 const rolesStore = useRolesStore();
 const errorMessage = ref("");
-const officialScripts = computed(() => mapObject(rolesStore.scripts, ([id, script]) => [
-    id,
-    rolesStore.getScriptMeta(script)?.name ?? id,
-]));
+const officialScripts = computed(() => {
+
+    return Object.entries(rolesStore.scripts).map(([id, script]) => {
+
+        return {
+            value: id,
+            text: rolesStore.getScriptMeta(script)?.name ?? id,
+        };
+
+    });
+
+});
 
 const handleSubmit = () => {
 

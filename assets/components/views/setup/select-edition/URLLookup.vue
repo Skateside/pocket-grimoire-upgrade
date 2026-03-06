@@ -1,7 +1,7 @@
 <template>
     <BaseForm memory="select-edition-url" @submit.prevent="handleSubmit">
         <StackLayout>
-            <BaseLabel text="Enter a URL">
+            <BaseLabel label="Enter a URL">
                 <BaseInput
                     name="url"
                     type="url"
@@ -12,7 +12,7 @@
             </BaseLabel>
             <SidebarLayout>
                 <div>
-                    <button type="submit">Select</button>
+                    <BaseButton type="submit" text="Select" />
                 </div>
                 <div>
                     <BaseSpinner v-if="isLoading" />
@@ -33,6 +33,7 @@ import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import usePathsStore from "~/scripts/store/paths";
 import useRolesStore from "~/scripts/store/roles";
 import { isValidURL } from "~/scripts/utilities/strings";

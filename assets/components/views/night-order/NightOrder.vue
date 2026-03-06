@@ -22,26 +22,14 @@
     <form>
         <ul>
             <li>
-                <label :for="`show-dead-${suffix}`">
-                    <input
-                        v-model="showDead"
-                        type="checkbox"
-                        :id="`show-dead-${suffix}`"
-                        name="show-dead"
-                    >
-                    Show dead characters
-                </label>
+                <BaseLabel label="Show dead characters" :nested="true">
+                    <BaseCheckbox v-model="showDead" name="show-dead" />
+                </BaseLabel>
             </li>
             <li>
-                <label :for="`show-nip-${suffix}`">
-                    <input
-                        v-model="showNotInPlay"
-                        type="checkbox"
-                        :id="`show-nip-${suffix}`"
-                        name="show-nip"
-                    >
-                    Show characters not in play
-                </label>
+                <BaseLabel label="Show characters not in play" :nested="true">
+                    <BaseCheckbox v-model="showNotInPlay" name="show-nip" />
+                </BaseLabel>
             </li>
         </ul>
     </form>
@@ -49,12 +37,12 @@
 
 <script setup lang="ts">
 import type { IRole } from "~/scripts/types/data";
-import { useId } from "vue";
+import ReelLayout from "~/components/layouts/ReelLayout.vue";
+import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import useRolesStore from "~/scripts/store/roles";
 import useTokensStore from "~/scripts/store/tokens";
-import ReelLayout from "~/components/layouts/ReelLayout.vue";
 
-const suffix = useId();
 const showDead = defineModel<boolean>("dead", { default: true });
 const showNotInPlay = defineModel<boolean>("not-in-play", { default: true });
 const rolesStore = useRolesStore();

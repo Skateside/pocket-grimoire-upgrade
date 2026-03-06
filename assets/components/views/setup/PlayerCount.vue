@@ -28,7 +28,7 @@
                     ),
                 }]"
             >
-                <th scope="row">{{ labels[team] || team }}</th>
+                <th scope="row">{{ get(labels, team) || team }}</th>
                 <td
                     v-for="{ count, number } in data"
                     :class="{ 'is-count': count === props.count }"
@@ -57,6 +57,12 @@ const labels = { // TODO: i18n
     [ERoleTeam.MINION]: "Minions",
     [ERoleTeam.DEMON]: "Demons",
 };
+
+// This just satisfies TypeScript.
+const get = <TKey extends PropertyKey = string>(
+    object: Record<TKey, any>,
+    key: TKey,
+) => object[key];
 </script>
 
 <style lang="scss" scoped>

@@ -3,7 +3,7 @@
         <StackLayout>
             <PlayerCount :count="playerCount" />
             <ClusterLayout side="end">
-                <BaseLabel text="Player count">
+                <BaseLabel label="Player count">
                     <BaseInput
                         v-model="model"
                         name="player-count"
@@ -36,11 +36,13 @@ import BaseLabel from "~/components/base/BaseLabel.vue";
 import PlayerCount from "./PlayerCount.vue";
 import { clamp } from "~/scripts/utilities/numbers";
 
-const model = defineModel<number>({ default: EGameValues.DEFAULT_NEW_GAME });
+const model = defineModel<string>({
+    default: String(EGameValues.DEFAULT_NEW_GAME),
+});
 const playerCount = computed(() => {
     return clamp(
         EGameValues.MIN_PLAYERS,
-        model.value,
+        Number(model.value),
         EGameValues.MAX_NON_TRAVELLER_PLAYERS,
     );
 });

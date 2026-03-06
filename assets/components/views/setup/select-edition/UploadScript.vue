@@ -1,17 +1,18 @@
 <template>
     <BaseForm ref="form" @submit.prevent="handleSubmit">
         <StackLayout>
-            <BaseLabel text="Upload a custom script">
+            <BaseLabel label="Upload a custom script">
                 <BaseInput
                     name="upload"
                     type="file"
                     accept="application/json"
                     :required="true"
+                    v-model="model"
                 />
             </BaseLabel>
             <SidebarLayout>
                 <div>
-                    <button type="submit">Select</button>
+                    <BaseButton type="submit" text="Select" />
                 </div>
                 <div>
                     <BaseSpinner v-if="isLoading" />
@@ -32,6 +33,7 @@ import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import useRolesStore from "~/scripts/store/roles";
 import { parseScript } from "./helpers";
 
@@ -42,6 +44,7 @@ const rolesStore = useRolesStore();
 const form = useTemplateRef("form");
 const errorMessage = ref("");
 const isLoading = ref(false);
+const model = ref("");
 
 const handleSubmit = () => {
 

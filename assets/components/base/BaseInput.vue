@@ -10,15 +10,16 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseInputTypes, IBaseLabelProvide } from "../../scripts/types/base";
-import { computed, inject, onMounted, useAttrs, useTemplateRef } from "vue";
+import type { IBaseInputTypes } from "../../scripts/types/base";
+import { computed, useAttrs, useTemplateRef } from "vue";
+import useLabel from "~/composables/useLabel";
 
 defineOptions({
     inheritAttrs: false,
 });
 const props = withDefaults(defineProps<{
     type?: IBaseInputTypes,
-    modelValue?: boolean | number | string,
+    modelValue: string,
 }>(), {
     type: "text",
 });
@@ -27,10 +28,13 @@ const emit = defineEmits<{
 }>();
 const input = useTemplateRef<HTMLInputElement | HTMLTextAreaElement>("input");
 const value = computed(() => {
+
     if (props.type === "file") {
         return undefined; // Removes property.
     }
+
     return props.modelValue;
+
 });
 
 const node = computed(() => (
@@ -39,7 +43,7 @@ const node = computed(() => (
     : "input"
 ));
 
-const labelProvision = inject<IBaseLabelProvide>("label", {});
+const { id } = useLabel();
 const attrs = computed(() => {
 
     const attrs = { ...useAttrs() };
@@ -48,8 +52,8 @@ const attrs = computed(() => {
         attrs.type = props.type;
     }
 
-    if (!Object.hasOwn(attrs, "id") && labelProvision) {
-        attrs.id = labelProvision.id;
+    if (!Object.hasOwn(attrs, "id") && id.value) {
+        attrs.id = id.value;
     }
 
     return attrs;
@@ -65,17 +69,4 @@ const handleInput = () => {
     emit("update:modelValue", input.value.value);
 
 };
-
-onMounted(() => {
-
-    switch (props.type) {
-
-    case "button":
-    case "reset":
-        console.warn("Did you intend to use <BaseButton>?");
-        break;
-
-    }
-
-});
 </script>

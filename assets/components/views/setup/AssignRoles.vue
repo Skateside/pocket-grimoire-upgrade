@@ -1,29 +1,27 @@
 <template>
     <BaseForm>
-        <p style="color: fuchsia;">TODO: Change <code>BaseRadios</code> into <code>BaseChoice</code>.</p>
         <StackLayout>
-            <BaseLabel text="Show character abilities">
-                <BaseInput
+            <BaseLabel label="Show character abilities" :nested="true">
+                <BaseCheckbox
                     v-model="showAbilities"
-                    type="checkbox"
                     name="abilities"
                 />
             </BaseLabel>
-            <BaseLabel text="Allow duplicate characters">
-                <BaseInput
+            <BaseLabel label="Allow duplicate characters" :nested="true">
+                <BaseCheckbox
                     v-model="allowDuplicates"
-                    type="checkbox"
                     name="duplicates"
                 />
             </BaseLabel>
-            <BaseRadios
+            <BaseChoice
                 v-model="direction"
+                :choices="[
+                    { text: 'Clockwise', value: String(ETokenDirection.CLOCKWISE) },
+                    { text: 'Anti-Clockwise', value: String(ETokenDirection.ANTICLOCKWISE) },
+                ]"
                 label="Direction"
                 name="direction"
-                :radios="{
-                    [String(ETokenDirection.CLOCKWISE)]: 'Clockwise',
-                    [String(ETokenDirection.ANTICLOCKWISE)]: 'Anti-clockwise',
-                }"
+                :open="true"
             />
         </StackLayout>
     </BaseForm>
@@ -61,53 +59,18 @@
             </fieldset>
         </template>
 
-        <p>
-            <label :for="`start-${suffix}`">Starting player</label>
-            <select name="start" :id="`start-${suffix}`">
-                <option v-for="seat in sorted" :key="seat.id" :value="seat.id">
-                    {{ seat.name ?? seat.index ?? seat.id }}
-                </option>
-            </select>
-        </p>
-
-        <fieldset>
-            <legend>Direction</legend>
-            <ul>
-                <li>
-                    <label :for="`direction-clockwise-${suffix}`">
-                        Clockwise
-                        <input
-                            v-model="direction"
-                            type="radio"
-                            name="direction"
-                            :id="`direction-clockwise-${suffix}`"
-                            :value="ETokenDirection.CLOCKWISE"
-                        >
-                    </label>
-                </li>
-                <li>
-                    <label :for="`direction-anticlockwise-${suffix}`">
-                        Anti-clockwise
-                        <input
-                            v-model="direction"
-                            type="radio"
-                            name="direction"
-                            :id="`direction-anticlockwise-${suffix}`"
-                            :value="ETokenDirection.ANTICLOCKWISE"
-                        >
-                    </label>
-                </li>
-            </ul>
-        </fieldset>
+        <BaseChoice
+            label="Starting player"
+            :choices="choices"
+            v-model="startingPlayer"
+            name="start"
+            empty-text="Please select"
+        />
     </form>
 </template>
 
 <script setup lang="ts">
-import type {
-    IRole,
-    // IRoleCoreTeam,
-    ITokenSeat,
-} from "~/scripts/types/data";
+import type { IRole, ITokenSeat } from "~/scripts/types/data";
 import {
     ERoleSpecialType,
     ERoleSpecialName,
@@ -123,23 +86,21 @@ import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
-import BaseInput from "~/components/base/BaseInput.vue";
-import BaseRadios from "~/components/base/BaseRadios.vue";
+import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
+import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
+import type { IBaseChoice } from "~/scripts/types/base";
 
 const suffix = useId();
 const gameStore = useGameStore();
 const rolesStore = useRolesStore();
 const tokensStore = useTokensStore();
-const direction = defineModel<ETokenDirection>("direction", {
-    default: ETokenDirection.CLOCKWISE,
+const direction = defineModel<string>("direction", {
+    default: String(ETokenDirection.CLOCKWISE),
 });
-const showAbilities = defineModel<boolean>("abilities", {
-    default: true,
-});
-const allowDuplicates = defineModel<boolean>("duplicates", {
-    default: false,
-});
+const showAbilities = defineModel<boolean>("abilities", { default: true });
+const allowDuplicates = defineModel<boolean>("duplicates", { default: false });
+const startingPlayer = defineModel<string>("start", { default: "" });
 const included = reactive<Record<IRole["id"], boolean>>(
     Object.fromEntries(rolesStore.script.map(({ id }) => [id, false]))
 );
@@ -209,10 +170,24 @@ const handleSelection = (role: IRole) => {
 
 };
 
-const sorted = computed(() => {
+const choices = computed(() => {
+
     return tokensStore
         .getSortedSeats()
         .map((id) => tokensStore.getById(id))
-        .filter(Boolean) as ITokenSeat[];
+        .filter((seat) => seat !== undefined)
+        .map((seat) => {
+
+            return {
+                value: seat.id,
+                text: String(
+                    (seat as ITokenSeat).name
+                    ?? (seat as ITokenSeat).index
+                    ?? seat.id
+                ),
+            } satisfies IBaseChoice;
+
+        });
+
 });
 </script>
