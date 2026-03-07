@@ -1,4 +1,5 @@
 import type {
+    IReminder,
     IRole,
     IRoleImport,
     IRoleNightOrder,
@@ -8,7 +9,12 @@ import type {
     IScriptImport,
 } from "../types/data";
 import type { IStorage } from "../classes/Storage";
-import { ERoleEdition, ERoleTeam } from "../enums/data";
+import {
+    ERoleEdition,
+    ERoleId,
+    ERoleTeam,
+    ETokenAlignment,
+} from "../enums/data";
 import { defineStore } from "pinia";
 import { computed, inject, ref, watch, type DeepReadonly } from "vue";
 import {
@@ -19,6 +25,7 @@ import {
     getSpecial as helperGetSpecial,
     isDeprecatedScriptEntry,
     isMetaEntry,
+    isUniversal,
     isValidRoleImport,
     isValidScriptImport,
     isValidScriptImportEntry,
@@ -88,6 +95,7 @@ const rolesStore = defineStore("roles", () => {
     const specialRoles = computed(() => roles.value.filter(({ edition }) => (
         edition === ERoleEdition.SPECIAL
     )));
+    const scriptImport = ref<IScriptImport>([]);
     const script = ref<IScriptFull>([]);
     const scriptByType = computed(() => {
 
@@ -142,14 +150,46 @@ const rolesStore = defineStore("roles", () => {
     });
 
     const innerGetRoleById = (roleId: IRole["id"]) => {
-        return roles.value.find(({ id }) => id === roleId);
+
+        const scriptEntry = script.value.find(({ id }) => id === roleId);
+
+        if (scriptEntry) {
+            return deepThaw(scriptEntry) as IRole;
+        }
+
+        const rolesEntry = roles.value.find(({ id }) => id === roleId);
+
+        if (rolesEntry) {
+            return deepThaw(rolesEntry) as IRole;
+        }
+
     };
 
-    // const getRoleById = computed(() => innerGetRoleById);
-
     const getImage = computed(() => helperGetImage);
+
+    const getReminderImage = computed(() => (
+        reminder: IReminder,
+        alignment: ETokenAlignment = ETokenAlignment.DEFAULT,
+    ) => {
+
+        if (reminder.image) {
+            return reminder.image;
+        }
+
+        const role = innerGetRoleById(reminder.roleId);
+
+        if (role) {
+            return helperGetImage(role, alignment);
+        }
+
+        return undefined;
+
+    });
+
     const getIsMeta = computed(() => isMetaEntry);
+    const getIsUniversal = computed(() => isUniversal);
     const getIsValidScriptImport = computed(() => isValidScriptImport);
+    const getRoleById = computed(() => innerGetRoleById);
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
     const getScriptMeta = computed(() => helperGetScriptMeta);
     const getSpecial = computed(() => helperGetSpecial);
@@ -159,24 +199,68 @@ const rolesStore = defineStore("roles", () => {
         return role?.edition === ERoleEdition.SPECIAL;
     });
 
+    const interpret = computed(() => (
+        role: IRole | IRole["id"] | null | void,
+    ) => {
+
+        const { NO_ROLE, META, UNIVERSAL, UNRECOGNISED } = ERoleId;
+
+        if (
+            !role
+            || role === NO_ROLE
+            || (role as IRole).id === NO_ROLE
+        ) {
+            return innerGetRoleById(NO_ROLE)!;
+        }
+
+        if (role === META || isMetaEntry(role as IRole)) {
+            return innerGetRoleById(META)!;
+        }
+
+        if (role === UNIVERSAL || isUniversal(role as IRole)) {
+            return innerGetRoleById(UNIVERSAL)!;
+        }
+
+        const roleId = (
+            isObject(role)
+            ? role.id
+            : role
+        );
+        const entry = innerGetRoleById(roleId);
+
+        if (entry) {
+            return entry;
+        }
+
+        const unrecognised = innerGetRoleById(UNRECOGNISED)!;
+
+        return {
+            ...unrecognised,
+            name: `${unrecognised.name}: ${roleId}`,
+        } as IRole;
+
+    });
+
     const setScript = (
-        scriptImport: (
+        rawScript: (
             IScriptImport
             | IScriptDataEntry
             | DeepReadonly<IScriptDataEntry>
         )
     ) => {
 
-        if (!Array.isArray(scriptImport)) {
+        if (!Array.isArray(rawScript)) {
             return;
         }
         
         const entries: IScriptFull = [
             ...deepThaw(specialRoles.value),
         ];
-        const filtered = scriptImport.filter((item) => {
+        const filtered = rawScript.filter((item) => {
             return isValidScriptImportEntry(item);
         });
+
+        scriptImport.value = filtered;
 
         filtered.forEach((entry) => {
 
@@ -234,8 +318,8 @@ const rolesStore = defineStore("roles", () => {
 
     };
 
-    setScript(storage.get<IScriptFull>(STORAGE_KEY, Array.isArray, []));
-    watch(script, (value) => storage.set(STORAGE_KEY, value));
+    setScript(storage.get<IScriptImport>(STORAGE_KEY, Array.isArray, []));
+    watch(scriptImport, (value) => storage.set(STORAGE_KEY, value));
 
     return {
         // Data.
@@ -245,14 +329,17 @@ const rolesStore = defineStore("roles", () => {
         scripts,
         nightOrder,
         scriptByType,
-        // getRoleById,
         getImage,
         getIsMeta,
         getIsSpecialById,
+        getIsUniversal,
         getIsValidScriptImport,
+        getReminderImage,
+        getRoleById,
         getScriptById,
         getScriptMeta,
         getSpecial,
+        interpret,
         // Actions.
         setScript,
     }

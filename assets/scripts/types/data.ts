@@ -116,9 +116,8 @@ export type IPad = Pick<DOMRect, "left" | "top" | "right" | "bottom">;
 
 export type IReminder = {
     id: `${IRole["id"]}:${number}`,
-    // role: IRole,
     name: string,
-    roleName: IRole["name"],
+    roleId: IRole["id"],
     count?: number,
     flags?: EReminderFlag[],
     image?: string,

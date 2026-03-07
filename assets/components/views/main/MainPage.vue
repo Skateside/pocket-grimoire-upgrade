@@ -4,7 +4,7 @@
 
     <ReelLayout node="menu" class="no-list">
         <li><RouterLink :to="{ name: 'setup' }">Setup</RouterLink></li>
-        <!-- <li><RouterLink :to="{ name: 'grimoire' }">Grimoire</RouterLink></li> -->
+        <li><RouterLink :to="{ name: 'grimoire' }">Grimoire</RouterLink></li>
         <!-- <li><RouterLink :to="{ name: 'info-tokens' }">Info Tokens</RouterLink></li> -->
         <li><RouterLink :to="{ name: 'night-order' }">Night Order</RouterLink></li>
         <!-- <li><RouterLink :to="{ name: 'jinxes' }">Jinxes</RouterLink></li> -->

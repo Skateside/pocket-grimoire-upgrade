@@ -1,21 +1,23 @@
 <template>
-    <ReelLayout class="night-order" node="dl" :carousel="true" :shadows="true">
+    <ReelLayout class="night-order" :carousel="true" :shadows="true">
         <div v-for="(title, key) in nights" class="night-order__night">
-            <dt class="night-order__heading">{{ title }}</dt>
-            <template v-for="{ role } in rolesStore.nightOrder[key]" :key="role.id">
-                <dd
-                    v-if="showRole(role.id)"
-                    class="night-order__entry"
-                    :class="{
-                        'is-in-play': isInPlay(role.id),
-                        'is-dead': isDead(role.id),
-                    }"
-                >
-                    <p class="night-order__name"><strong>{{ role.name }}</strong></p>
-                    <img :src="rolesStore.getImage(role)" alt="" width="50" height="50" class="night-order__icon">
-                    <p class="night-order__ability">{{ role[`${key}NightReminder`] }}</p>
-                </dd>
-            </template>
+            <h2 class="night-order__heading">{{ title }}</h2>
+            <ol>
+                <template v-for="{ role } in rolesStore.nightOrder[key]" :key="role.id">
+                    <li
+                        v-if="showRole(role.id)"
+                        class="night-order__entry"
+                        :class="{
+                            'is-in-play': isInPlay(role.id),
+                            'is-dead': isDead(role.id),
+                        }"
+                    >
+                        <p class="night-order__name"><strong>{{ role.name }}</strong></p>
+                        <img :src="rolesStore.getImage(role)" alt="" width="50" height="50" class="night-order__icon">
+                        <p class="night-order__ability">{{ role[`${key}NightReminder`] }}</p>
+                    </li>
+                </template>
+            </ol>
         </div>
     </ReelLayout>
 

@@ -17,13 +17,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import("./components/views/setup/PageWrapper.vue"),
                 redirect: { name: "select-edition" },
                 children: [
-                    /*
-                    {
-                        path: "select-edition",
-                        name: "select-edition",
-                        component: () => import("./components/views/setup/SelectEdition.vue"),
-                    },
-                    */
                     {
                         path: "select-edition",
                         name: "select-edition",
@@ -74,6 +67,11 @@ const routes: RouteRecordRaw[] = [
                         component: () => import("./components/views/setup/ClearCache.vue"),
                     },
                 ],
+            },
+            {
+                path: "grimoire",
+                name: "grimoire",
+                component: () => import("./components/views/grimoire/GrimoirePad.vue"),
             },
             {
                 path: "night-order",

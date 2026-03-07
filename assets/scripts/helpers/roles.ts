@@ -109,13 +109,13 @@ export function convertJinxes(
 /**
  * Converts a reminder import into a full reminder.
  *
- * @param role Role information - specifically the `id` and `name`.
+ * @param roleId ID of the role that this reminder belongs to.
  * @param reminder Reminder import as an object.
  * @param index Index of the reminder, used for generating an ID.
  * @returns Converted reminder or `null` if the reminder can't be converted.
  */
 export function convertReminder(
-    { id, name }: { id: IRole["id"], name: IRole["name"] },
+    roleId: IRole["id"],
     reminder: Partial<IReminder>,
     index: number,
 ) {
@@ -130,12 +130,12 @@ export function convertReminder(
         (
             !Object.hasOwn(reminder, "id")
             || !isString(reminder.id)
-            || !reminder.id.startsWith(id + ":")
+            || !reminder.id.startsWith(roleId + ":")
         )
-        ? `${id}:${index}`
+        ? `${roleId}:${index}`
         : reminder.id
     );
-    converted.roleName = name;
+    converted.roleId = roleId;
     converted.name = reminder.name;
 
     if (isNumber(reminder.count)) {
@@ -177,7 +177,7 @@ export function convertReminder(
  * global reminders were given.
  */
 export function convertReminders(
-    { id, name }: { id: IRole["id"], name: IRole["name"] },
+    roleId: IRole["id"],
     reminders: Partial<IReminder>[] | string[] | void,
     remindersGlobal: string[] | void,
 ) {
@@ -193,7 +193,7 @@ export function convertReminders(
                 reminder = { name: reminder } as Partial<IReminder>;
             }
 
-            const converted = convertReminder({ id, name }, reminder, index);
+            const converted = convertReminder(roleId, reminder, index);
 
             if (converted) {
 
@@ -211,7 +211,7 @@ export function convertReminders(
         remindersGlobal.forEach((reminder) => {
 
             const converted = convertReminder(
-                { id, name },
+                roleId,
                 { name: reminder } as Partial<IReminder>,
                 index,
             );
@@ -389,10 +389,7 @@ export function convertRole(
     if (Array.isArray(role.reminders) || Array.isArray(role.remindersGlobal)) {
 
         const reminders = convertReminders(
-            {
-                id: converted.id,
-                name: converted.name,
-            },
+            role.id,
             role.reminders,
             role.remindersGlobal,
         );
@@ -743,6 +740,22 @@ export function isMetaEntry(object: unknown): object is IScriptMeta {
 }
 
 /**
+ * Checks to see if the given object is the universal role.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is the universal role entry, `false` otherwise.
+ */
+export function isUniversal(object: unknown): object is IRole & { id: ERoleId.UNIVERSAL } {
+
+    return (
+        isObject(object)
+        && object.id === ERoleId.UNIVERSAL
+        && object.edition == ERoleEdition.SPECIAL
+    );
+
+}
+
+/**
  * Validates that the given object is a valid jinx import.
  *
  * @param object Object to check.
@@ -772,6 +785,7 @@ export function isValidReminderImport(
         isObject(object)
         && isPropertyString(object, "name")
         && isPropertyOptionalString(object, "id")
+        && isPropertyOptionalString(object, "roleId")
         && isPropertyOptionalString(object, "roleName")
         && (
             !Object.hasOwn(object, "count") || isNumber(object.count)
