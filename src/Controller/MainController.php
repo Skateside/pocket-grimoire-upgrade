@@ -14,7 +14,6 @@ class MainController extends AbstractController
 {
 
     #[Route('/', name: 'home')]
-    // #[Route('/{route}', name: 'vue', requirements: ['route' => '^.+'])]
     #[Route('/{route}', name: 'vue', requirements: ['route' => '^(?!api).+'])]
     public function indexAction(): Response
     {
