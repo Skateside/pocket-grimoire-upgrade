@@ -1,24 +1,26 @@
-import type {
-    Plugin,
-} from "vite";
+import type { Plugin } from "vite";
 import type {
     IInfoTokenRaw,
-    IRoleRaw,
-    IRoleReminderRaw,
-    IRoleReminderFlag,
-    IRoleJinxRaw,
-    IRoleMeta,
+    IJinx,
+    IReminder,
+    IRole,
+    IRoleImport,
+    IScriptMeta,
 } from "../assets/scripts/types/data";
+import type { AnyObject } from "../assets/scripts/types/lib";
 import {
-    promises as fs,
-} from "fs";
+    EReminderFlag,
+    ERoleId,
+    ERoleSpecialName,
+    ERoleSpecialType,
+} from "../assets/scripts/enums/data";
+import { promises as fs } from "fs";
 import path from "path";
 
 // Utility types.
 type RecursivePartial<T> = {
     [P in keyof T]?: RecursivePartial<T[P]>;
 };
-type AnyObject = Record<string, any>;
 type AnyMap = Record<string, string>;
 
 // Options for this plugin.
@@ -30,7 +32,6 @@ type ILocaleDataOptionsReal = {
         infoTokens: string,
         roles: string,
         scripts: string,
-        specialRoles: string,
     },
     locales: {
         dirname: string,
@@ -46,16 +47,12 @@ type ILocaleDataOptionsReal = {
 
 // Types that describe the data that gets read from the files.
 type IRawRoleImages = {
-    id: IRoleRaw["id"],
-    image: IRoleRaw["image"],
+    id: IRole["id"],
+    image: IRole["image"],
     reminders?: string[],
 }[];
-type IRawScripts = Record<string, (IRoleMeta | IRoleRaw["id"])[]>;
-type ILocaleJinxes = {
-    target: IRoleJinxRaw["id"],
-    trick: IRoleJinxRaw["id"],
-    reason: IRoleJinxRaw["reason"],
-}[];
+type IRawScripts = Record<string, (IScriptMeta | IRole["id"])[]>;
+type ILocaleJinxes = Omit<IJinx, "state">[];
 type ILocaleInfoTokens = Record<string, IInfoTokenRaw["markdown"]>;
 type ILocaleScripts = {
     author: string,
@@ -72,9 +69,8 @@ export default (options: ILocaleDataOptions = {}): Plugin => {
             dirname: "raw",
             images: "images.json",
             infoTokens: "info-tokens.json",
-            roles: "roles.json",
+            roles: "fetched-roles.json",
             scripts: "scripts.json",
-            specialRoles: "special-roles.json",
         },
         locales: {
             dirname: "locales",
@@ -119,7 +115,6 @@ const buildFiles = async (config: ILocaleDataOptionsReal) => {
             createRoles([
                 path.join(rawDir, config.raw.roles),
                 path.join(rawDir, config.raw.images),
-                path.join(rawDir, config.raw.specialRoles),
                 path.join(localesDir, locale, config.locales.roles),
                 path.join(localesDir, locale, config.locales.extra),
                 path.join(localesDir, locale, config.locales.jinxes),
@@ -191,23 +186,22 @@ const createInfoTokens = (tokenFiles: string[]) => processFiles(tokenFiles).then
 const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
     rawRoles,
     images,
-    specialRoles,
+    // specialRoles,
     localeRoles,
     localeExtraRoles,
     localeJinxes,
-]) => new Promise<IRoleRaw[]>((resolve, _reject) => {
+]) => new Promise<IRoleImport[]>((resolve, _reject) => {
 
-    const roles = rawRoles as IRoleRaw[];
+    const roles = rawRoles as IRoleImport[];
 
     roles.push(
-        ...(specialRoles as IRoleRaw[]),
-        ...((localeExtraRoles || []) as IRoleRaw[]),
+        ...((localeExtraRoles || []) as IRoleImport[]),
     );
     roles.forEach((role) => {
 
         Object.assign(
             role,
-            (localeRoles as IRoleRaw[]).find(({ id }) => id === role.id) || {},
+            (localeRoles as IRoleImport[]).find(({ id }) => id === role.id) || {},
         );
 
         fixRoleJinxes(role, localeJinxes);
@@ -220,7 +214,7 @@ const createRoles = (roleFiles: string[]) => processFiles(roleFiles).then(([
 
 }));
 
-const fixRoleJinxes = (role: IRoleRaw, localeJinxes: ILocaleJinxes) => {
+const fixRoleJinxes = (role: IRoleImport, localeJinxes: ILocaleJinxes) => {
 
     if (!role.jinxes?.length) {
         return;
@@ -241,12 +235,13 @@ const fixRoleJinxes = (role: IRoleRaw, localeJinxes: ILocaleJinxes) => {
 
 // This should be a temporary fix - eventually, the data itself should be
 // corrected to use the new format.
-const fixRoleReminders = (role: IRoleRaw) => {
+const fixRoleReminders = (role: IRoleImport) => {
 
     const { reminders, remindersGlobal } = role as {
-        reminders?: IRoleReminderRaw[] | string[],
+        reminders?: IReminder[] | string[],
         remindersGlobal?: string[],
     };
+    const fixedReminders: IReminder[] = [];
 
     if (
         (
@@ -256,17 +251,17 @@ const fixRoleReminders = (role: IRoleRaw) => {
         || remindersGlobal?.length
     ) {
 
-        role.reminders = [];
+        // const reminders: IReminder[] = [];
 
         // Regular reminders are just that.
         for (const [_index, name] of Object.entries(reminders || [])) {
 
-            const reminder: IRoleReminderRaw = (
+            const reminder = (
                 typeof name === "string"
                 ? { name }
                 : name
-            );
-            const found = role.reminders.find(({ name }) => reminder.name === name);
+            ) as IReminder;
+            const found = fixedReminders.find(({ name }) => reminder.name === name);
 
             if (found) {
 
@@ -277,7 +272,7 @@ const fixRoleReminders = (role: IRoleRaw) => {
                 found.count += 1;
 
             } else {
-                role.reminders.push(reminder);
+                fixedReminders.push(reminder);
             }
 
         }
@@ -287,27 +282,29 @@ const fixRoleReminders = (role: IRoleRaw) => {
         // reminder needs the "role" flag.
         for (const [index, name] of Object.entries(remindersGlobal || [])) {
 
-            const flags: IRoleReminderFlag[] = ["global"];
-            const replace = role.special?.find(({ type, name }) => {
-                return type === "reveal" && name === "replace-character";
-            });
+            const flags: EReminderFlag[] = [EReminderFlag.GLOBAL];
+            const replace = role.special?.find(({ type, name }) => (
+                type === ERoleSpecialType.REVEAL
+                && name === ERoleSpecialName.REPLACE_CHARACTER
+            ));
 
             if (replace && Number(index) === 0) {
-                flags.push("role");
+                flags.push(EReminderFlag.ROLE);
             }
 
-            const reminder: IRoleReminderRaw = { name, flags };
-            role.reminders.push(reminder);
+            const reminder = { name, flags } as IReminder;
+            fixedReminders.push(reminder);
 
         }
 
     }
 
+    (role as any).reminders = fixedReminders;
     delete (role as any).remindersGlobal;
 
 };
 
-const fixRoleImages = (role: IRoleRaw, images: IRawRoleImages) => {
+const fixRoleImages = (role: IRoleImport, images: IRawRoleImages) => {
 
     const roleImages = (images as IRawRoleImages).find(({ id }) => id === role.id);
 
@@ -338,11 +335,11 @@ const createScripts = (scriptFiles: string[]) => processFiles(scriptFiles).then(
 
         const metaIndex = script.findIndex((entry) => (
             typeof entry === "object"
-            && entry.id === "_meta"
+            && entry.id === ERoleId.META
         ));
-        const metaEntry: IRoleMeta = (script[metaIndex] as IRoleMeta) || {};
+        const metaEntry: IScriptMeta = (script[metaIndex] as IScriptMeta) || {};
 
-        metaEntry.id = "_meta";
+        metaEntry.id = ERoleId.META;
         metaEntry.author = (localeScripts as ILocaleScripts).author;
         metaEntry.name = (localeScripts as ILocaleScripts).scripts[id] || "";
 
