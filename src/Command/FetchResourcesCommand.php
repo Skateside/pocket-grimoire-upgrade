@@ -30,7 +30,7 @@ class FetchResourcesCommand
 
         $io->section('Downloading');
         $io->progressStart(4);
-        $special = $this->resourcesModel->getSpecialRoles();
+        $specials = $this->resourcesModel->getSpecialRoles();
         $io->progressAdvance();
         $roles = $this->resourcesModel->getJson(BotcResourcesModel::ROLES_URL);
         $io->progressAdvance();
@@ -39,9 +39,10 @@ class FetchResourcesCommand
         $nightsheet = $this->resourcesModel->getJson(BotcResourcesModel::NIGHTSHEET_URL);
         $io->progressFinish();
 
-        $isValidRoles = $this->resourcesModel->isValidRoles($roles['body'] ?? null);
-        $isValidJinxes = $this->resourcesModel->isValidJinxes($jinxes['body'] ?? null);
-        $isValidNightsheet = $this->resourcesModel->isValidNightsheet($nightsheet['body'] ?? null);
+        $isValidSpecials = $this->resourcesModel->isValidSpecialRoles($specials['body']);
+        $isValidRoles = $this->resourcesModel->isValidRoles($roles['body']);
+        $isValidJinxes = $this->resourcesModel->isValidJinxes($jinxes['body']);
+        $isValidNightsheet = $this->resourcesModel->isValidNightsheet($nightsheet['body']);
 
         $io->section('Results');
         $io->table(
@@ -49,8 +50,8 @@ class FetchResourcesCommand
             [
                 [
                     'Special',
-                    $special['success'] ? 'Yes' : "({$special['body']})",
-                    '-',
+                    $specials['success'] ? 'Yes' : "({$specials['body']})",
+                    $isValidSpecials ? 'Yes' : 'No',
                 ],
                 [
                     'Roles',
@@ -75,12 +76,24 @@ class FetchResourcesCommand
             $io->text($this->resourcesModel->getMessage());
         }
 
-        if (!$isValidRoles || !$isValidJinxes || !$isValidNightsheet) {
+        if (!$isValidSpecials || !$isValidRoles || !$isValidJinxes || !$isValidNightsheet) {
             $io->getErrorStyle()->error('Data not valid, cannot continue');
             return Command::FAILURE;
         }
 
-        $io->getErrorStyle()->success('Data downloaded');
+        $combined = $this->resourcesModel->combineData(
+            $specials['body'],
+            $roles['body'],
+            $jinxes['body'],
+            $nightsheet['body'],
+        );
+
+        if (!$this->resourcesModel->writeData($combined)) {
+            $io->getErrorStyle()->error('Failed to write data');
+            return Command::FAILURE;
+        }
+
+        $io->getErrorStyle()->success('Data downloaded and written');
         return Command::SUCCESS;
     }
 }

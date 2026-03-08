@@ -22,15 +22,31 @@ class BotcResourcesModel
     const NIGHTSHEET_URL = 'https://release.botc.app/resources/data/nightsheet.json';
 
     /**
+     * @var string File name of the special roles.
+     */
+    const SPECIAL_ROLES = 'special-roles.json';
+
+    /**
+     * @var string File name where the data will be saved.
+     */
+    const DESTINATION = 'fetched-roles.json';
+
+    /**
      * An error message generated when validating a role.
      */
     private string $message = '';
 
     public function __construct(
-        // private string $message = '',
 
-        #[Autowire('%kernel.project_dir%/assets/data/special-roles.json')]
-        private string $specialRolesJson,
+        #[Autowire('%kernel.project_dir%/assets/data/raw/')]
+        private string $dataDirectory,
+
+        // #[Autowire('%kernel.project_dir%/assets/data/raw/special-roles.json')]
+        // private string $specialRolesJson,
+
+        // #[Autowire('%kernel.project_dir%/assets/data/raw/fetched-roles.json')]
+        // private string $destinationJson,
+
     )
     {}
 
@@ -41,6 +57,32 @@ class BotcResourcesModel
      */
     public function getMessage() {
         return $this->message;
+    }
+
+    /**
+     * Gets the special roles from the JSON file.
+     *
+     * @return array Success status and the body of the results.
+     */
+    public function getSpecialRoles()
+    {
+        $specialRolesJson = $this->dataDirectory . static::SPECIAL_ROLES;
+
+        if (!file_exists($specialRolesJson)) {
+            return ['success' => false, 'body' => "'{$specialRolesJson}' not found"];
+        }
+
+        $contents = file_get_contents($specialRolesJson);
+
+        if ($contents === false) {
+            return ['success' => false, 'body' => 'Failed to get special roles contents'];
+        }
+
+        if (!json_validate($contents)) {
+            return ['success' => false, 'body' => 'Invalid JSON'];
+        }
+
+        return ['success' => true, 'body' => json_decode($contents, true)];
     }
 
     /**
@@ -62,6 +104,21 @@ class BotcResourcesModel
         }
 
         return ['success' => true, 'body' => json_decode($contents, true)];
+    }
+
+    /**
+     * Checks to see if the given JSON is a valid collection of special roles.
+     *
+     * @param mixed $json JSON to check.
+     * @return bool `true` if the JSON is a valid collection of special roles,
+     * `false` otherwise.
+     */
+    public function isValidSpecialRoles(mixed $json): bool
+    {
+        return (
+            is_array($json)
+            && $this->array_every($json, [$this, 'isValidSpecialRoleEntry'])
+        );
     }
 
     /**
@@ -109,31 +166,16 @@ class BotcResourcesModel
     }
 
     /**
-     * Gets the special roles from the JSON file.
+     * Combines all the given arrays into a single array.
      *
-     * @return array Success status and the body of the results.
+     * @param array $specials Special roles ("_meta", "dawn", "demoninfo" etc.).
+     * @param array $roles Main roles.
+     * @param array $jinxes Jinxes.
+     * @param array $nightsheet Night order.
+     * @return array Combined data.
      */
-    public function getSpecialRoles()
-    {
-        if (!file_exists($this->specialRolesJson)) {
-            return ['success' => false, 'body' => "'{$this->specialRolesJson}' not found"];
-        }
-
-        $contents = file_get_contents($this->specialRolesJson);
-
-        if ($contents === false) {
-            return ['success' => false, 'body' => 'Failed to get special roles contents'];
-        }
-
-        if (!json_validate($contents)) {
-            return ['success' => false, 'body' => 'Invalid JSON'];
-        }
-
-        return ['success' => true, 'body' => json_decode($contents, true)];
-    }
-
     public function combineData(
-        array $special,
+        array $specials,
         array $roles,
         array $jinxes,
         array $nightsheet,
@@ -143,47 +185,40 @@ class BotcResourcesModel
         $idToIndex = [];
         $message = [];
 
-        // TODO: add these to the special-roles.json file.
-        /*
-        {
-            "id": "dawn",
-            "edition": "special",
-            "name": "Dawn",
-            "team": "fabled",
-            "firstNightReminder": "Wait for a few seconds. End the Night Phase.",
-            "otherNightReminder": "Wait for a few seconds. End the Night Phase.",
-            "firstNight": 72,
-            "otherNight": 90
-        },
-        {
-            "id": "demoninfo",
-            "edition": "special",
-            "name": "Demon Info",
-            "team": "demon",
-            "firstNightReminder": "If there are 7 or more players, wake the Demon:\n\tShow the *THESE ARE YOUR MINIONS* token. Point to all Minions.\n\tShow the *THESE CHARACTERS ARE NOT IN PLAY* token. Show 3 not-in-play good character tokens.",
-            "firstNight": 18,
-            "otherNight": 0
-        },
-        {
-            "id": "dusk",
-            "edition": "special",
-            "name": "Dusk",
-            "team": "fabled",
-            "firstNightReminder": "Start the Night Phase.",
-            "otherNightReminder": "Start the Night Phase.",
-            "firstNight": 1,
-            "otherNight": 1
-        },
-        {
-            "id": "minioninfo",
-            "edition": "special",
-            "name": "Minion Info",
-            "team": "minion",
-            "firstNightReminder": "If there are 7 or more players, wake all Minions:\n\tShow the *THIS IS THE DEMON* token. Point to the Demon.\n\tShow the *THESE ARE YOUR MINIONS* token. Point to the other Minions.",
-            "firstNight": 14,
-            "otherNight": 0
-        },
-        */
+        foreach ($specials as $special) {
+
+            $cleanSpecial = [
+                'id' => $special['id'],
+                'name' => $special['name'],
+                'edition' => $special['edition'],
+                'firstNight' => $special['firstNight'],
+                'otherNight' => $special['otherNight'],
+            ];
+
+            if (array_key_exists('ability', $special)) {
+                $cleanSpecial['ability'] = $special['ability'];
+            }
+
+            if (array_key_exists('reminders', $special)) {
+                $cleanSpecial['reminders'] = $special['reminders'];
+            }
+
+            if (array_key_exists('team', $special)) {
+                $cleanSpecial['team'] = $special['team'];
+            }
+
+            if (array_key_exists('firstNightReminder', $special)) {
+                $cleanSpecial['firstNightReminder'] = $special['firstNightReminder'];
+            }
+
+            if (array_key_exists('otherNightReminder', $special)) {
+                $cleanSpecial['otherNightReminder'] = $special['otherNightReminder'];
+            }
+
+            $idToIndex[$special['id']] = count($combined);
+            $combined[] = $cleanSpecial;
+
+        }
 
         foreach ($roles as $role) {
 
@@ -237,7 +272,17 @@ class BotcResourcesModel
 
         foreach ($nightsheet as $night => $ids) {
 
-            foreach ($ids as $index => $roleId) {
+            foreach ($ids as $nightOrder => $roleId) {
+
+                $index = $idToIndex[$jinx['id']] ?? -1;
+
+                if ($index < 0) {
+                    $message[] = "Unrecognised role '{$roleId}'";
+                    continue;
+                }
+
+                $combined[$index][$night] = $nightOrder;
+
             }
 
         }
@@ -245,6 +290,56 @@ class BotcResourcesModel
         $this->message = implode(PHP_EOL, $message);
 
         return $combined;
+    }
+
+    /**
+     * Writes the JSON data to the destination.
+     */
+    public function writeData(array $data): bool
+    {
+        $destination = $this->dataDirectory . static::DESTINATION;
+
+        if (file_put_contents($destination, json_encode($data)) === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks to see if the given item is a valid special role.
+     *
+     * @param mixed $item Item to check.
+     * @return bool `true` if the item is a valid special role, `false`
+     * otherwise.
+     */
+    protected function isValidSpecialRoleEntry(mixed $item): bool
+    {
+        if (
+            !is_array($item)
+            || !is_string($item['id'] ?? null)
+            || !is_string($item['name'] ?? null)
+            || ($item['edition'] ?? null) !== 'special'
+            || !is_int($item['firstNight'] ?? null)
+            || !is_int($item['otherNight'] ?? null)
+            || (array_key_exists('ability', $item) && !is_string($item['ability']))
+            || (
+                array_key_exists('reminders', $item)
+                && (
+                    !is_array($item['reminders'])
+                    || !$this->array_every($item['reminders'], function ($reminder) {
+                        return is_string($reminder['name'] ?? null);
+                    })
+                )
+            )
+            || (array_key_exists('team', $item) && !is_string($item['team']))
+            || (array_key_exists('firstNightReminder', $item) && !is_string($item['firstNightReminder']))
+            || (array_key_exists('otherNightReminder', $item) && !is_string($item['otherNightReminder']))
+         ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
