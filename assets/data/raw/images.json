@@ -132,6 +132,10 @@
         ]
     },
     {
+        "id": "bigwig",
+        "image": "/icons/bigwig.svg"
+    },
+    {
         "id": "bishop",
         "image": [
             "/icons/bishop.svg",
@@ -529,6 +533,10 @@
         ]
     },
     {
+        "id": "hindu",
+        "image": "/icons/hindu.svg"
+    },
+    {
         "id": "huntsman",
         "image": [
             "/icons/huntsman.svg",
@@ -843,6 +851,10 @@
         ]
     },
     {
+        "id": "pope",
+        "image": "/icons/pope.svg"
+    },
+    {
         "id": "poppygrower",
         "image": [
             "/icons/poppygrower.svg",
@@ -1064,6 +1076,10 @@
         ]
     },
     {
+        "id": "tor",
+        "image": "/icons/tor.svg"
+    },
+    {
         "id": "towncrier",
         "image": [
             "/icons/towncrier.svg",
@@ -1080,6 +1096,10 @@
             "/icons/undertaker.svg",
             "/icons/alternative/undertaker.svg"
         ]
+    },
+    {
+        "id": "ventriloquist",
+        "image": "/icons/ventriloquist.svg"
     },
     {
         "id": "vigormortis",
@@ -1172,6 +1192,10 @@
             "/icons/zealot.svg",
             "/icons/alternative/zealot.svg"
         ]
+    },
+    {
+        "id": "zenomancer",
+        "image": "/icons/zenomancer.svg"
     },
     {
         "id": "zombuul",

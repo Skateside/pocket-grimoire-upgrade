@@ -30,62 +30,55 @@ class FetchResourcesCommand
 
         $io->section('Downloading');
         $io->progressStart(4);
-        $specials = $this->resourcesModel->getSpecialRoles();
+        $rawSpecials = $this->resourcesModel->getSpecialRoles();
         $io->progressAdvance();
-        $roles = $this->resourcesModel->getJson(BotcResourcesModel::ROLES_URL);
+        $rawRoles = $this->resourcesModel->getJson(BotcResourcesModel::ROLES_URL);
         $io->progressAdvance();
-        $jinxes = $this->resourcesModel->getJson(BotcResourcesModel::JINXES_URL);
+        $rawJinxes = $this->resourcesModel->getJson(BotcResourcesModel::JINXES_URL);
         $io->progressAdvance();
-        $nightsheet = $this->resourcesModel->getJson(BotcResourcesModel::NIGHTSHEET_URL);
+        $rawNightsheet = $this->resourcesModel->getJson(BotcResourcesModel::NIGHTSHEET_URL);
         $io->progressFinish();
 
-        $isValidSpecials = $this->resourcesModel->isValidSpecialRoles($specials['body']);
-        $isValidRoles = $this->resourcesModel->isValidRoles($roles['body']);
-        $isValidJinxes = $this->resourcesModel->isValidJinxes($jinxes['body']);
-        $isValidNightsheet = $this->resourcesModel->isValidNightsheet($nightsheet['body']);
-
-        $io->section('Results');
-        $io->table(
-            ['Type', 'Found', 'Valid'],
-            [
-                [
-                    'Special',
-                    $specials['success'] ? 'Yes' : "({$specials['body']})",
-                    $isValidSpecials ? 'Yes' : 'No',
-                ],
-                [
-                    'Roles',
-                    $roles['success'] ? 'Yes' : "({$roles['body']})",
-                    $isValidRoles ? 'Yes' : 'No',
-                ],
-                [
-                    'Jinxes',
-                    $jinxes['success'] ? 'Yes' : "({$jinxes['body']})",
-                    $isValidJinxes ? 'Yes' : 'No',
-                ],
-                [
-                    'Nightsheet',
-                    $nightsheet['success'] ? 'Yes' : "({$nightsheet['body']})",
-                    $isValidNightsheet ? 'Yes' : 'No',
-                ],
-            ]
-        );
-
-        if (!$isValidRoles) {
-            $io->section('Roles not valid');
-            $io->text($this->resourcesModel->getMessage());
-        }
-
-        if (!$isValidSpecials || !$isValidRoles || !$isValidJinxes || !$isValidNightsheet) {
+        if (
+            !$rawSpecials['success']
+            || !$rawRoles['success']
+            || !$rawJinxes['success']
+            || !$rawNightsheet['success']
+        ) {
             $io->getErrorStyle()->error('Data not valid, cannot continue');
             return Command::FAILURE;
         }
 
+        $specials = $this->resourcesModel->filterSpecials($rawSpecials['body']);
+        $roles = $this->resourcesModel->filterRoles($rawRoles['body']);
+        $jinxes = $this->resourcesModel->filterJinxes($rawJinxes['body']);
+        $nightsheet = $this->resourcesModel->filterNightsheet($rawNightsheet['body']);
+
+        $io->section('Results');
+        $io->table(
+            ['Type', 'Raw entries', 'Filtered entries'],
+            [
+                ['Special', count($rawSpecials['body']), count($specials)],
+                ['Roles', count($rawRoles['body']), count($roles)],
+                ['Jinxes', count($rawJinxes['body']), count($jinxes)],
+                ['Nightsheet', count($rawNightsheet['body']), count($nightsheet)],
+            ]
+        );
+
+        if (
+            count($rawSpecials['body']) !== count($specials)
+            || count($rawRoles['body']) !== count($roles)
+            || count($rawJinxes['body']) !== count($jinxes)
+            || count($rawNightsheet['body']) !== count($nightsheet)
+        ) {
+            $io->getErrorStyle()->warning('Some filtering occurred');
+        }
+
         $combined = $this->resourcesModel->combineData(
-            $specials['body'],
-            $roles['body'],
-            $jinxes['body'],
-            $nightsheet['body'],
+            $specials,
+            $roles,
+            $jinxes,
+            $nightsheet,
         );
 
         if (!$this->resourcesModel->writeData($combined)) {

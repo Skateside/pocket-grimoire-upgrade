@@ -41,12 +41,6 @@ class BotcResourcesModel
         #[Autowire('%kernel.project_dir%/assets/data/raw/')]
         private string $dataDirectory,
 
-        // #[Autowire('%kernel.project_dir%/assets/data/raw/special-roles.json')]
-        // private string $specialRolesJson,
-
-        // #[Autowire('%kernel.project_dir%/assets/data/raw/fetched-roles.json')]
-        // private string $destinationJson,
-
     )
     {}
 
@@ -82,7 +76,13 @@ class BotcResourcesModel
             return ['success' => false, 'body' => 'Invalid JSON'];
         }
 
-        return ['success' => true, 'body' => json_decode($contents, true)];
+        $decoded = json_decode($contents, true);
+
+        if (!is_array($decoded)) {
+            return ['success' => false, 'body' => 'JSON not an array'];
+        }
+
+        return ['success' => true, 'body' => $decoded];
     }
 
     /**
@@ -103,66 +103,127 @@ class BotcResourcesModel
             return ['success' => false, 'body' => "'{$url}' not valid JSON"];
         }
 
-        return ['success' => true, 'body' => json_decode($contents, true)];
+        $decoded = json_decode($contents, true);
+
+        if (!is_array($decoded)) {
+            return ['success' => false, 'body' => 'JSON not an array'];
+        }
+
+        return ['success' => true, 'body' => $decoded];
     }
 
     /**
-     * Checks to see if the given JSON is a valid collection of special roles.
+     * Filter the special roles so that only valid roles are included.
      *
-     * @param mixed $json JSON to check.
-     * @return bool `true` if the JSON is a valid collection of special roles,
-     * `false` otherwise.
+     * @param array $specials Special roles to filter.
+     * @return array Filtered special roles.
      */
-    public function isValidSpecialRoles(mixed $json): bool
+    public function filterSpecials(array $specials): array
     {
-        return (
-            is_array($json)
-            && $this->array_every($json, [$this, 'isValidSpecialRoleEntry'])
-        );
+        $filtered = array_filter($specials, [$this, 'isValidSpecialRoleEntry']);
+
+        foreach ($filtered as $special) {
+
+            if (is_array($special['reminders'] ?? null)) {
+                $special['reminders'] = array_filter($special['reminders'], function ($item) {
+                    return is_array($item) && is_string($item['name'] ?? null);
+                });
+            }
+
+        }
+
+        return $filtered;
     }
 
     /**
-     * Checks to see if the given JSON is a valid collection of roles.
+     * Filter the roles so that only valid roles are included.
      *
-     * @param mixed $json JSON to check.
-     * @return bool `true` if all entries are valid roles, `false` otherwise.
+     * @param array $specials Roles to filter.
+     * @return array Filtered roles.
      */
-    public function isValidRoles(mixed $json): bool
+    public function filterRoles(array $roles): array
     {
-        return (
-            is_array($json)
-            && $this->array_every($json, [$this, 'isValidRoleEntry'])
-        );
+        $filtered = array_filter($roles, [$this, 'isValidRoleEntry']);
+
+        foreach ($filtered as $role) {
+
+            if (is_array($role['reminders'] ?? null)) {
+                $role['reminders'] = array_filter($role['reminders'], function ($item) {
+                    return is_string($item);
+                });
+
+                if (!count($role['reminders'])) {
+                    unset($role['reminders']);
+                }
+            }
+
+            if (is_array($role['remindersGlobal'] ?? null)) {
+                $role['remindersGlobal'] = array_filter($role['remindersGlobal'], function ($item) {
+                    return is_string($item);
+                });
+
+                if (!count($role['remindersGlobal'])) {
+                    unset($role['remindersGlobal']);
+                }
+            }
+
+            if (is_array($role['special'] ?? null)) {
+                $role['special'] = array_filter($role['special'], function ($item) {
+                    return $this->isValidSpecialEntry($item);
+                });
+
+                if (!count($role['special'])) {
+                    unset($role['special']);
+                }
+            }
+
+        }
+
+        return $filtered;
     }
 
     /**
-     * Checks to see if the given JSON is a valid collection of jinxes.
+     * Filter the jinxes so that only valid jinxes are included.
      *
-     * @param mixed $json JSON to check.
-     * @return bool `true` if the JSON is a valid collection of jinxes, `false`
-     * otherwise.
+     * @param array $specials Jinxes to filter.
+     * @return array Filtered jinxes.
      */
-    public function isValidJinxes(mixed $json): bool
+    public function filterJinxes(array $jinxes): array
     {
-        return (
-            is_array($json)
-            && $this->array_every($json, [$this, 'isValidJinxEntry'])
-        );
+        $filtered = array_filter($jinxes, [$this, 'isValidJinxEntry']);
+
+        foreach ($filtered as $index => $jinx) {
+            $jinx['jinx'] = array_filter($jinx['jinx'], function ($item) {
+                return $this->isValidJinxJinxEntry($item);
+            });
+
+            if (!count($jinx['jinx'])) {
+                array_splice($filtered, $index, 1);
+            }
+        }
+
+        return $filtered;
     }
 
     /**
-     * Checks to see if the given JSON is a valid nightsheet.
+     * Filter the night sheet so that only valid entries are included.
      *
-     * @param mixed $json JSON to check.
-     * @return bool `true` if the JSON is a valid nightsheet, `false` otherwise.
+     * @param array $specials Night sheet to filter.
+     * @return array Filtered sheet.
      */
-    public function isValidNightsheet(mixed $json): bool
+    public function filterNightsheet(array $nightsheet): array
     {
-        return (
-            is_array($json)
-            && $this->isValidNightsheetEntry($json, 'firstNight')
-            && $this->isValidNightsheetEntry($json, 'otherNight')
-        );
+        $filtered = array_filter($nightsheet, function ($item) {
+            return is_array($item);
+        });
+
+        foreach ($filtered as $key => $night) {
+            $filtered[$key] = array_filter($night, function ($id) {
+                return is_string($id);
+            });
+        }
+
+        return $filtered;
     }
 
     /**
@@ -289,6 +350,10 @@ class BotcResourcesModel
 
         $this->message = implode(PHP_EOL, $message);
 
+        usort($combined, function ($a, $b) {
+            return $a['id'] <=> $b['id'];
+        });
+
         return $combined;
     }
 
@@ -298,8 +363,9 @@ class BotcResourcesModel
     public function writeData(array $data): bool
     {
         $destination = $this->dataDirectory . static::DESTINATION;
+        $json = json_encode($data, JSON_PRETTY_PRINT);
 
-        if (file_put_contents($destination, json_encode($data)) === false) {
+        if ($json === false || file_put_contents($destination, $json) === false) {
             return false;
         }
 
@@ -323,15 +389,6 @@ class BotcResourcesModel
             || !is_int($item['firstNight'] ?? null)
             || !is_int($item['otherNight'] ?? null)
             || (array_key_exists('ability', $item) && !is_string($item['ability']))
-            || (
-                array_key_exists('reminders', $item)
-                && (
-                    !is_array($item['reminders'])
-                    || !$this->array_every($item['reminders'], function ($reminder) {
-                        return is_string($reminder['name'] ?? null);
-                    })
-                )
-            )
             || (array_key_exists('team', $item) && !is_string($item['team']))
             || (array_key_exists('firstNightReminder', $item) && !is_string($item['firstNightReminder']))
             || (array_key_exists('otherNightReminder', $item) && !is_string($item['otherNightReminder']))
@@ -373,35 +430,6 @@ class BotcResourcesModel
             return false;
         }
 
-        // If reminders exist, make sure that they're an array of strings.
-        if (
-            array_key_exists('reminders', $item)
-            && (
-                !is_array($item['reminders'])
-                || !$this->array_every($item['reminders'], function ($reminder) {
-                    return is_string($reminder);
-                })
-            )
-        ) {
-            $this->message = "'{$item['id']}' invalid reminders";
-            return false;
-        }
-
-        // If global reminders exist, make sure that they're an array of
-        // strings.
-        if (
-            array_key_exists('remindersGlobal', $item)
-            && (
-                !is_array($item['remindersGlobal'])
-                || !$this->array_every($item['remindersGlobal'], function ($reminder) {
-                    return is_string($reminder);
-                })
-            )
-        ) {
-            $this->message = "'{$item['id']}' invalid reminders global";
-            return false;
-        }
-
         // If a first night reminder exists, make sure it's a string.
         if (
             array_key_exists('firstNightReminder', $item)
@@ -417,18 +445,6 @@ class BotcResourcesModel
             && !is_string($item['otherNightReminder'])
         ) {
             $this->message = "'{$item['id']}' invalid other night reminder";
-            return false;
-        }
-
-        // If specials exist, make sure they look valid.
-        if (
-            array_key_exists('special', $item)
-            && (
-                !is_array($item['special'])
-                || !$this->array_every($item['special'], [$this, 'isValidSpecialEntry'])
-            )
-        ) {
-            $this->message = "'{$item['id']}' invalid special";
             return false;
         }
 
@@ -470,7 +486,6 @@ class BotcResourcesModel
             is_array($item)
             && is_string($item['id'] ?? null)
             && is_array($item['jinx'] ?? null)
-            && $this->array_every($item['jinx'], [$this, 'isValidJinxJinxEntry'])
         );
     }
 
@@ -504,9 +519,6 @@ class BotcResourcesModel
         return (
             array_key_exists($key, $array)
             && is_array($array[$key])
-            && $this->array_every($array[$key], function ($item) {
-                return is_string($item);
-            })
         );
     }
 
@@ -527,24 +539,5 @@ class BotcResourcesModel
         $despaced = preg_replace('/\s+/', ' ', $unorred);
 
         return $despaced;
-    }
-
-    /**
-     * Runs the given predicate function on every item in the array, returning
-     * `true` if every item passes and `false` if any fail.
-     * Be aware that this function will return `true` if given an empty array.
-     *
-     * @param array $array Array whose items should be checked.
-     * @param callable $predicate Function to check every array item.
-     * @return bool `true` if every item passes, `false` otherwise.
-     */
-    protected function array_every(array $array, callable $predicate): bool
-    {
-        foreach ($array as $item) {
-            if (!$predicate($item)) {
-                return false;
-            }
-        }
-        return true;
     }
 }
