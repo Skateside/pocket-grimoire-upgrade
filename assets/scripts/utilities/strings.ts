@@ -1,3 +1,6 @@
+import { intersect } from "./arrays";
+import { memoise } from "./functions";
+
 /**
  * Generates a random ID containing numbers and the full range of lowercase
  * latin letters. Use this function to create an ID that needs to be unique but
@@ -153,5 +156,118 @@ export function isValidCSSSelector(string: string) {
     } catch (ignore) {
         return false;
     }
+
+}
+
+// The Dice-Sørensen coefficient:
+// https://en.wikipedia.org/wiki/Dice-S%C3%B8rensen_coefficient
+// Based on "string-similarity"
+// https://github.com/aceakash/string-similarity
+
+/**
+ * Makes bigrams (2-letter combinations).
+ *
+ * @param string String to split into bigrams.
+ * @returns Bigrams made from the string.
+ * @private
+ * 
+ * @example
+ * makeBigrams("abcdefg"); // -> ["ab", "bc", "cd", "de", "ef", "fg"]
+ */
+function makeBigrams(string: string) {
+
+    const bigrams: string[] = [];
+    const length = string.length - 1;
+    let index = 0;
+
+    while (index < length) {
+        bigrams.push(string.substring(index, index + 2));
+        index += 1;
+    }
+
+    return bigrams;
+
+}
+
+/**
+ * Generates the bigrams from the given string after removing all spaces,
+ * memoising the results.
+ *
+ * @param string String to split into bigrams.
+ * @returns Bigrams from the string or `null` if the string is too short.
+ * @private
+ */
+const getBigrams = memoise((string: string) => {
+
+    const simple = string.replace(/\s+/g, "");
+
+    if (simple.length < 2) {
+        return null;
+    }
+
+    return makeBigrams(simple);
+
+});
+
+/**
+ * Compares two strings, returning the coefficient that describes how similar
+ * they are on a scale of `1` (identical) to `0` (no similarities).
+ *
+ * @param first First string to compare.
+ * @param second Second string to compare.
+ * @returns The coefficient.
+ */
+export function compareStrings(first: string, second: string) {
+
+    if (first === second) {
+        return 1;
+    }
+
+    const firstBigrams = getBigrams(first);
+    const secondBigrams = getBigrams(second);
+
+    if (!firstBigrams || !secondBigrams) {
+        return 0;
+    }
+
+    const intersections = intersect(firstBigrams, secondBigrams);
+
+    return (
+        (2 * intersections.length)
+        / (firstBigrams.length + secondBigrams.length)
+    );
+
+}
+
+/**
+ * Compares the string `main` to all the strings in `targets` and returns the
+ * best match along with the coefficient describing how close a match it was.
+ *
+ * If two strings within `targets` are equally matched to `main` then the first
+ * one alphabetically is returned.
+ *
+ * @param main Main string to compare.
+ * @param targets All strings to compare against.
+ * @returns Best matching target string and the coefficient of the match.
+ */
+export function findBestMatch(main: string, targets: string[]) {
+
+    const matches: [string, number][] = targets.map((target) => [
+        target,
+        compareStrings(main, target),
+    ]);
+    const sorted = matches.toSorted((
+        [targetA, compareA],
+        [targetB, compareB],
+    ) => {
+        // Best match, or alphabetically (ascending) if equally matched.
+        return (compareB - compareA) || targetA.localeCompare(targetB);
+    });
+    const [match, index] = sorted[0];
+
+    return {
+        index,
+        match,
+    };
 
 }

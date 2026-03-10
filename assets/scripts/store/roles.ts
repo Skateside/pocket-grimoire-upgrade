@@ -1,6 +1,7 @@
 import type {
     IReminder,
     IRole,
+    IRoleCheckResults,
     IRoleImport,
     IRoleNightOrder,
     IScriptData,
@@ -18,6 +19,7 @@ import {
 import { defineStore } from "pinia";
 import { computed, inject, ref, watch, type DeepReadonly } from "vue";
 import {
+    checkScriptImportValidity,
     convertRole,
     convertScriptToData,
     getImage as helperGetImage,
@@ -32,6 +34,7 @@ import {
     mergeRoles,
     sortByTeam,
 } from "../helpers/roles";
+import { findBestMatch } from "../utilities/strings";
 import { deepFreeze, deepThaw, isObject, isString } from "../utilities/objects";
 import { StorageNotFoundError } from "~/errors";
 
@@ -92,6 +95,7 @@ const rolesStore = defineStore("roles", () => {
         return deepFreeze(scripts);
 
     });
+    const invalidRoles = ref<IRoleCheckResults["invalid"]>([]);
     const specialRoles = computed(() => roles.value.filter(({ edition }) => (
         edition === ERoleEdition.SPECIAL
     )));
@@ -241,6 +245,14 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
+    const clearInvalid = () => {
+        invalidRoles.value.length = 0;
+    };
+
+    const addInvalid = (invalid: IRoleCheckResults["invalid"][number]) => {
+        invalidRoles.value.push(invalid);
+    };
+
     const setScript = (
         rawScript: (
             IScriptImport
@@ -249,20 +261,28 @@ const rolesStore = defineStore("roles", () => {
         )
     ) => {
 
+        clearInvalid();
+
         if (!Array.isArray(rawScript)) {
+
+            addInvalid({
+                role: rawScript,
+                reasons: ["script not an array"], // TODO: i18n
+            });
+
             return;
+
         }
         
         const entries: IScriptFull = [
             ...deepThaw(specialRoles.value),
         ];
-        const filtered = rawScript.filter((item) => {
-            return isValidScriptImportEntry(item);
-        });
+        const checked = checkScriptImportValidity(rawScript);
+        checked.invalid.forEach((invalid) => addInvalid(invalid));
 
-        scriptImport.value = filtered;
+        scriptImport.value = checked.valid;
 
-        filtered.forEach((entry) => {
+        checked.valid.forEach((entry) => {
 
             if (isMetaEntry(entry)) {
                 entries.push(entry);
@@ -273,14 +293,26 @@ const rolesStore = defineStore("roles", () => {
 
             if (isEntryString || isDeprecatedScriptEntry(entry)) {
 
-                const role = innerGetRoleById(
+                const id = (
                     isEntryString
                     ? entry
                     : entry.id
                 );
+                const role = innerGetRoleById(id);
 
                 if (role) {
                     entries.push(deepThaw(role));
+                } else {
+
+                    const ids = roles.value.map(({ id }) => id);
+                    const bestMatch = findBestMatch(id, ids);
+                    addInvalid({
+                        role: entry,
+                        reasons: [
+                            `Unrecognised ID "${id}" - did you mean "${bestMatch}"?`
+                        ], // TODO: i18n
+                    });
+
                 }
 
                 return; // job done
@@ -291,10 +323,13 @@ const rolesStore = defineStore("roles", () => {
 
             if (!converted) {
 
-                return console.warn(
-                    "Unable to convert given entry into a role",
-                    entry,
-                );
+                const invalid = {
+                    role: entry,
+                    reasons: ["Unable to convert given entry into a role"], // TODO: i18n
+                };
+
+                addInvalid(invalid);
+                return console.warn(invalid.reasons[0], invalid.role);
 
             }
 
@@ -303,10 +338,12 @@ const rolesStore = defineStore("roles", () => {
 
             if (!merged) {
 
-                return console.warn(
-                    "failure during role merge",
-                    { entry, original, converted },
-                );
+                const invalid = {
+                    role: entry,
+                    reasons: ["Failure during role merge"],
+                };
+                addInvalid(invalid);
+                return console.warn(invalid.reasons[0], invalid.role);
 
             }
 
@@ -341,6 +378,7 @@ const rolesStore = defineStore("roles", () => {
         getSpecial,
         interpret,
         // Actions.
+        clearInvalid,
         setScript,
     }
 

@@ -302,6 +302,19 @@ export type IRole = {
     special?: IRoleSpecial[],
 };
 
+export type IRoleCheck = {
+    check: (object: any) => boolean,
+    error: string,
+};
+
+export type IRoleCheckResults = {
+    valid: (string | IScriptDeprecated | IRoleImport | IScriptMeta)[],
+    invalid: {
+        role: any,
+        reasons: string[],
+    }[],
+};
+
 export type IRoleImport = {
     id: string,
     name: string,
@@ -411,7 +424,7 @@ export type IScriptFull = (IScriptMeta | IRole)[];
 
 export type IScriptImport = (
     IScriptMeta
-    // | IScriptDeprecated
+    | IScriptDeprecated
     | IRole["id"]
     | IRole
     | IRoleImport

@@ -4,7 +4,7 @@ import {
 
 /**
  * Removes any duplicates from the given array.
- * 
+ *
  * @param array Array to reduce.
  * @returns Array with any duplicates removed.
  */
@@ -35,7 +35,7 @@ export function uniqueMap<T = any>(
 /**
  * Removes the item at the given index from the given array. `true` is returned
  * if the item was removed, `false` is returned if it was not.
- * 
+ *
  * @param array Array whose item should be removed.
  * @param index Index of the item to remove.
  * @returns `true` if removed, `false` if not.
@@ -55,7 +55,7 @@ export function removeAtIndex(array: any[], index: number) {
 /**
  * Removes the first occurrence of the given item from the given array. `true`
  * is returned if the item was removed, `false` is returned if it was not.
- * 
+ *
  * @param array Array whose item should be removed.
  * @param item Item to remove.
  * @returns `true` if removed, `false` if not.
@@ -68,7 +68,7 @@ export function removeItem(array: any[], item: any) {
  * Swaps the items in the array at `indexA` and `indexB`. If either `indexA` or
  * `indexB` are less than `0`, more-than-or-equal-to the length of `array`, or
  * not an integer, then no action is taken.
- * 
+ *
  * @param array Array whose items should be swapped.
  * @param indexA Index of one item to swap.
  * @param indexB Index of the other item to swap.
@@ -104,7 +104,7 @@ const swap = (array: any[], indexA: number, indexB: number) => {
 
 /**
  * Shuffles the given array. The given array is not affected.
- * 
+ *
  * @param array Array to shuffle.
  * @returns Shuffled copy of the array.
  */
@@ -125,3 +125,22 @@ export function shuffle<T = any>(array: T[]) {
     return shuffled;
 
 }
+
+/**
+ * Returns any items within `array` that also appear in every entry in `arrays`.
+ *
+ * @param array Array to filter.
+ * @param arrays Arrays that contain items that `array` must include.
+ * @returns Filtered array.
+ */
+export function intersect<Type = any>(array: Type[], ...arrays: any[][]) {
+
+    let intersection = [...array];
+
+    arrays.forEach((items) => {
+        intersection = intersection.filter((item) => items.includes(item));
+    });
+
+    return intersection;
+
+};

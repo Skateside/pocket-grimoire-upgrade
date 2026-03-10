@@ -1,13 +1,10 @@
 import type { IScriptImport } from "~/scripts/types/data";
-import useRolesStore from "~/scripts/store/roles";
 import { abortableFetch } from "~/scripts/utilities/fetch";
 
 type IParseScriptResponse = {
     script?: IScriptImport,
     error?: string,
 };
-
-const rolesStore = useRolesStore();
 
 /**
  * Performs an AJAX lookup but provides both the promise (which resolves/rejects
@@ -61,7 +58,7 @@ export const parseScript = (data: string): IParseScriptResponse => {
         return { error: "Unable to parse script." }; // TODO: i18n
     }
 
-    if (!rolesStore.getIsValidScriptImport(script)) {
+    if (!Array.isArray(script)) {
         return { error: "Script is not valid." }; // TODO: i18n
     }
 

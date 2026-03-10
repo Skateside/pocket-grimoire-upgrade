@@ -1,9 +1,12 @@
 import type { DeepReadonly } from "vue";
+import type { AnyObject } from "../types/lib";
 import type {
     IJinx,
     IJinxImport,
     IReminder,
     IRole,
+    IRoleCheck,
+    IRoleCheckResults,
     IRoleImport,
     IRoleSpecial,
     IRoleSpecialAbility,
@@ -44,6 +47,41 @@ import {
 } from "../utilities/objects";
 import { isValidLocalURL, isValidURL } from "../utilities/strings";
 
+function isPositiveNumber(object: unknown): object is number {
+    return isNumber(object) && object > 0;
+}
+
+function isPopulatedString(object: unknown): object is string {
+    return isString(object) && object.trim() !== "";
+}
+
+function isAnyUrl(object: unknown): object is string {
+
+    return (
+        isPopulatedString(object)
+        && (
+            isValidURL(object)
+            || isValidLocalURL(object)
+        )
+    );
+
+}
+
+function propertyMatches(
+    object: AnyObject,
+    property: string,
+    check: (object: any) => boolean,
+    optional = false,
+) {
+
+    if (optional && !Object.hasOwn(object, property)) {
+        return true;
+    }
+
+    return check(object[property]);
+
+}
+
 /**
  * When they're displayed, the teams are always in an order. This is that order.
  */
@@ -56,6 +94,150 @@ export const ORDER = Object.freeze([
     ERoleTeam.FABLED,
     ERoleTeam.LORIC,
 ]);
+
+function makeCheck(
+    property: string,
+    check: (object: any) => boolean,
+    optional = false,
+): IRoleCheck {
+
+    return {
+        check(object) {
+            return propertyMatches(object, property, check, optional);
+        },
+        error: (
+            optional
+            ? `"${property}" is an invalid type` // TODO: i18n
+            : `"${property}" is missing or an invalid type` // TODO: i18n
+        ),
+    };
+
+}
+
+function makeNightCheck(property: "firstNight" | "otherNight"): IRoleCheck {
+
+    return {
+        check(object) {
+
+            if (!Object.hasOwn(object, property)) {
+                return true;
+            }
+
+            if (!isPositiveNumber(object[property])) {
+                return false;
+            }
+
+            if (!isPopulatedString(object[`${property}Reminder`])) {
+                return false;
+            }
+
+            return true;
+
+        },
+        error: `"${property}" isn't valid`, // TODO: i18n
+    };
+
+}
+
+function makeArrayOfCheck(
+    property: string,
+    check: (object: any) => boolean,
+    optional = false,
+) {
+    return makeCheck(property, (object) => {
+        return Array.isArray(object) && object.every(check);
+    }, optional);
+}
+
+const roleChecks: IRoleCheck[] = [
+    makeCheck("id", isPopulatedString),
+    makeCheck("name", isPopulatedString),
+    makeCheck("edition", isPopulatedString, true),
+    makeCheck("team", isPopulatedString),
+    makeCheck("ability", isPopulatedString),
+    makeNightCheck("firstNight"),
+    makeNightCheck("otherNight"),
+    makeCheck("image", (object) => (
+        isAnyUrl(object)
+        || (
+            Array.isArray(object)
+            && object.length > 0
+            && object.length < 3
+            && object.every(isAnyUrl)
+        )
+    ), true),
+    makeArrayOfCheck("jinxes", isValidJinxImport, true),
+    makeArrayOfCheck("reminders", (object) => (
+        isPopulatedString(object) || isValidReminderImport(object)
+    ), true),
+    makeArrayOfCheck("remindersGlobal", isPopulatedString, true),
+    makeCheck("setup", isBoolean, true),
+    makeArrayOfCheck("special", isValidSpecialImport, true),
+];
+
+export function checkScriptImportValidity(script: unknown[]) {
+
+    if (!Array.isArray(script)) {
+        throw new TypeError("checkScriptImportValidity requires an array");
+    }
+
+    const results: IRoleCheckResults = {
+        valid: [],
+        invalid: [],
+    };
+    let hasMeta = false;
+
+    script.forEach((role) => {
+
+        if (isPopulatedString(role) || isDeprecatedScriptEntry(role)) {
+
+            results.valid.push(role);
+            return;
+
+        }
+
+        if (isMetaEntry(role)) {
+
+            if (hasMeta) {
+
+                results.invalid.push({
+                    role,
+                    reasons: ["Duplicate meta entry"], // TODO: i18n
+                });
+                
+            } else {
+                results.valid.push(role);
+                return;
+            }
+
+        }
+
+        const reasons = roleChecks.reduce((reasons, { check, error }) => {
+
+            if (!check(role)) {
+                reasons.push(error);
+            }
+
+            return reasons;
+
+        }, [] as IRoleCheckResults["invalid"][number]["reasons"]);
+
+        if (reasons.length) {
+
+            results.invalid.push({
+                role,
+                reasons,
+            });
+
+        } else {
+            results.valid.push(role as IRoleImport);
+        }
+
+    });
+
+    return results;
+
+}
 
 /**
  * Converts a jinx import into a full jinx.
