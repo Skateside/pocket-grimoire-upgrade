@@ -137,8 +137,9 @@ const handleClick = (id: number) => {
         return;
     }
 
-    rolesStore.setScript(botcScript.script);
-    emit("success");
+    if (rolesStore.setScript(botcScript.script)) {
+        emit("success");
+    }
 
 };
 </script>

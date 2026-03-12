@@ -45,8 +45,7 @@ const handleSubmit = () => {
 
     const { script, error } = parseScript(model.value);
 
-    if (script) {
-        rolesStore.setScript(script);
+    if (script && rolesStore.setScript(script)) {
         emit("success");
     }
 

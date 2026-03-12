@@ -47,14 +47,35 @@ import {
 } from "../utilities/objects";
 import { isValidLocalURL, isValidURL } from "../utilities/strings";
 
+/**
+ * Checks to see if the given object is a positive number more than `0`.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a positive number, `false` otherwise.
+ * @private
+ */
 function isPositiveNumber(object: unknown): object is number {
     return isNumber(object) && object > 0;
 }
 
+/**
+ * Checks to see if the given object is a non-empty string.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a non-empty string, `false` otherwise.
+ * @private
+ */
 function isPopulatedString(object: unknown): object is string {
     return isString(object) && object.trim() !== "";
 }
 
+/**
+ * Checks to see if the given object is either a local or remote URL.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a URL, `false` otherwise.
+ * @private
+ */
 function isAnyUrl(object: unknown): object is string {
 
     return (
@@ -67,6 +88,19 @@ function isAnyUrl(object: unknown): object is string {
 
 }
 
+/**
+ * Checks to see if the given `property` on the given `object` matches the given
+ * `check`. If the property is considered optional, the property will match if
+ * it isn't there.
+ *
+ * @param object Object whose property should be checked.
+ * @param property Property to check.
+ * @param check The check, passed the object's property.
+ * @param optional Optional flag for whether or not the property is optional.
+ * @returns `true` if `check` returns `true` or the property is optional and has
+ * not been set on `object`.
+ * @private
+ */
 function propertyMatches(
     object: AnyObject,
     property: string,
@@ -83,18 +117,14 @@ function propertyMatches(
 }
 
 /**
- * When they're displayed, the teams are always in an order. This is that order.
+ * Makes a check.
+ *
+ * @param property Property for the object.
+ * @param check Check to pass to {@link propertyMatches}.
+ * @param optional Optional flag.
+ * @returns Check - with the `check` and `error` properties.
+ * @private
  */
-export const ORDER = Object.freeze([
-    ERoleTeam.TOWNSFOLK,
-    ERoleTeam.OUTSIDER,
-    ERoleTeam.MINION,
-    ERoleTeam.DEMON,
-    ERoleTeam.TRAVELLER,
-    ERoleTeam.FABLED,
-    ERoleTeam.LORIC,
-]);
-
 function makeCheck(
     property: string,
     check: (object: any) => boolean,
@@ -114,6 +144,13 @@ function makeCheck(
 
 }
 
+/**
+ * Make a check for the night order/reminder.
+ *
+ * @param property Night to check.
+ * @returns Check (see {@link makeCheck}.
+ * @private
+ */
 function makeNightCheck(property: "firstNight" | "otherNight"): IRoleCheck {
 
     return {
@@ -139,6 +176,16 @@ function makeNightCheck(property: "firstNight" | "otherNight"): IRoleCheck {
 
 }
 
+/**
+ * Make a check to see if the given property is an array where every item
+ * matches the given check.
+ *
+ * @param property Property to get.
+ * @param check Check passed to {@link propertyMatches}.
+ * @param optional Optional flag.
+ * @returns Check - see {@link makeCheck}.
+ * @private
+ */
 function makeArrayOfCheck(
     property: string,
     check: (object: any) => boolean,
@@ -149,6 +196,9 @@ function makeArrayOfCheck(
     }, optional);
 }
 
+/**
+ * All the checks for a valid role.
+ */
 const roleChecks: IRoleCheck[] = [
     makeCheck("id", isPopulatedString),
     makeCheck("name", isPopulatedString),
@@ -175,6 +225,13 @@ const roleChecks: IRoleCheck[] = [
     makeArrayOfCheck("special", isValidSpecialImport, true),
 ];
 
+/**
+ * Checks the given script, dividing the script into valid and invalid entries.
+ * Invalid entries have an array of reasons why they're considered invalid.
+ *
+ * @param script Script to check.
+ * @returns Valid and invalid results.
+ */
 export function checkScriptImportValidity(script: unknown[]) {
 
     if (!Array.isArray(script)) {
@@ -238,6 +295,19 @@ export function checkScriptImportValidity(script: unknown[]) {
     return results;
 
 }
+
+/**
+ * When they're displayed, the teams are always in an order. This is that order.
+ */
+export const ORDER = Object.freeze([
+    ERoleTeam.TOWNSFOLK,
+    ERoleTeam.OUTSIDER,
+    ERoleTeam.MINION,
+    ERoleTeam.DEMON,
+    ERoleTeam.TRAVELLER,
+    ERoleTeam.FABLED,
+    ERoleTeam.LORIC,
+]);
 
 /**
  * Converts a jinx import into a full jinx.
@@ -922,19 +992,23 @@ export function isMetaEntry(object: unknown): object is IScriptMeta {
 }
 
 /**
+ * Checks to see if the given object is a special role.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a special role entry, `false` otherwise.
+ */
+export function isSpecial(object: unknown): object is IRole & { edition: ERoleEdition.SPECIAL } {
+    return isObject(object) && object.edition === ERoleEdition.SPECIAL;
+}
+
+/**
  * Checks to see if the given object is the universal role.
  *
  * @param object Object to check.
  * @returns `true` if the object is the universal role entry, `false` otherwise.
  */
 export function isUniversal(object: unknown): object is IRole & { id: ERoleId.UNIVERSAL } {
-
-    return (
-        isObject(object)
-        && object.id === ERoleId.UNIVERSAL
-        && object.edition == ERoleEdition.SPECIAL
-    );
-
+    return isSpecial(object) && object.id === ERoleId.UNIVERSAL;
 }
 
 /**
@@ -978,6 +1052,15 @@ export function isValidReminderImport(
 
 }
 
+/**
+ * Checks to see if the given object is a valid internally-necessary special
+ * role.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a valid internally-necessary special role,
+ * `false` otherwise.
+ * @private
+ */
 const isInternalSpecialRole = (object: Record<string, any>) => (
     isString(object.ability)
     && (!Object.hasOwn(object, "firstNight") || object.firstNight === 0)
@@ -986,23 +1069,44 @@ const isInternalSpecialRole = (object: Record<string, any>) => (
     && (!Object.hasOwn(object, "otherNight") || object.otherNight === 0)
 );
 
+/**
+ * Checks to see if the given object is a valid internal first-night information
+ * role.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a valid internal first-night information
+ * role, `false` otherwise.
+ * @private
+ */
 const isFirstNightInfo = (object: Record<string, any>) => (
-    (isNumber(object.firstNight) && object.firstNight > 0)
+    isPositiveNumber(object.firstNight)
     && isString(object.firstNightReminder)
     && isValidLocalURL(object.image)
     && isString(object.name)
     && (!isNumber(object.otherNight) || object.otherNight === 0)
 );
 
+/**
+ * Checks to see if the given object is a valid internal every-night information
+ * role.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a valid internal every-night information
+ * role, `false` otherwise.
+ * @private
+ */
 const isEveryNightInfo = (object: Record<string, any>) => (
-    (isNumber(object.firstNight) && object.firstNight > 0)
+    isPositiveNumber(object.firstNight)
     && isString(object.firstNightReminder)
     && isValidLocalURL(object.image)
     && isString(object.name)
-    && (isNumber(object.otherNight) && object.otherNight > 0)
+    && isPositiveNumber(object.otherNight)
     && isString(object.otherNightReminder)
-)
+);
 
+/**
+ * Checks for special roles.
+ */
 const specialRoles: Record<ERoleId, (object: Record<string, any>) => boolean> = {
     [ERoleId.DAWN]: isEveryNightInfo,
     [ERoleId.DEMON_INFO]: isFirstNightInfo,

@@ -65,8 +65,9 @@ const handleSubmit = () => {
         url: model.value,
     }).promise.then(
         (value) => {
-            rolesStore.setScript(value)
-            emit("success");
+            if (rolesStore.setScript(value)) {
+                emit("success");
+            }
         },
         (error) => errorMessage.value = error,
     ).finally(() => isLoading.value = false);

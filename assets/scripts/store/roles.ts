@@ -17,7 +17,15 @@ import {
     ETokenAlignment,
 } from "../enums/data";
 import { defineStore } from "pinia";
-import { computed, inject, ref, watch, type DeepReadonly } from "vue";
+import {
+    type DeepReadonly,
+    computed,
+    inject,
+    reactive,
+    ref,
+    toRaw,
+    watch,
+} from "vue";
 import {
     checkScriptImportValidity,
     convertRole,
@@ -95,12 +103,11 @@ const rolesStore = defineStore("roles", () => {
         return deepFreeze(scripts);
 
     });
-    const invalidRoles = ref<IRoleCheckResults["invalid"]>([]);
     const specialRoles = computed(() => roles.value.filter(({ edition }) => (
         edition === ERoleEdition.SPECIAL
     )));
-    const scriptImport = ref<IScriptImport>([]);
     const script = ref<IScriptFull>([]);
+    const scriptImport = ref<IScriptImport>([]);
     const scriptByType = computed(() => {
 
         return Object.groupBy(
@@ -153,18 +160,28 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
+    const importReport = reactive<{
+        given: number,
+        imported: number,
+        invalid: IRoleCheckResults["invalid"],
+    }>({
+        given: 0,
+        imported: 0,
+        invalid: [],
+    });
+
     const innerGetRoleById = (roleId: IRole["id"]) => {
 
         const scriptEntry = script.value.find(({ id }) => id === roleId);
 
         if (scriptEntry) {
-            return deepThaw(scriptEntry) as IRole;
+            return deepThaw(toRaw(scriptEntry)) as IRole;
         }
 
         const rolesEntry = roles.value.find(({ id }) => id === roleId);
 
         if (rolesEntry) {
-            return deepThaw(rolesEntry) as IRole;
+            return deepThaw(toRaw(rolesEntry)) as IRole;
         }
 
     };
@@ -245,12 +262,10 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
-    const clearInvalid = () => {
-        invalidRoles.value.length = 0;
-    };
-
-    const addInvalid = (invalid: IRoleCheckResults["invalid"][number]) => {
-        invalidRoles.value.push(invalid);
+    const clearImportReport = () => {
+        importReport.given = 0;
+        importReport.imported = 0;
+        importReport.invalid.length = 0;
     };
 
     const setScript = (
@@ -261,11 +276,11 @@ const rolesStore = defineStore("roles", () => {
         )
     ) => {
 
-        clearInvalid();
+        clearImportReport();
 
         if (!Array.isArray(rawScript)) {
 
-            addInvalid({
+            importReport.invalid.push({
                 role: rawScript,
                 reasons: ["script not an array"], // TODO: i18n
             });
@@ -273,12 +288,12 @@ const rolesStore = defineStore("roles", () => {
             return;
 
         }
-        
+
         const entries: IScriptFull = [
             ...deepThaw(specialRoles.value),
         ];
         const checked = checkScriptImportValidity(rawScript);
-        checked.invalid.forEach((invalid) => addInvalid(invalid));
+        checked.invalid.forEach((invalid) => importReport.invalid.push(invalid));
 
         scriptImport.value = checked.valid;
 
@@ -306,10 +321,10 @@ const rolesStore = defineStore("roles", () => {
 
                     const ids = roles.value.map(({ id }) => id);
                     const bestMatch = findBestMatch(id, ids);
-                    addInvalid({
-                        role: entry,
+                    importReport.invalid.push({
+                        role: { id },
                         reasons: [
-                            `Unrecognised ID "${id}" - did you mean "${bestMatch}"?`
+                            `Unrecognised ID "${id}" - did you mean "${bestMatch.match}"?`
                         ], // TODO: i18n
                     });
 
@@ -328,7 +343,7 @@ const rolesStore = defineStore("roles", () => {
                     reasons: ["Unable to convert given entry into a role"], // TODO: i18n
                 };
 
-                addInvalid(invalid);
+                importReport.invalid.push(invalid);
                 return console.warn(invalid.reasons[0], invalid.role);
 
             }
@@ -342,7 +357,7 @@ const rolesStore = defineStore("roles", () => {
                     role: entry,
                     reasons: ["Failure during role merge"],
                 };
-                addInvalid(invalid);
+                importReport.invalid.push(invalid);
                 return console.warn(invalid.reasons[0], invalid.role);
 
             }
@@ -352,6 +367,10 @@ const rolesStore = defineStore("roles", () => {
         });
 
         script.value = sortByTeam(entries);
+        importReport.given = rawScript.length;
+        importReport.imported = entries.length - specialRoles.value.length;
+
+        return importReport.invalid.length === 0;
 
     };
 
@@ -360,6 +379,7 @@ const rolesStore = defineStore("roles", () => {
 
     return {
         // Data.
+        importReport,
         script,
         // Getters.
         roles,
@@ -378,7 +398,7 @@ const rolesStore = defineStore("roles", () => {
         getSpecial,
         interpret,
         // Actions.
-        clearInvalid,
+        clearImportReport,
         setScript,
     }
 

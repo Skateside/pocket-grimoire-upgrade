@@ -50,12 +50,8 @@ const handleSubmit = () => {
 
     const script = rolesStore.getScriptById(model.value);
 
-    if (script) {
-
-        rolesStore.setScript(script);
-        emit("success");
-        return;
-
+    if (script && rolesStore.setScript(script)) {
+        return emit("success");
     }
      
     errorMessage.value = `Unrecognised script ID "${model.value}"`; // TODO: i18n

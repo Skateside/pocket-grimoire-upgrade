@@ -71,9 +71,8 @@ const handleSubmit = () => {
 
         const { script, error } = parseScript(target!.result as string);
 
-        if (script) {
+        if (script && rolesStore.setScript(script)) {
 
-            rolesStore.setScript(script);
             isLoading.value = false;
             emit("success");
             return;
