@@ -2,6 +2,7 @@
    <DialogUI
       v-if="rolesStore.importReport.invalid.length"
       :title="`Imported ${rolesStore.importReport.imported} of ${rolesStore.importReport.given}`"
+      @hide="clearImportReport"
    >
       <p>The valid roles have been imported, but some roles couldn't be.</p>
       
@@ -12,7 +13,7 @@
          </div>
       </dl>
 
-      <BaseButton @click="() => rolesStore.clearImportReport()">OK</BaseButton>
+      <BaseButton @click="clearImportReport">OK</BaseButton>
    </DialogUI>
 </template>
 
@@ -22,4 +23,8 @@ import BaseButton from "~/components/base/BaseButton.vue";
 import useRolesStore from "~/scripts/store/roles";
 
 const rolesStore = useRolesStore();
+
+const clearImportReport = () => {
+   rolesStore.clearImportReport();
+};
 </script>

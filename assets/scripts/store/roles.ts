@@ -17,15 +17,7 @@ import {
     ETokenAlignment,
 } from "../enums/data";
 import { defineStore } from "pinia";
-import {
-    type DeepReadonly,
-    computed,
-    inject,
-    reactive,
-    ref,
-    toRaw,
-    watch,
-} from "vue";
+import { type DeepReadonly, computed, inject, reactive, ref, toRaw } from "vue";
 import {
     checkScriptImportValidity,
     convertRole,
@@ -37,7 +29,6 @@ import {
     isMetaEntry,
     isUniversal,
     isValidRoleImport,
-    isValidScriptImport,
     isValidScriptImportEntry,
     mergeRoles,
     sortByTeam,
@@ -107,7 +98,6 @@ const rolesStore = defineStore("roles", () => {
         edition === ERoleEdition.SPECIAL
     )));
     const script = ref<IScriptFull>([]);
-    const scriptImport = ref<IScriptImport>([]);
     const scriptByType = computed(() => {
 
         return Object.groupBy(
@@ -209,7 +199,6 @@ const rolesStore = defineStore("roles", () => {
 
     const getIsMeta = computed(() => isMetaEntry);
     const getIsUniversal = computed(() => isUniversal);
-    const getIsValidScriptImport = computed(() => isValidScriptImport);
     const getRoleById = computed(() => innerGetRoleById);
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
     const getScriptMeta = computed(() => helperGetScriptMeta);
@@ -295,9 +284,9 @@ const rolesStore = defineStore("roles", () => {
         const checked = checkScriptImportValidity(rawScript);
         checked.invalid.forEach((invalid) => importReport.invalid.push(invalid));
 
-        scriptImport.value = checked.valid;
+        const validImports: IScriptImport = [...checked.valid];
 
-        checked.valid.forEach((entry) => {
+        checked.valid.forEach((entry, index) => {
 
             if (isMetaEntry(entry)) {
                 entries.push(entry);
@@ -319,6 +308,8 @@ const rolesStore = defineStore("roles", () => {
                     entries.push(deepThaw(role));
                 } else {
 
+                    delete validImports[index];
+
                     const ids = roles.value.map(({ id }) => id);
                     const bestMatch = findBestMatch(id, ids);
                     importReport.invalid.push({
@@ -338,6 +329,8 @@ const rolesStore = defineStore("roles", () => {
 
             if (!converted) {
 
+                delete validImports[index];
+
                 const invalid = {
                     role: entry,
                     reasons: ["Unable to convert given entry into a role"], // TODO: i18n
@@ -353,10 +346,13 @@ const rolesStore = defineStore("roles", () => {
 
             if (!merged) {
 
+                delete validImports[index];
+
                 const invalid = {
                     role: entry,
-                    reasons: ["Failure during role merge"],
+                    reasons: ["Failure during role merge"], // TODO: i18n
                 };
+
                 importReport.invalid.push(invalid);
                 return console.warn(invalid.reasons[0], invalid.role);
 
@@ -366,6 +362,7 @@ const rolesStore = defineStore("roles", () => {
 
         });
 
+        storage.set(STORAGE_KEY, validImports.filter(Boolean));
         script.value = sortByTeam(entries);
         importReport.given = rawScript.length;
         importReport.imported = entries.length - specialRoles.value.length;
@@ -375,7 +372,6 @@ const rolesStore = defineStore("roles", () => {
     };
 
     setScript(storage.get<IScriptImport>(STORAGE_KEY, Array.isArray, []));
-    watch(scriptImport, (value) => storage.set(STORAGE_KEY, value));
 
     return {
         // Data.
@@ -390,7 +386,6 @@ const rolesStore = defineStore("roles", () => {
         getIsMeta,
         getIsSpecialById,
         getIsUniversal,
-        getIsValidScriptImport,
         getReminderImage,
         getRoleById,
         getScriptById,
