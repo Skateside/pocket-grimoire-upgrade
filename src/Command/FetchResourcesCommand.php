@@ -6,7 +6,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-use App\Model\BotcResourcesModel;
+use App\Model\TPIResourcesModel;
 
 #[AsCommand(
     name: 'pocket-grimoire:fetch-resources',
@@ -17,7 +17,7 @@ class FetchResourcesCommand
     private $resourcesModel;
 
     public function __construct(
-        BotcResourcesModel $resourcesModel,
+        TPIResourcesModel $resourcesModel,
     ) {
         $this->resourcesModel = $resourcesModel;
     }
@@ -32,11 +32,11 @@ class FetchResourcesCommand
         $io->progressStart(4);
         $rawSpecials = $this->resourcesModel->getSpecialRoles();
         $io->progressAdvance();
-        $rawRoles = $this->resourcesModel->getJson(BotcResourcesModel::ROLES_URL);
+        $rawRoles = $this->resourcesModel->getJson(TPIResourcesModel::ROLES_URL);
         $io->progressAdvance();
-        $rawJinxes = $this->resourcesModel->getJson(BotcResourcesModel::JINXES_URL);
+        $rawJinxes = $this->resourcesModel->getJson(TPIResourcesModel::JINXES_URL);
         $io->progressAdvance();
-        $rawNightsheet = $this->resourcesModel->getJson(BotcResourcesModel::NIGHTSHEET_URL);
+        $rawNightsheet = $this->resourcesModel->getJson(TPIResourcesModel::NIGHTSHEET_URL);
         $io->progressFinish();
 
         if (
@@ -45,7 +45,7 @@ class FetchResourcesCommand
             || !$rawJinxes['success']
             || !$rawNightsheet['success']
         ) {
-            $io->getErrorStyle()->error('Data not valid, cannot continue');
+            $io->getErrorStyle()->error('Data not valid');
             return Command::FAILURE;
         }
 

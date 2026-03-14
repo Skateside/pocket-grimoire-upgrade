@@ -19,5 +19,6 @@
 
 # Pocket Grimoire specific
 /assets/data/compiled/
+/assets/data/localised/
 /assets/data/raw/fetched-roles.json
 /ideas/

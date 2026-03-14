@@ -4,7 +4,7 @@ namespace App\Model;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
-class BotcResourcesModel
+class TPIResourcesModel
 {
     /**
      * @var string Location of the roles data.
@@ -370,6 +370,22 @@ class BotcResourcesModel
         }
 
         return true;
+    }
+    
+    public function getData(): array | null
+    {
+        $destination = $this->dataDirectory . static::DESTINATION;
+
+        if (
+            !file_exists($destination)
+            || (($contents = file_get_contents($destination)) === false)
+            || (($data = json_decode($contents, true)) === null)
+            || !is_array($data)
+        ) {
+            return null;
+        }
+
+        return $data;
     }
 
     /**
