@@ -9,9 +9,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Model\LocalesDataModel;
 use App\Model\TPIResourcesModel;
 
+/** @deprecated */
 #[AsCommand(
     name: 'pocket-grimoire:extract-english',
-    description: 'Extract the English locale from the fetched resources',
+    description: 'DEPRECATED. Extract the English locale from the fetched resources',
 )]
 class ExtractEnglishCommand
 {

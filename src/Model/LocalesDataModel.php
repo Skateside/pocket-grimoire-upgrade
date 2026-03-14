@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+/** @deprecated */
 class LocalesDataModel
 {
     const JINXES = 'jinxes.json';

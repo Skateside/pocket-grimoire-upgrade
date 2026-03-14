@@ -372,7 +372,7 @@ class TPIResourcesModel
         return true;
     }
     
-    public function getData(): array | null
+    public function getData(): ?array
     {
         $destination = $this->dataDirectory . static::DESTINATION;
 
