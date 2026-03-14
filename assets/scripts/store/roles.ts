@@ -27,6 +27,7 @@ import {
     getSpecial as helperGetSpecial,
     isDeprecatedScriptEntry,
     isMetaEntry,
+    isSpecial,
     isUniversal,
     isValidRoleImport,
     isValidScriptImportEntry,
@@ -94,9 +95,7 @@ const rolesStore = defineStore("roles", () => {
         return deepFreeze(scripts);
 
     });
-    const specialRoles = computed(() => roles.value.filter(({ edition }) => (
-        edition === ERoleEdition.SPECIAL
-    )));
+    const specialRoles = computed(() => roles.value.filter(isSpecial));
     const script = ref<IScriptFull>([]);
     const scriptByType = computed(() => {
 
