@@ -2,7 +2,21 @@
 
 namespace App\Enums;
 
+// Sometimes the values can be the same but the keys are different. A `class`
+// will allow for that whereas an `enum` won't. Although we could have multiple
+// role enums, at the moment I prefer having the strings all in the same file
+// for ease of reference.
+
 class RoleEnums {
+    const ID_DAWN = 'dawn';
+    const ID_DEMON_INFO = 'demoninfo';
+    const ID_DUSK = 'dusk';
+    const ID_META = '_meta';
+    const ID_MINION_INFO = 'minioninfo';
+    const ID_NO_ROLE = '_norole';
+    const ID_UNIVERSAL = '_universal';
+    const ID_UNRECOGNISED = '_unrecognised';
+
     const SPECIAL_GLOBAL_DEAD = 'dead';
     const SPECIAL_GLOBAL_DEMON = 'demon';
     const SPECIAL_GLOBAL_MINION = 'minion';
@@ -22,7 +36,7 @@ class RoleEnums {
     const SPECIAL_NAME_OPEN_EYES = 'open-eyes';
     const SPECIAL_NAME_PLAYER = 'player';
     const SPECIAL_NAME_POINTING = 'pointing';
-    const SPECIAL_NAME_REPLACE_CHARACTER = 'replace-character",  ';
+    const SPECIAL_NAME_REPLACE_CHARACTER = 'replace-character';
 
     const SPECIAL_TIME_DAY = 'day';
     const SPECIAL_TIME_FIRST_NIGHT = 'firstNight';
@@ -38,4 +52,12 @@ class RoleEnums {
     const SPECIAL_TYPE_SELECTION = 'selection';
     const SPECIAL_TYPE_SIGNAL = 'signal';
     const SPECIAL_TYPE_VOTE = 'vote';
+
+    const TEAM_TOWNSFOLK = 'townsfolk';
+    const TEAM_OUTSIDER = 'outsider';
+    const TEAM_MINION = 'minion';
+    const TEAM_DEMON = 'demon';
+    const TEAM_TRAVELLER = 'traveller';
+    const TEAM_FABLED = 'fabled';
+    const TEAM_LORIC = 'loric';
 }

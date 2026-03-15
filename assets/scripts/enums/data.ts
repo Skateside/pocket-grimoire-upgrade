@@ -72,7 +72,7 @@ export enum ERoleSpecialName {
     OPEN_EYES = "open-eyes",
     PLAYER = "player",
     POINTING = "pointing",
-    REPLACE_CHARACTER = "replace-character",    
+    REPLACE_CHARACTER = "replace-character",
 };
 
 export enum ERoleSpecialTime {

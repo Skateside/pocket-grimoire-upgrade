@@ -5,7 +5,6 @@ namespace App\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
 use App\Model\TPIResourcesModel;
 
 #[AsCommand(
@@ -26,20 +25,44 @@ class FetchResourcesCommand
         SymfonyStyle $io,
     ): int
     {
-        $io->title('Fetching resources');
+        if ($io->isVerbose()) {
+            $io->title('Fetching Resources');
+        }
 
-        $io->section('Downloading');
-        $io->progressStart(5);
-        $rawSpecials = $this->resourcesModel->getLocale(TPIResourcesModel::SPECIAL_ROLES_FILENAME);
-        $io->progressAdvance();
-        $rawImages = $this->resourcesModel->getLocale(TPIResourcesModel::IMAGES_FILENAME);
-        $io->progressAdvance();
-        $rawRoles = $this->resourcesModel->getRemote(TPIResourcesModel::ROLES_URL);
-        $io->progressAdvance();
-        $rawJinxes = $this->resourcesModel->getRemote(TPIResourcesModel::JINXES_URL);
-        $io->progressAdvance();
-        $rawNightsheet = $this->resourcesModel->getRemote(TPIResourcesModel::NIGHTSHEET_URL);
-        $io->progressFinish();
+        if ($io->isVerbose()) {
+            $io->section('Downloading');
+            $io->progressStart(5);
+        }
+
+        $rawSpecials = $this->resourcesModel->getLocale(TPIResourcesModel::FILENAME_SPECIAL_ROLES);
+
+        if ($io->isVerbose()) {
+            $io->progressAdvance();
+        }
+
+        $rawImages = $this->resourcesModel->getLocale(TPIResourcesModel::FILENAME_IMAGES);
+
+        if ($io->isVerbose()) {
+            $io->progressAdvance();
+        }
+
+        $rawRoles = $this->resourcesModel->getRemote(TPIResourcesModel::URL_ROLES);
+
+        if ($io->isVerbose()) {
+            $io->progressAdvance();
+        }
+
+        $rawJinxes = $this->resourcesModel->getRemote(TPIResourcesModel::URL_JINXES);
+
+        if ($io->isVerbose()) {
+            $io->progressAdvance();
+        }
+
+        $rawNightsheet = $this->resourcesModel->getRemote(TPIResourcesModel::URL_NIGHTSHEET);
+
+        if ($io->isVerbose()) {
+            $io->progressFinish();
+        }
 
         if (
             !$rawSpecials['success']
@@ -58,17 +81,21 @@ class FetchResourcesCommand
         $jinxes = $this->resourcesModel->filterJinxes($rawJinxes['body']);
         $nightsheet = $this->resourcesModel->filterNightsheet($rawNightsheet['body']);
 
-        $io->section('Results');
-        $io->table(
-            ['Type', 'Raw entries', 'Filtered entries'],
-            [
-                ['Special', count($rawSpecials['body']), count($specials)],
-                ['Images', count($rawImages['body']), count($images)],
-                ['Roles', count($rawRoles['body']), count($roles)],
-                ['Jinxes', count($rawJinxes['body']), count($jinxes)],
-                ['Nightsheet', count($rawNightsheet['body']), count($nightsheet)],
-            ]
-        );
+        if ($io->isVerbose()) {
+
+            $io->section('Results');
+            $io->table(
+                ['Type', 'Raw entries', 'Filtered entries'],
+                [
+                    ['Special', count($rawSpecials['body']), count($specials)],
+                    ['Images', count($rawImages['body']), count($images)],
+                    ['Roles', count($rawRoles['body']), count($roles)],
+                    ['Jinxes', count($rawJinxes['body']), count($jinxes)],
+                    ['Nightsheet', count($rawNightsheet['body']), count($nightsheet)],
+                ]
+            );
+
+        }
 
         if (
             count($rawSpecials['body']) !== count($specials)
@@ -80,9 +107,6 @@ class FetchResourcesCommand
             $io->getErrorStyle()->warning('Some filtering occurred');
         }
 
-        // $fixedReminders = $this->resourcesModel->convertReminders($roles);
-        // $withImages = $this->resourcesModel->applyImages($fixedReminders, $images);
-
         $combined = $this->resourcesModel->combineData(
             $specials,
             $roles,
@@ -91,7 +115,7 @@ class FetchResourcesCommand
             $images,
         );
 
-        if (!$this->resourcesModel->writeData($combined)) {
+        if (!$this->resourcesModel->writeData($combined, $io->isVerbose())) {
             $io->getErrorStyle()->error('Failed to write data');
             return Command::FAILURE;
         }

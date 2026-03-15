@@ -5,8 +5,6 @@ namespace App\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
-
-use App\Model\TPIResourcesModel;
 use App\Model\TranslationsModel;
 
 #[AsCommand(
@@ -15,14 +13,11 @@ use App\Model\TranslationsModel;
 )]
 class FetchTranslationsCommand
 {
-    private $resourcesModel;
     private $translationsModel;
 
     public function __construct(
-        TPIResourcesModel $resourcesModel,
         TranslationsModel $translationsModel,
     ) {
-        $this->resourcesModel = $resourcesModel;
         $this->translationsModel = $translationsModel;
     }
 
@@ -30,40 +25,88 @@ class FetchTranslationsCommand
         SymfonyStyle $io,
     ): int
     {
-        $io->title('Fetching translations');
+        if ($io->isVerbose()) {
+            $io->title('Compiling Translations');
+        }
 
-        // $locale = 'fr';
+        $locales = [
+            'de_DE' => 'de',
+            'en_GB' => 'en',
+            'fr_FR' => 'fr',
+        ];
 
-        // $i18n = $this->translationsModel->getI18n($locale);
-        // $io->writeln(var_export($i18n, true));
-        // $infoTokens = $this->translationsModel->getInfoTokens($locale);
-        // $io->writeln(var_export($infoTokens, true));
+        if ($io->isVerbose()) {
+            $io->progressStart(count($locales));
+        }
 
+        $hasError = false;
+        $results = [];
+
+        foreach ($locales as $filename => $remote) {
+
+            $index = count($results);
+            $results[$index] = [
+                'locale' => $filename,
+                'i18n' => 'No',
+                'infoTokens' => 'No',
+                'roles' => 'No',
+                'scripts' => 'No',
+                'written' => 'No',
+            ];
+
+            $data = [
+                'i18n' => $this->translationsModel->getI18n($remote),
+                'infoTokens' => $this->translationsModel->getInfoTokens($remote),
+                'roles' => $this->translationsModel->getRoles($remote),
+                'scripts' => $this->translationsModel->getScripts($remote),
+            ];
+
+            foreach ($data as $key => $datum) {
+                if ($datum !== null) {
+                    $results[$index][$key] = 'Yes';
+                } else {
+                    $hasError = true;
+                }
+            }
+
+            if (
+                !$hasError
+                && $this->translationsModel->writeData(
+                    $data,
+                    $filename,
+                    $io->isVerbose(),
+                )
+            ) {
+                $results[$index]['written'] = 'Yes';
+            } else {
+                $hasError = true;
+            }
+
+            if ($io->isVerbose()) {
+                $io->progressAdvance();
+            }
+
+        }
+
+        if ($io->isVerbose()) {
+            $io->progressFinish();
+        }
+
+        if ($io->isVerbose()) {
+
+            $io->section('Results');
+            $io->table(
+                ['Locale', 'i18n', 'infoTokens', 'roles', 'scripts', 'Written'],
+                $results,
+            );
+
+        }
+
+        if ($hasError) {
+            $io->getErrorStyle()->warning('Some locales failed to complete');
+        }
+
+        $io->getErrorStyle()->success('Files written');
         return Command::SUCCESS;
     }
 }
-
-/*
-i18n: app/{locale}.json (note: these are in the format `singluar|plural`
-{
-    "townsfolk": grimoire.townsfolk,
-    "outsider": grimoire.outsider,
-    "minion": grimoire.minion,
-    "demon": grimoire.demon,
-    "traveller": grimoire.traveller,
-    "fabled": grimoire.fabled,
-    "loric": grimoire.loric,
-}
-
-Info tokens: app/{locale}.json
-{
-    "isdemon": modals.signal.cards.demon,
-    "isminion": modals.signal.cards.minions,
-    "notinplay": modals.signal.cards.bluffs,
-    "nominatetoday": ~,
-    "playeris": modals.signal.cards.claim,
-    "votetoday": ~,
-    "youare": modals.signal.cards.you,
-    "selectedyou": modals.signal.cards.selected,
-}
-*/

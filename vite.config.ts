@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import symfonyPlugin from "vite-plugin-symfony";
 import vue from "@vitejs/plugin-vue"
-import localeDataPlugin from "./tools/locale-data-plugin";
 import { readdirSync } from "fs";
 import { resolve } from "path";
 
@@ -23,7 +22,6 @@ const getGeneratedInputs = () => {
 
 export default defineConfig({
     plugins: [
-        localeDataPlugin(),
         vue(),
         symfonyPlugin(),
     ],
