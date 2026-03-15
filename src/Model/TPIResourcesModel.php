@@ -4,6 +4,9 @@ namespace App\Model;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
+use App\Enums\ReminderEnums;
+use App\Enums\RoleEnums;
+
 class TPIResourcesModel
 {
     /**
@@ -24,12 +27,17 @@ class TPIResourcesModel
     /**
      * @var string File name of the special roles.
      */
-    const SPECIAL_ROLES = 'special-roles.json';
+    const SPECIAL_ROLES_FILENAME = 'special-roles.json';
+
+    /**
+     * @var string File name of the images file.
+     */
+    const IMAGES_FILENAME = 'images.json';
 
     /**
      * @var string File name where the data will be saved.
      */
-    const DESTINATION = 'fetched-roles.json';
+    const DESTINATION_FILENAME = 'fetched-roles.json';
 
     /**
      * An error message generated when validating a role.
@@ -38,7 +46,7 @@ class TPIResourcesModel
 
     public function __construct(
 
-        #[Autowire('%kernel.project_dir%/assets/data/raw/')]
+        #[Autowire('%kernel.project_dir%/assets/data/raw')]
         private string $dataDirectory,
 
     )
@@ -49,7 +57,8 @@ class TPIResourcesModel
      *
      * @return string Latest role validation error message.
      */
-    public function getMessage() {
+    public function getMessage()
+    {
         return $this->message;
     }
 
@@ -58,31 +67,15 @@ class TPIResourcesModel
      *
      * @return array Success status and the body of the results.
      */
-    public function getSpecialRoles()
+    public function getLocale(string $filename): array
     {
-        $specialRolesJson = $this->dataDirectory . static::SPECIAL_ROLES;
+        $file = $this->dataDirectory . DIRECTORY_SEPARATOR . $filename;
 
-        if (!file_exists($specialRolesJson)) {
-            return ['success' => false, 'body' => "'{$specialRolesJson}' not found"];
+        if (!file_exists($file)) {
+            return ['success' => false, 'body' => "'{$file}' not found"];
         }
 
-        $contents = file_get_contents($specialRolesJson);
-
-        if ($contents === false) {
-            return ['success' => false, 'body' => 'Failed to get special roles contents'];
-        }
-
-        if (!json_validate($contents)) {
-            return ['success' => false, 'body' => 'Invalid JSON'];
-        }
-
-        $decoded = json_decode($contents, true);
-
-        if (!is_array($decoded)) {
-            return ['success' => false, 'body' => 'JSON not an array'];
-        }
-
-        return ['success' => true, 'body' => $decoded];
+        return $this->getContentsAsJson($file);
     }
 
     /**
@@ -91,25 +84,9 @@ class TPIResourcesModel
      * @param string $url URL to find the JSON.
      * @return array The success status body of the results.
      */
-    public function getJson(string $url): array
+    public function getRemote(string $url): array
     {
-        $contents = file_get_contents($url);
-
-        if ($contents === false) {
-            return ['success' => false, 'body' => "'{$url}' not found"];
-        }
-
-        if (!json_validate($contents)) {
-            return ['success' => false, 'body' => "'{$url}' not valid JSON"];
-        }
-
-        $decoded = json_decode($contents, true);
-
-        if (!is_array($decoded)) {
-            return ['success' => false, 'body' => 'JSON not an array'];
-        }
-
-        return ['success' => true, 'body' => $decoded];
+        return $this->getContentsAsJson($url);
     }
 
     /**
@@ -133,6 +110,17 @@ class TPIResourcesModel
         }
 
         return $filtered;
+    }
+
+    /**
+     * Filter the images so that only valid image entries are included.
+     *
+     * @param array $images Images to filter.
+     * @return array Filtered images.
+     */
+    public function filterImages(array $images): array
+    {
+        return array_filter($images, [$this, 'isValidImagesEntry']);
     }
 
     /**
@@ -233,6 +221,7 @@ class TPIResourcesModel
      * @param array $roles Main roles.
      * @param array $jinxes Jinxes.
      * @param array $nightsheet Night order.
+     * @param array $images Image data.
      * @return array Combined data.
      */
     public function combineData(
@@ -240,6 +229,7 @@ class TPIResourcesModel
         array $roles,
         array $jinxes,
         array $nightsheet,
+        array $images,
     ): array
     {
         $combined = [];
@@ -348,21 +338,32 @@ class TPIResourcesModel
 
         }
 
+        $fixedReminders = $this->convertReminders($combined);
+        $withImages = $this->applyImages($fixedReminders, $images);
+
         $this->message = implode(PHP_EOL, $message);
 
-        usort($combined, function ($a, $b) {
+        usort($withImages, function ($a, $b) {
             return $a['id'] <=> $b['id'];
         });
 
-        return $combined;
+        return $withImages;
     }
 
     /**
      * Writes the JSON data to the destination.
+     *
+     * @param array $data JSON data to write.
+     * @return bool `true` if the data was sucessfully written, `false`
+     * otherwise.
      */
     public function writeData(array $data): bool
     {
-        $destination = $this->dataDirectory . static::DESTINATION;
+        $destination = (
+            $this->dataDirectory
+            . DIRECTORY_SEPARATOR
+            . static::DESTINATION_FILENAME
+        );
         $json = json_encode($data, JSON_PRETTY_PRINT);
 
         if ($json === false || file_put_contents($destination, $json) === false) {
@@ -371,10 +372,20 @@ class TPIResourcesModel
 
         return true;
     }
-    
+
+    /**
+     * Gets the data from the saved file, returning `null` if the data couldn't
+     * be retrieved or parsed.
+     *
+     * @return ?array Parsed data or `null` if the data can't be read or parsed.
+     */
     public function getData(): ?array
     {
-        $destination = $this->dataDirectory . static::DESTINATION;
+        $destination = (
+            $this->dataDirectory
+            . DIRECTORY_SEPARATOR
+            . static::DESTINATION_FILENAME
+        );
 
         if (
             !file_exists($destination)
@@ -386,6 +397,179 @@ class TPIResourcesModel
         }
 
         return $data;
+    }
+
+    /**
+     * Gets the contents of the given source and attempts to parse it as JSON,
+     * returning an array with a "success" key and a "body" key.
+     *
+     * @param string $source Source of the contents to get and parse.
+     * @return array Results of parsing the contents (if possible).
+     */
+    protected function getContentsAsJson(string $source): array
+    {
+        $contents = file_get_contents($source);
+
+        if ($contents === false) {
+            return ['success' => false, 'body' => "'{$source}' not found"];
+        }
+
+        if (!json_validate($contents)) {
+            return ['success' => false, 'body' => "'{$source}' not valid JSON"];
+        }
+
+        $decoded = json_decode($contents, true);
+
+        if (!is_array($decoded)) {
+            return ['success' => false, 'body' => 'JSON not an array'];
+        }
+
+        return ['success' => true, 'body' => $decoded];
+    }
+
+    /**
+     * Applies the images to the given roles.
+     *
+     * @param array $roles Roles that should gain images.
+     * @param array $images Images to apply to the roles.
+     * @return array Roles with images applied.
+     */
+    protected function applyImages(array $roles, array $images): array
+    {
+        return array_map(function ($role) use ($images) {
+
+            if (!array_key_exists($role['id'], $images)) {
+                return $role;
+            }
+
+            $image = $images[$role['id']];
+
+            $role['image'] = $image['image'] ?? $image;
+
+            foreach (($image['reminders'] ?? []) as $index => $reminderImage) {
+                if (
+                    is_array($role['reminders'] ?? null)
+                    && $index <  count($role['reminders'])
+                ) {
+                    $role['reminders'][$index]['image'] = $reminderImage;
+                }
+            }
+
+            return $role;
+
+        }, $roles);
+    }
+
+    /**
+     * Converts all the reminders in the given roles.
+     *
+     * @param array $roles Roles whose reminders should be converted.
+     * @return array Roles with converted reminders.
+     */
+    protected function convertReminders(array $roles): array
+    {
+        return array_map(function ($role) {
+
+            $reminders = $this->convertRoleReminders(
+                $role['reminders'] ?? [],
+                $role['remindersGlobal'] ?? [],
+                $role['special'] ?? [],
+            );
+            unset($role['reminders'], $role['remindersGlobal']);
+
+            if (count($reminders)) {
+                $role['reminders'] = $reminders;
+            }
+
+            return $role;
+
+        }, $roles);
+    }
+
+    /**
+     * Converts the given reminders into the modern format.
+     *
+     * @param array $reminders Local reminder to convert.
+     * @param array $remindersGlobal Global reminder to convert.
+     * @param array $special Special information about the role.
+     * @return array Converted reminders.
+     */
+    protected function convertRoleReminders(
+        array $reminders,
+        array $remindersGlobal,
+        array $special,
+    ): array
+    {
+        $convertedReminders = [];
+
+        foreach ($reminders as $reminder) {
+
+            $converted = [];
+
+            if (is_string($reminder)) {
+                $converted['name'] = $reminder;
+            } elseif (is_array($reminder)) {
+
+                if (is_string($reminder['name'] ?? null)) {
+                    $converted['name'] = $reminder['name'];
+                }
+
+                if (
+                    is_array($reminder['flags'] ?? null)
+                    && array_all($reminder['flags'], function ($item) {
+                        return is_string($item);
+                    })
+                ) {
+                    $converted['flags'] = $reminder['flags'];
+                }
+
+                if (is_int($reminder['count'] ?? null)) {
+                    $converted['count'] = $reminder['count'];
+                }
+
+                if (is_string($reminder['image'] ?? null)) {
+                    $converted['image'] = $reminder['image'];
+                }
+
+            }
+
+            if (!is_string($converted['name'] ?? null)) {
+                continue;
+            }
+
+            foreach ($convertedReminders as $reminder) {
+                if ($reminder['name'] === $converted['name']) {
+                    $reminder['count'] = ($reminder['count'] ?? 1) + 1;
+                    continue 2;
+                }
+            }
+
+            $convertedReminders[] = $converted;
+
+        }
+
+        foreach ($remindersGlobal as $index => $reminder) {
+
+            $flags = [ReminderEnums::FLAG_GLOBAL];
+            $replace = array_find($special, function ($special) {
+                return (
+                    ($special['type'] ?? '') === RoleEnums::SPECIAL_TYPE_REVEAL
+                    && ($special['name'] ?? '') === RoleEnums::SPECIAL_NAME_REPLACE_CHARACTER
+                );
+            });
+
+            if (!is_null($replace) && $index === 0) {
+                $flags[] = ReminderEnums::FLAG_ROLE;
+            }
+
+            $convertedReminders[] = [
+                'name' => $reminder,
+                'flags' => $flags,
+            ];
+
+        }
+
+        return $convertedReminders;
     }
 
     /**
@@ -410,6 +594,48 @@ class TPIResourcesModel
             || (array_key_exists('otherNightReminder', $item) && !is_string($item['otherNightReminder']))
          ) {
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Checks to see if the given item is a valid image entry.
+     *
+     * @param mixed $item Item to check.
+     * @return bool `true` if the item is a valid image entry, `false`
+     * otherwise.
+     */
+    public function isValidImagesEntry(mixed $item): bool
+    {
+        if (!is_string($item) && !is_array($item)) {
+            return false;
+        }
+
+        if (is_array($item)) {
+
+            if (array_all($item, function ($url) {
+                return is_string($url);
+            })) {
+                return (count($item) > 0 && count($item) <= 3);
+            }
+
+            if (
+                array_key_exists('image', $item)
+                && !$this->isValidImagesEntry($item['image'])
+            ) {
+                return false;
+            }
+
+            if (
+                array_key_exists('reminders', $item)
+                && !$this->isValidImagesEntry($item['reminders'])
+            ) {
+                // NOTE: this might be a future bug since we haven't fully
+                // figured out the "reminders" key here.
+                return false;
+            }
+
         }
 
         return true;

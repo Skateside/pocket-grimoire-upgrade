@@ -6,7 +6,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-// use App\Model\TPIResourcesModel;
+use App\Model\TPIResourcesModel;
 use App\Model\TranslationsModel;
 
 #[AsCommand(
@@ -15,14 +15,14 @@ use App\Model\TranslationsModel;
 )]
 class FetchTranslationsCommand
 {
-    // private $resourcesModel;
+    private $resourcesModel;
     private $translationsModel;
 
     public function __construct(
-        // TPIResourcesModel $resourcesModel,
+        TPIResourcesModel $resourcesModel,
         TranslationsModel $translationsModel,
     ) {
-        // $this->resourcesModel = $resourcesModel;
+        $this->resourcesModel = $resourcesModel;
         $this->translationsModel = $translationsModel;
     }
 
@@ -32,12 +32,12 @@ class FetchTranslationsCommand
     {
         $io->title('Fetching translations');
 
-        $locale = 'fr';
+        // $locale = 'fr';
 
-        $i18n = $this->translationsModel->getI18n($locale);
-        $io->writeln(var_export($i18n, true));
-        $infoTokens = $this->translationsModel->getInfoTokens($locale);
-        $io->writeln(var_export($infoTokens, true));
+        // $i18n = $this->translationsModel->getI18n($locale);
+        // $io->writeln(var_export($i18n, true));
+        // $infoTokens = $this->translationsModel->getInfoTokens($locale);
+        // $io->writeln(var_export($infoTokens, true));
 
         return Command::SUCCESS;
     }

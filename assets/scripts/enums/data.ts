@@ -89,7 +89,7 @@ export enum ERoleSpecialType {
     ABILITY = "ability",
     PLAYER = "player",
     REVEAL = "reveal",
-    SELECTION ="selection",
+    SELECTION = "selection",
     SIGNAL = "signal",
     VOTE = "vote",
 };

@@ -29,18 +29,21 @@ class FetchResourcesCommand
         $io->title('Fetching resources');
 
         $io->section('Downloading');
-        $io->progressStart(4);
-        $rawSpecials = $this->resourcesModel->getSpecialRoles();
+        $io->progressStart(5);
+        $rawSpecials = $this->resourcesModel->getLocale(TPIResourcesModel::SPECIAL_ROLES_FILENAME);
         $io->progressAdvance();
-        $rawRoles = $this->resourcesModel->getJson(TPIResourcesModel::ROLES_URL);
+        $rawImages = $this->resourcesModel->getLocale(TPIResourcesModel::IMAGES_FILENAME);
         $io->progressAdvance();
-        $rawJinxes = $this->resourcesModel->getJson(TPIResourcesModel::JINXES_URL);
+        $rawRoles = $this->resourcesModel->getRemote(TPIResourcesModel::ROLES_URL);
         $io->progressAdvance();
-        $rawNightsheet = $this->resourcesModel->getJson(TPIResourcesModel::NIGHTSHEET_URL);
+        $rawJinxes = $this->resourcesModel->getRemote(TPIResourcesModel::JINXES_URL);
+        $io->progressAdvance();
+        $rawNightsheet = $this->resourcesModel->getRemote(TPIResourcesModel::NIGHTSHEET_URL);
         $io->progressFinish();
 
         if (
             !$rawSpecials['success']
+            || !$rawImages['success']
             || !$rawRoles['success']
             || !$rawJinxes['success']
             || !$rawNightsheet['success']
@@ -50,6 +53,7 @@ class FetchResourcesCommand
         }
 
         $specials = $this->resourcesModel->filterSpecials($rawSpecials['body']);
+        $images = $this->resourcesModel->filterImages($rawImages['body']);
         $roles = $this->resourcesModel->filterRoles($rawRoles['body']);
         $jinxes = $this->resourcesModel->filterJinxes($rawJinxes['body']);
         $nightsheet = $this->resourcesModel->filterNightsheet($rawNightsheet['body']);
@@ -59,6 +63,7 @@ class FetchResourcesCommand
             ['Type', 'Raw entries', 'Filtered entries'],
             [
                 ['Special', count($rawSpecials['body']), count($specials)],
+                ['Images', count($rawImages['body']), count($images)],
                 ['Roles', count($rawRoles['body']), count($roles)],
                 ['Jinxes', count($rawJinxes['body']), count($jinxes)],
                 ['Nightsheet', count($rawNightsheet['body']), count($nightsheet)],
@@ -67,6 +72,7 @@ class FetchResourcesCommand
 
         if (
             count($rawSpecials['body']) !== count($specials)
+            || count($rawImages['body']) !== count($images)
             || count($rawRoles['body']) !== count($roles)
             || count($rawJinxes['body']) !== count($jinxes)
             || count($rawNightsheet['body']) !== count($nightsheet)
@@ -74,11 +80,15 @@ class FetchResourcesCommand
             $io->getErrorStyle()->warning('Some filtering occurred');
         }
 
+        // $fixedReminders = $this->resourcesModel->convertReminders($roles);
+        // $withImages = $this->resourcesModel->applyImages($fixedReminders, $images);
+
         $combined = $this->resourcesModel->combineData(
             $specials,
             $roles,
             $jinxes,
             $nightsheet,
+            $images,
         );
 
         if (!$this->resourcesModel->writeData($combined)) {
