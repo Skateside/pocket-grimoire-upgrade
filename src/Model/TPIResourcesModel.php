@@ -3,8 +3,11 @@
 namespace App\Model;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use App\Enums\ReminderEnums;
-use App\Enums\RoleEnums;
+use App\Enums\{
+    ReminderFlagEnums,
+    RoleSpecialNameEnums,
+    RoleSpecialTypeEnums,
+};
 
 class TPIResourcesModel
 {
@@ -570,16 +573,16 @@ class TPIResourcesModel
 
         foreach ($remindersGlobal as $index => $reminder) {
 
-            $flags = [ReminderEnums::FLAG_GLOBAL];
+            $flags = [ReminderFlagEnums::GLOBAL->value];
             $replace = array_find($special, function ($special) {
                 return (
-                    ($special['type'] ?? '') === RoleEnums::SPECIAL_TYPE_REVEAL
-                    && ($special['name'] ?? '') === RoleEnums::SPECIAL_NAME_REPLACE_CHARACTER
+                    ($special['type'] ?? '') === RoleSpecialTypeEnums::REVEAL->value
+                    && ($special['name'] ?? '') === RoleSpecialNameEnums::REPLACE_CHARACTER->value
                 );
             });
 
             if (!is_null($replace) && $index === 0) {
-                $flags[] = ReminderEnums::FLAG_ROLE;
+                $flags[] = ReminderFlagEnums::ROLE->value;
             }
 
             $convertedReminders[] = [

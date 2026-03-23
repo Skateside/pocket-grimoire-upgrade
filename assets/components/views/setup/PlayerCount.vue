@@ -1,5 +1,13 @@
 <template>
     <table class="count-table">
+        <colgroup>
+            <col />
+            <col
+                v-for="[count] in table.players"
+                :key="count"
+                :class="{ 'is-count': count === props.count }"
+            />
+        </colgroup>
         <thead>
             <tr>
                 <th scope="row">Players</th>
@@ -7,7 +15,6 @@
                     v-for="[count, text] in table.players"
                     :key="count"
                     scope="col"
-                    :class="{ 'is-count': count === props.count }"
                 >
                     {{ text }}
                 </th>
@@ -31,7 +38,7 @@
                 <th scope="row">{{ get(labels, team) || team }}</th>
                 <td
                     v-for="{ count, number } in data"
-                    :class="{ 'is-count': count === props.count }"
+                    :key="count"
                 >
                     {{ number }}
                 </td>

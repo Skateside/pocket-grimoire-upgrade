@@ -4,7 +4,10 @@ namespace App\Model;
 
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use App\Model\TPIResourcesModel;
-use App\Enums\RoleEnums;
+use App\Enums\{
+    RoleIdEnums,
+    RoleTeamEnums,
+};
 
 class TranslationsModel
 {
@@ -250,10 +253,12 @@ class TranslationsModel
             $metaIndex = array_find_key($script, function ($item) {
                 return (
                     is_array($item)
-                    && ($item['id'] ?? null) === RoleEnums::ID_META
+                    && ($item['id'] ?? null) === RoleIdEnums::META->value
                 );
             });
-            $metaEntry = $script[$metaIndex] ?? [];
+            $metaEntry = $script[$metaIndex] ?? [
+                'id' => RoleIdEnums::META->value,
+            ];
 
             $metaEntry['name'] = $translation[$key];
 
@@ -327,13 +332,13 @@ class TranslationsModel
     {
         $app = $this->getRemote(static::TYPE_APP, $locale);
         $keys = [
-            RoleEnums::TEAM_TOWNSFOLK,
-            RoleEnums::TEAM_OUTSIDER,
-            RoleEnums::TEAM_MINION,
-            RoleEnums::TEAM_DEMON,
-            RoleEnums::TEAM_TRAVELLER,
-            RoleEnums::TEAM_FABLED,
-            RoleEnums::TEAM_LORIC,
+            RoleTeamEnums::TOWNSFOLK->value,
+            RoleTeamEnums::OUTSIDER->value,
+            RoleTeamEnums::MINION->value,
+            RoleTeamEnums::DEMON->value,
+            RoleTeamEnums::TRAVELLER->value,
+            RoleTeamEnums::FABLED->value,
+            RoleTeamEnums::LORIC->value,
         ];
         $i18n = [];
 

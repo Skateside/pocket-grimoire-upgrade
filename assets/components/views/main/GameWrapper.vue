@@ -12,3 +12,9 @@
 import { RouterView, RouterLink } from "vue-router";
 import ReelLayout from "../../layouts/ReelLayout.vue";
 </script>
+
+<style>
+.router-link-active {
+    font-weight: bold;
+}
+</style>

@@ -2,21 +2,19 @@
     <BaseForm @submit.prevent="handleSubmit">
         <StackLayout>
             <PlayerCount :count="playerCount" />
-            <ClusterLayout side="end">
-                <BaseLabel label="Player count">
-                    <BaseInput
-                        v-model="model"
-                        name="player-count"
-                        type="range"
-                        :min="EGameValues.MIN_PLAYERS"
-                        :max="EGameValues.MAX_PLAYERS"
-                        step="1"
-                    />
-                </BaseLabel>
-                <output :value="model" aria-hidden="true"></output>
-            </ClusterLayout>
+            <BaseLabel label="Player count">
+                <BaseInput
+                    v-model="model"
+                    name="player-count"
+                    type="range"
+                    :min="EGameValues.MIN_PLAYERS"
+                    :max="EGameValues.MAX_PLAYERS"
+                    step="1"
+                />
+                <BaseOutput :value="model" />
+            </BaseLabel>
             <div>
-                <button type="submit">Add seats</button>
+                <BaseButton type="submit">Add seats</BaseButton>
             </div>
         </StackLayout>
     </BaseForm>
@@ -24,15 +22,14 @@
 
 <script setup lang="ts">
 import { EGameValues } from "~/scripts/enums/data";
-import {
-    computed,
-} from "vue";
+import { computed } from "vue";
 import useGameStore from "~/scripts/store/game";
-import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseOutput from "~/components/base/BaseOutput.vue";
 import PlayerCount from "./PlayerCount.vue";
 import { clamp } from "~/scripts/utilities/numbers";
 

@@ -30,7 +30,7 @@ import {
     isSpecial,
     isUniversal,
     isValidRoleImport,
-    isValidScriptImportEntry,
+    isValidScriptImport,
     mergeRoles,
     sortByTeam,
 } from "../helpers/roles";
@@ -76,8 +76,7 @@ const rolesStore = defineStore("roles", () => {
 
                 if (
                     !validKeys.includes(key as ERoleEdition)
-                    || !Array.isArray(script)
-                    || !script.every((item) => isValidScriptImportEntry(item))
+                    || !isValidScriptImport(script)
                 ) {
                     return; // unrecognised script.
                 }
