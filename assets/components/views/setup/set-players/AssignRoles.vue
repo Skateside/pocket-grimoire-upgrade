@@ -1,72 +1,68 @@
 <template>
-    <BaseForm>
-        <StackLayout>
-            <BaseLabel label="Show character abilities" :nested="true">
-                <BaseCheckbox
-                    v-model="showAbilities"
-                    name="abilities"
-                />
-            </BaseLabel>
-            <BaseLabel label="Allow duplicate characters" :nested="true">
-                <BaseCheckbox
-                    v-model="allowDuplicates"
-                    name="duplicates"
-                />
-            </BaseLabel>
-            <BaseChoice
-                v-model="direction"
-                :choices="[
-                    { text: 'Clockwise', value: String(ETokenDirection.CLOCKWISE) },
-                    { text: 'Anti-Clockwise', value: String(ETokenDirection.ANTICLOCKWISE) },
-                ]"
-                label="Direction"
-                name="direction"
-                :open="true"
+    <StackLayout>
+        <BaseLabel label="Show character abilities" :nested="true">
+            <BaseCheckbox
+                v-model="showAbilities"
+                name="abilities"
             />
-        </StackLayout>
-    </BaseForm>
-    <form>
+        </BaseLabel>
+        <BaseLabel label="Allow duplicate characters" :nested="true">
+            <BaseCheckbox
+                v-model="allowDuplicates"
+                name="duplicates"
+            />
+        </BaseLabel>
+        <!-- <BaseChoice
+            v-model="direction"
+            :choices="[
+                { text: 'Clockwise', value: String(ETokenDirection.CLOCKWISE) },
+                { text: 'Anti-Clockwise', value: String(ETokenDirection.ANTICLOCKWISE) },
+            ]"
+            label="Direction"
+            name="direction"
+            :open="true"
+        /> -->
+    </StackLayout>
 
-        <template v-for="team in ORDER">
-            <fieldset v-if="rolesStore.scriptByType[team]?.length">
-                <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.breakdown[team] ?? "X" }})</legend>
-                <GridLayout min-width="10ch">
-                    <div v-for="role in rolesStore.scriptByType[team]" :key="role.id">
-                        <BaseInputSpinner
-                            v-if="allowDuplicates && included[role.id]"
-                            v-model="counts[role.id]"
-                            readonly
-                            :aria-label="`Number of ${role.name} to add`"
-                            :min="0"
-                        />
-                        <label :for="`role-${role.id}-${suffix}`">
-                            <input
-                                v-model="included[role.id]"
-                                type="checkbox"
-                                :name="`role[${role.id}]`"
-                                :id="`role-${role.id}-${suffix}`"
-                                :disabled="Boolean(rolesStore.getSpecial(role, ERoleSpecialType.SELECTION, ERoleSpecialName.BAG_DISABLED))"
-                                @change="() => handleSelection(role)"
-                            >
-                            <StackLayout node="span">
-                                <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
-                                <strong>{{ role.name }}</strong>
-                                <span v-if="showAbilities">{{ role.ability }}</span>
-                            </StackLayout>
-                        </label>
-                    </div>
-                </GridLayout>
-            </fieldset>
-        </template>
+    <template v-for="team in ORDER">
+        <fieldset v-if="rolesStore.scriptByType[team]?.length">
+            <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.breakdown[team] ?? "X" }})</legend>
+            <GridLayout min-width="10ch">
+                <div v-for="role in rolesStore.scriptByType[team]" :key="role.id">
+                    <BaseInputSpinner
+                        v-if="allowDuplicates && included[role.id]"
+                        v-model="counts[role.id]"
+                        readonly
+                        :aria-label="`Number of ${role.name} to add`"
+                        :min="0"
+                    />
+                    <label :for="`role-${role.id}-${suffix}`">
+                        <input
+                            v-model="included[role.id]"
+                            type="checkbox"
+                            :name="`role[${role.id}]`"
+                            :id="`role-${role.id}-${suffix}`"
+                            :disabled="Boolean(rolesStore.getSpecial(role, ERoleSpecialType.SELECTION, ERoleSpecialName.BAG_DISABLED))"
+                            @change="() => handleSelection(role)"
+                        >
+                        <StackLayout node="span">
+                            <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
+                            <strong>{{ role.name }}</strong>
+                            <span v-if="showAbilities">{{ role.ability }}</span>
+                        </StackLayout>
+                    </label>
+                </div>
+            </GridLayout>
+        </fieldset>
+    </template>
 
-        <BaseChoice
-            label="Starting player"
-            :choices="choices"
-            v-model="startingPlayer"
-            name="start"
-            empty-text="Please select"
-        />
-    </form>
+    <BaseChoice
+        label="Starting player"
+        :choices="choices"
+        v-model="startingPlayer"
+        name="start"
+        empty-text="Please select"
+    />
 </template>
 
 <script setup lang="ts">
@@ -75,7 +71,7 @@ import {
     ERoleSpecialType,
     ERoleSpecialName,
     ERoleTeam,
-    ETokenDirection,
+    // ETokenDirection,
 } from "~/scripts/enums/data";
 import { computed, reactive, useId, watch } from "vue";
 import { ORDER } from "~/scripts/helpers/roles";
@@ -84,7 +80,6 @@ import useRolesStore from "~/scripts/store/roles";
 import useTokensStore from "~/scripts/store/tokens";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
-import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import BaseChoice from "~/components/base/BaseChoice.vue";
@@ -95,9 +90,9 @@ const suffix = useId();
 const gameStore = useGameStore();
 const rolesStore = useRolesStore();
 const tokensStore = useTokensStore();
-const direction = defineModel<string>("direction", {
-    default: String(ETokenDirection.CLOCKWISE),
-});
+// const direction = defineModel<string>("direction", {
+//     default: String(ETokenDirection.CLOCKWISE),
+// });
 const showAbilities = defineModel<boolean>("abilities", { default: true });
 const allowDuplicates = defineModel<boolean>("duplicates", { default: false });
 const startingPlayer = defineModel<string>("start", { default: "" });
