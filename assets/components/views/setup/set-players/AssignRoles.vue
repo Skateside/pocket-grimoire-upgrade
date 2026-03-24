@@ -12,6 +12,9 @@
                 name="duplicates"
             />
         </BaseLabel>
+        <div>
+            <BaseButton @click="selectRandom">Highlight random</BaseButton>
+        </div>
     </StackLayout>
 
     <template v-for="team in ORDER">
@@ -27,14 +30,13 @@
                         :min="0"
                     />
                     <label :for="`role-${role.id}-${suffix}`">
-                        <input
+                        <BaseCheckbox
                             v-model="included[role.id]"
-                            type="checkbox"
                             :name="`role[${role.id}]`"
                             :id="`role-${role.id}-${suffix}`"
-                            :disabled="Boolean(rolesStore.getSpecial(role, ERoleSpecialType.SELECTION, ERoleSpecialName.BAG_DISABLED))"
+                            :disabled="rolesStore.getIsBagDisabled(role)"
                             @change="() => handleSelection(role)"
-                        >
+                        />
                         <StackLayout node="span">
                             <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
                             <strong>{{ role.name }}</strong>
@@ -48,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IRole } from "~/scripts/types/data";
+import type { IGameBreakdown, IRole, IRoleCounts } from "~/scripts/types/data";
 import {
     ERoleSpecialType,
     ERoleSpecialName,
@@ -60,12 +62,18 @@ import useGameStore from "~/scripts/store/game";
 import useRolesStore from "~/scripts/store/roles";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
-import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
+import BaseLabel from "~/components/base/BaseLabel.vue";
+import { shuffle } from "~/scripts/utilities/arrays";
 
 const props = defineProps<{
     count: number,
+    modelValue: IRoleCounts,
+}>();
+const emit = defineEmits<{
+    (e: "update:model-value", value: IRoleCounts): void,
 }>();
 
 const suffix = useId();
@@ -76,7 +84,7 @@ const allowDuplicates = defineModel<boolean>("duplicates", { default: false });
 const included = reactive<Record<IRole["id"], boolean>>(
     Object.fromEntries(rolesStore.script.map(({ id }) => [id, false]))
 );
-const counts = reactive<Record<IRole["id"], number>>(
+const counts = reactive<IRoleCounts>(
     Object.fromEntries(rolesStore.script.map(({ id }) => [id, 0]))
 );
 const teams = computed<Record<IRole["id"], ERoleTeam>>(() => Object.fromEntries(
@@ -114,6 +122,8 @@ watch(counts, (value) => {
 
     });
 
+    emit("update:model-value", value);
+
 });
 
 const handleSelection = (role: IRole) => {
@@ -139,6 +149,40 @@ const handleSelection = (role: IRole) => {
     ) {
         allowDuplicates.value = true;
     }
+
+};
+
+const selectRandom = () => {
+
+    const types = rolesStore.scriptByType;
+    const breakdown = gameStore.getBreakdown(props.count);
+
+    const random: IRole["id"][] = [];
+
+    for (const [team, count] of Object.entries(breakdown)) {
+
+        const roles = types[team as keyof IGameBreakdown].filter((role) => (
+            rolesStore.getIsBasicRole(role)
+            && !rolesStore.getIsBagDisabled(role)
+        ));
+        const shuffled = shuffle(roles);
+        const sliced = shuffled.slice(0, count);
+
+        random.push(...sliced.map(({ id }) => id));
+
+    }
+
+    rolesStore.script.forEach((role) => {
+
+        if (!rolesStore.getIsBasicRole(role)) {
+            return;
+        }
+
+        const { id } = role;
+        included[id] = random.includes(id);
+        handleSelection(role);
+
+    });
 
 };
 </script>

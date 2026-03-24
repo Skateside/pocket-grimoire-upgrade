@@ -322,6 +322,8 @@ export type IRoleCheckResults = {
     }[],
 };
 
+export type IRoleCounts = Record<IRole["id"], number>;
+
 export type IRoleImport = {
     id: string,
     name: string,

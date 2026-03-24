@@ -318,9 +318,9 @@ export function addNightOrders(script: IScriptFull) {
     const metaEntry = getOrCreateScriptMeta(script);
     const nightSheets: INightSheets = Object.fromEntries(
         script
-            .filter((entry) => !isMetaEntry(entry))
+            .filter((entry) => isBasicRole(entry) || isSpecial(entry))
             .map((entry) => {
-                const { id, firstNight, otherNight } = entry as IRole;
+                const { id, firstNight, otherNight } = entry;
                 return [
                     id,
                     { firstNight, otherNight },
@@ -1095,6 +1095,39 @@ export function getSpecial(
     );
 
 }
+
+/**
+ * Checks whether or not the role can be added to the bag.
+ *
+ * @param role Role to check.
+ * @returns `true` if the role can be added to the bag, `false` otherwise.
+ */
+export function isBagDisabled(role: IRole) {
+
+    if (isSpecial(role)) {
+        return false;
+    }
+
+    const special = getSpecial(
+        role,
+        ERoleSpecialType.SELECTION,
+        ERoleSpecialName.BAG_DISABLED,
+    );
+
+    return Boolean(special);
+
+}
+
+/**
+ * Checks to see if the given object is a basic role, i.e. not a special role,
+ * not the meta entry etc.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a basic role, `false` otherwise.
+ */
+export function isBasicRole(object: unknown): object is IRole {
+    return isObject(object) && !isMetaEntry(object) && !isSpecial(object);
+};
 
 /**
  * Checks to see if the given ojbect is a deprecated script entry.

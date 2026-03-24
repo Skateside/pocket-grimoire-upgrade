@@ -26,6 +26,8 @@ import {
     getImage as helperGetImage,
     getScriptMeta as helperGetScriptMeta,
     getSpecial as helperGetSpecial,
+    isBagDisabled,
+    isBasicRole,
     isDeprecatedScriptEntry,
     isMetaEntry,
     isSpecial,
@@ -100,10 +102,8 @@ const rolesStore = defineStore("roles", () => {
     const scriptByType = computed(() => {
 
         return Object.groupBy(
-            script.value.filter((role) => (
-                !isMetaEntry(role) && role.edition !== ERoleEdition.SPECIAL
-            )),
-            (role) => (role as IRole).team || "",
+            script.value.filter(isBasicRole),
+            (role) => role.team || "",
         ) as Record<ERoleTeam, IRole[]>;
 
     });
@@ -176,6 +176,8 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
+    const getIsBagDisabled = computed(() => isBagDisabled);
+    const getIsBasicRole = computed(() => isBasicRole);
     const getIsMeta = computed(() => isMetaEntry);
     const getIsUniversal = computed(() => isUniversal);
     const getRoleById = computed(() => innerGetRoleById);
@@ -366,6 +368,8 @@ const rolesStore = defineStore("roles", () => {
         nightOrder,
         scriptByType,
         getImage,
+        getIsBagDisabled,
+        getIsBasicRole,
         getIsMeta,
         getIsSpecialById,
         getIsUniversal,
