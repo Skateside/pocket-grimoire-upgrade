@@ -29,20 +29,23 @@
                         :aria-label="`Number of ${role.name} to add`"
                         :min="0"
                     />
-                    <label :for="`role-${role.id}-${suffix}`">
-                        <BaseCheckbox
-                            v-model="included[role.id]"
-                            :name="`role[${role.id}]`"
-                            :id="`role-${role.id}-${suffix}`"
-                            :disabled="rolesStore.getIsBagDisabled(role)"
-                            @change="() => handleSelection(role)"
-                        />
-                        <StackLayout node="span">
-                            <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
-                            <strong>{{ role.name }}</strong>
-                            <span v-if="showAbilities">{{ role.ability }}</span>
-                        </StackLayout>
-                    </label>
+                    <StackLayout class="assign-roles__picker">
+                        <label :for="`role-${role.id}-${suffix}`">
+                            <BaseCheckbox
+                                v-model="included[role.id]"
+                                :name="`role[${role.id}]`"
+                                :id="`role-${role.id}-${suffix}`"
+                                :disabled="rolesStore.getIsBagDisabled(role)"
+                                :aria-describedby="showAbilities ? `role-ability-${role.id}-${suffix}` : undefined"
+                                @change="() => handleSelection(role)"
+                            />
+                            <StackLayout node="span">
+                                <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
+                                <strong>{{ role.name }}</strong>
+                            </StackLayout>
+                        </label>
+                        <span v-if="showAbilities" :id="`role-ability-${role.id}-${suffix}`">{{ role.ability }}</span>
+                    </StackLayout>
                 </div>
             </GridLayout>
         </fieldset>
@@ -186,3 +189,18 @@ const selectRandom = () => {
 
 };
 </script>
+
+<style lang="scss" scoped>
+.assign-roles__picker {
+    position: relative;
+
+    > label::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        inset-inline-start: 0;
+        inset-block-start: 0;
+    }
+}
+</style>

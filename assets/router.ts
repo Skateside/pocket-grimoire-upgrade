@@ -54,7 +54,7 @@ const routes: RouteRecordRaw[] = [
                     {
                         path: "set-players",
                         name: "set-players",
-                        component: () => import("./components/views/setup/SetPlayers.vue"),
+                        component: () => import("./components/views/setup/set-players/SetPlayers.vue"),
                     },
                     {
                         path: "cache",
