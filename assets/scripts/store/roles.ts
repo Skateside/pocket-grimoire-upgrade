@@ -19,6 +19,7 @@ import {
 import { defineStore } from "pinia";
 import { type DeepReadonly, computed, inject, reactive, ref, toRaw } from "vue";
 import {
+    addNightOrders,
     checkScriptImportValidity,
     convertRole,
     convertScriptToData,
@@ -108,46 +109,26 @@ const rolesStore = defineStore("roles", () => {
     });
     const nightOrder = computed(() => {
 
+        const metaEntry = script.value.find(isMetaEntry);
         const nightOrder: IRoleNightOrder = {
             first: [],
             other: [],
         };
 
-        script.value.forEach((role) => {
-
-            if (isMetaEntry(role)) {
-                return; // ignore meta role.
-            }
-
-            const { firstNight, otherNight } = role;
-
-            if (firstNight) {
-
-                nightOrder.first.push({
-                    role,
-                    order: firstNight,
-                });
-
-            }
-
-            if (otherNight) {
-
-                nightOrder.other.push({
-                    role,
-                    order: otherNight,
-                });
-
-            }
-
-        });
-
-        nightOrder.first.sort((roleA, roleB) => roleA.order - roleB.order);
-        nightOrder.other.sort((roleA, roleB) => roleA.order - roleB.order);
+        if (!metaEntry) {
+            return nightOrder;
+        }
+        
+        nightOrder.first = (metaEntry.firstNight ?? [])
+            .map(innerGetRoleById)
+            .filter(Boolean) as IRole[];
+        nightOrder.other = (metaEntry.otherNight ?? [])
+            .map(innerGetRoleById)
+            .filter(Boolean) as IRole[];
 
         return nightOrder;
 
     });
-
     const importReport = reactive<{
         given: number,
         imported: number,
@@ -361,6 +342,10 @@ const rolesStore = defineStore("roles", () => {
         });
 
         storage.set(STORAGE_KEY, validImports.filter(Boolean));
+
+        // Generate the night order for the meta entry.
+        addNightOrders(entries);
+
         script.value = sortByTeam(entries);
         importReport.given = rawScript.length;
         importReport.imported = entries.length - specialRoles.value.length;

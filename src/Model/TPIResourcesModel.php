@@ -260,12 +260,20 @@ class TPIResourcesModel
                 $cleanSpecial['team'] = $special['team'];
             }
 
-            if (array_key_exists('firstNightReminder', $special)) {
-                $cleanSpecial['firstNightReminder'] = $special['firstNightReminder'];
+            if (
+                array_key_exists('firstNightReminder', $special)
+                && in_array($special['id'], $nightsheet['firstNight'])
+            ) {
+                $cleanSpecial['firstNight'] = array_search($special['id'], $nightsheet['firstNight']) + 1;
+                $cleanSpecial['firstNightReminder'] = $this->cleanNightReminder($special['firstNightReminder']);
             }
 
-            if (array_key_exists('otherNightReminder', $special)) {
-                $cleanSpecial['otherNightReminder'] = $special['otherNightReminder'];
+            if (
+                array_key_exists('otherNightReminder', $special)
+                && in_array($special['id'], $nightsheet['otherNight'])
+            ) {
+                $cleanSpecial['otherNight'] = array_search($special['id'], $nightsheet['otherNight']) + 1;
+                $cleanSpecial['otherNightReminder'] = $this->cleanNightReminder($special['otherNightReminder']);
             }
 
             $idToIndex[$special['id']] = count($combined);
@@ -293,11 +301,19 @@ class TPIResourcesModel
                 $cleanRole['remindersGlobal'] = $role['remindersGlobal'];
             }
 
-            if (array_key_exists('firstNightReminder', $role)) {
+            if (
+                array_key_exists('firstNightReminder', $role)
+                && in_array($role['id'], $nightsheet['firstNight'])
+            ) {
+                $cleanRole['firstNight'] = array_search($role['id'], $nightsheet['firstNight']) + 1;
                 $cleanRole['firstNightReminder'] = $this->cleanNightReminder($role['firstNightReminder']);
             }
 
-            if (array_key_exists('otherNightReminder', $role)) {
+            if (
+                array_key_exists('otherNightReminder', $role)
+                && in_array($role['id'], $nightsheet['otherNight'])
+            ) {
+                $cleanRole['otherNight'] = array_search($role['id'], $nightsheet['otherNight']) + 1;
                 $cleanRole['otherNightReminder'] = $this->cleanNightReminder($role['otherNightReminder']);
             }
 
@@ -323,25 +339,8 @@ class TPIResourcesModel
 
         }
 
-        foreach ($nightsheet as $night => $ids) {
-
-            foreach ($ids as $nightOrder => $roleId) {
-
-                $index = $idToIndex[$jinx['id']] ?? -1;
-
-                if ($index < 0) {
-                    $message[] = "Unrecognised role '{$roleId}'";
-                    continue;
-                }
-
-                $combined[$index][$night] = $nightOrder;
-
-            }
-
-        }
-
-        $fixedReminders = $this->convertReminders($combined);
-        $withImages = $this->applyImages($fixedReminders, $images);
+        $withReminders = $this->convertReminders($combined);
+        $withImages = $this->applyImages($withReminders, $images);
 
         $this->message = implode(PHP_EOL, $message);
 

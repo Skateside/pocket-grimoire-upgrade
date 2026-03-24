@@ -194,6 +194,8 @@ type IObjectMapCallback<TObject extends AnyObject, TResult = any> = (
 /**
  * Converts the given object as defined by the map.
  *
+ * **WARNING** Keys are forgotten during this process since they can be changed.
+ *
  * @param object Object to convert.
  * @param callback Function to modify the object.
  * @returns Modified object.
@@ -211,6 +213,8 @@ type IObjectFilterCallback<TObject extends AnyObject> = (
 
 /**
  * Filters the given object as defined by the given filter.
+ *
+ * **WARNING** This is not type-safe and will return `{ [k: string]: any }`
  *
  * @param object Object to filter.
  * @param callback Function to filter the object.

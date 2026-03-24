@@ -22,7 +22,7 @@ const usePathsStore = defineStore("paths", () => {
             ([_key, value]) => isString(value) && isValidLocalURL(value),
         );
 
-        return Object.freeze(filteredPaths)
+        return Object.freeze(filteredPaths as Record<string, string>)
 
     });
 

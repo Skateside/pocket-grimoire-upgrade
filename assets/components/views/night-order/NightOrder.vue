@@ -3,7 +3,7 @@
         <div v-for="(title, key) in nights" class="night-order__night">
             <h2 class="night-order__heading">{{ title }}</h2>
             <ol>
-                <template v-for="{ role } in rolesStore.nightOrder[key]" :key="role.id">
+                <template v-for="role in rolesStore.nightOrder[key]" :key="role.id">
                     <li
                         v-if="showRole(role.id)"
                         class="night-order__entry"

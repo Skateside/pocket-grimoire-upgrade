@@ -199,7 +199,9 @@ function makeBigrams(string: string) {
  */
 const getBigrams = memoise((string: string) => {
 
-    const simple = string.replace(/\s+/g, "");
+    const simple = string
+        .normalize("NFD")
+        .replace(/[\p{Diacritic}\P{Letter}]/gu, "");
 
     if (simple.length < 2) {
         return null;

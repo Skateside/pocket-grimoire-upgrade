@@ -44,18 +44,18 @@
         "edition": "special",
         "name": "Dawn",
         "team": "fabled",
-        "firstNightReminder": "Wait for a few seconds. End the Night Phase.",
-        "otherNightReminder": "Wait for a few seconds. End the Night Phase.",
         "firstNight": 1,
-        "otherNight": 1
+        "firstNightReminder": "Wait for a few seconds. End the Night Phase.",
+        "otherNight": 1,
+        "otherNightReminder": "Wait for a few seconds. End the Night Phase."
     },
     {
         "id": "demoninfo",
         "edition": "special",
         "name": "Demon Info",
         "team": "demon",
-        "firstNightReminder": "If there are 7 or more players, wake the Demon:\n\tShow the *THESE ARE YOUR MINIONS* token. Point to all Minions.\n\tShow the *THESE CHARACTERS ARE NOT IN PLAY* token. Show 3 not-in-play good character tokens.",
         "firstNight": 1,
+        "firstNightReminder": "If there are 7 or more players, wake the Demon:\n\tShow the *THESE ARE YOUR MINIONS* token. Point to all Minions.\n\tShow the *THESE CHARACTERS ARE NOT IN PLAY* token. Show 3 not-in-play good character tokens.",
         "otherNight": 0
     },
     {
@@ -63,18 +63,18 @@
         "edition": "special",
         "name": "Dusk",
         "team": "fabled",
-        "firstNightReminder": "Start the Night Phase.",
-        "otherNightReminder": "Start the Night Phase.",
         "firstNight": 1,
-        "otherNight": 1
+        "firstNightReminder": "Start the Night Phase.",
+        "otherNight": 1,
+        "otherNightReminder": "Start the Night Phase."
     },
     {
         "id": "minioninfo",
         "edition": "special",
         "name": "Minion Info",
         "team": "minion",
-        "firstNightReminder": "If there are 7 or more players, wake all Minions:\n\tShow the *THIS IS THE DEMON* token. Point to the Demon.\n\tShow the *THESE ARE YOUR MINIONS* token. Point to the other Minions.",
         "firstNight": 1,
+        "firstNightReminder": "If there are 7 or more players, wake all Minions:\n\tShow the *THIS IS THE DEMON* token. Point to the Demon.\n\tShow the *THESE ARE YOUR MINIONS* token. Point to the other Minions.",
         "otherNight": 0
     }
 ]

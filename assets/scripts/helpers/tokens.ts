@@ -185,7 +185,7 @@ export function filterUpdateData<TToken extends Partial<IToken>>(object: TToken)
             Object.hasOwn(updateDataWhitelist, key)
             && updateDataWhitelist[key as string](value)
         );
-    });
+    }) as Partial<IToken>;
 
 }
 

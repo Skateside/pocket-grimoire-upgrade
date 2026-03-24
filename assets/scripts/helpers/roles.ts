@@ -44,6 +44,7 @@ import {
     isPropertyString,
     isString,
     isObject,
+    filterObject,
 } from "../utilities/objects";
 import { isValidLocalURL, isValidURL } from "../utilities/strings";
 
@@ -224,6 +225,122 @@ const roleChecks: IRoleCheck[] = [
     makeCheck("setup", isBoolean, true),
     makeArrayOfCheck("special", isValidSpecialImport, true),
 ];
+
+/**
+ * Filters the given raw night order so that it only includes roles that were
+ * successfully added to the script.
+ *
+ * @param rawNightOrder Unfiltered night order.
+ * @param nightSheets An object of the role IDs to the first- and other- nights'
+ * positions.
+ * @param nightType The type of night (i.e. `"firstNight"` or `"otherNight`).
+ * @returns The filtered night order.
+ * @private
+ */
+function filterNightOrder<TNightType extends keyof INightSheets[IRole["id"]]>(
+    rawNightOrder: NonNullable<IScriptMeta[TNightType]>,
+    nightSheets: INightSheets,
+    nightType: TNightType,
+): NonNullable<IScriptMeta[TNightType]> {
+
+    const filtered = rawNightOrder.filter((id) => {
+        return isNumber(nightSheets[id]?.[nightType]);
+    });
+
+    // Add in the special roles of "dawn", "dusk", "minion info", and "demon
+    // info" if they're not there already.
+
+    const { DAWN, DEMON_INFO, DUSK, MINION_INFO } = ERoleId;
+
+    if (!filtered.includes(DAWN)) {
+        filtered.unshift(DAWN);
+    }
+
+    if (nightType === "firstNight" && !filtered.includes(MINION_INFO)) {
+        filtered.splice(filtered.indexOf(DAWN) + 1, 0, MINION_INFO);
+    }
+
+    if (nightType === "firstNight" && !filtered.includes(DEMON_INFO)) {
+        filtered.splice(filtered.indexOf(MINION_INFO) + 1, 0, DEMON_INFO);
+    }
+
+    if (!filtered.includes(DUSK)) {
+        filtered.push(DUSK);
+    }
+
+    return filtered;
+
+}
+
+/**
+ * Creates the night order for a specific night, filtering out any pre-existing
+ * but invalid entries.
+ *
+ * @param rawNightOrder Unfiltered night order, which might be undefined.
+ * @param nightSheets An object of the role IDs to the first- and other- nights'
+ * positions.
+ * @param nightType The type of night (i.e. `"firstNight"` or `"otherNight`).
+ * @returns The filtered and sorted night order.
+ * @private
+ */
+function createNightOrder<TNightType extends keyof INightSheets[IRole["id"]]>(
+    rawNightOrder: IScriptMeta[TNightType],
+    nightSheets: INightSheets,
+    nightType: TNightType,
+): NonNullable<IScriptMeta[TNightType]> {
+
+    if (Array.isArray(rawNightOrder) && rawNightOrder.length) {
+        return filterNightOrder(rawNightOrder, nightSheets, nightType);
+    }
+
+    const nightOrder = filterObject(
+        nightSheets,
+        ([_id, nights]) => isNumber(nights[nightType]),
+    ) as { [k: IRole["id"]]: { [nightType]: number } };
+    const order = Object.entries(nightOrder)
+        .map(([id, nights]) => [id, nights[nightType]]) as [string, number][];
+    const sorted = order
+        .toSorted((a, b) => a[1] - b[1])
+        .map(([id]) => id);
+
+    return sorted;
+
+};
+
+/**
+ * Adds the night orders to the meat entry of the given script, creating the
+ * meta entry if it doesn't already exist.
+ *
+ * @param script Script whose night orders should be set.
+ */
+export function addNightOrders(script: IScriptFull) {
+
+    const metaEntry = getOrCreateScriptMeta(script);
+    const nightSheets: INightSheets = Object.fromEntries(
+        script
+            .filter((entry) => !isMetaEntry(entry))
+            .map((entry) => {
+                const { id, firstNight, otherNight } = entry as IRole;
+                return [
+                    id,
+                    { firstNight, otherNight },
+                ];
+            })
+    );
+
+    metaEntry.firstNight = createNightOrder(
+        metaEntry.firstNight,
+        nightSheets,
+        "firstNight",
+    );
+    metaEntry.otherNight = createNightOrder(
+        metaEntry.otherNight,
+        nightSheets,
+        "otherNight",
+    );
+
+}
+
 
 /**
  * Checks the given script, dividing the script into valid and invalid entries.
@@ -856,6 +973,13 @@ export function convertSpecialEntry(special: IRoleSpecialImport) {
 
 }
 
+type INightSheets = {
+    [Key: IRole["id"]]: {
+        firstNight: number | undefined,
+        otherNight: number | undefined,
+    },
+};
+
 /**
  * Gets the image for the given role, optionally changing it to the specified
  * alignment. If the image doesn't exist at that alignment, the first image will
@@ -887,6 +1011,34 @@ export function getImage(
         ? source
         : ""
     );
+
+};
+
+/**
+ * Gets the meta entry from the given scripts. If the script has no meta entry,
+ * one is created and prepended to the start of the script before being
+ * returned.
+ *
+ * @param script Script whose meta entry should be returned.
+ * @returns Found or created meta entry.
+ */
+export function getOrCreateScriptMeta(
+    script: IScriptFull,
+) {
+
+    let metaEntry = getScriptMeta(script);
+
+    if (!metaEntry) {
+
+        metaEntry = {
+            id: ERoleId.META,
+            name: "",
+        } satisfies IScriptMeta
+        script.unshift(metaEntry);
+
+    }
+
+    return metaEntry;
 
 };
 
