@@ -56,8 +56,8 @@ const props = defineProps<{
     count?: number,
 }>();
 
-const store = useGameStore();
-const table = computed(() => store.getTable());
+const gameStore = useGameStore();
+const table = computed(() => gameStore.getTable());
 const labels = { // TODO: i18n
     [ERoleTeam.TOWNSFOLK]: "Townsfolk",
     [ERoleTeam.OUTSIDER]: "Outsiders",

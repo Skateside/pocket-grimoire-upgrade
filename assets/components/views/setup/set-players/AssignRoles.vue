@@ -12,21 +12,11 @@
                 name="duplicates"
             />
         </BaseLabel>
-        <!-- <BaseChoice
-            v-model="direction"
-            :choices="[
-                { text: 'Clockwise', value: String(ETokenDirection.CLOCKWISE) },
-                { text: 'Anti-Clockwise', value: String(ETokenDirection.ANTICLOCKWISE) },
-            ]"
-            label="Direction"
-            name="direction"
-            :open="true"
-        /> -->
     </StackLayout>
 
     <template v-for="team in ORDER">
         <fieldset v-if="rolesStore.scriptByType[team]?.length">
-            <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.breakdown[team] ?? "X" }})</legend>
+            <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.getTeamCount(team, props.count) }})</legend>
             <GridLayout min-width="10ch">
                 <div v-for="role in rolesStore.scriptByType[team]" :key="role.id">
                     <BaseInputSpinner
@@ -55,47 +45,34 @@
             </GridLayout>
         </fieldset>
     </template>
-
-    <BaseChoice
-        label="Starting player"
-        :choices="choices"
-        v-model="startingPlayer"
-        name="start"
-        empty-text="Please select"
-    />
 </template>
 
 <script setup lang="ts">
-import type { IRole, ITokenSeat } from "~/scripts/types/data";
+import type { IRole } from "~/scripts/types/data";
 import {
     ERoleSpecialType,
     ERoleSpecialName,
     ERoleTeam,
-    // ETokenDirection,
 } from "~/scripts/enums/data";
 import { computed, reactive, useId, watch } from "vue";
 import { ORDER } from "~/scripts/helpers/roles";
 import useGameStore from "~/scripts/store/game";
 import useRolesStore from "~/scripts/store/roles";
-import useTokensStore from "~/scripts/store/tokens";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
-import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
-import type { IBaseChoice } from "~/scripts/types/base";
+
+const props = defineProps<{
+    count: number,
+}>();
 
 const suffix = useId();
 const gameStore = useGameStore();
 const rolesStore = useRolesStore();
-const tokensStore = useTokensStore();
-// const direction = defineModel<string>("direction", {
-//     default: String(ETokenDirection.CLOCKWISE),
-// });
 const showAbilities = defineModel<boolean>("abilities", { default: true });
 const allowDuplicates = defineModel<boolean>("duplicates", { default: false });
-const startingPlayer = defineModel<string>("start", { default: "" });
 const included = reactive<Record<IRole["id"], boolean>>(
     Object.fromEntries(rolesStore.script.map(({ id }) => [id, false]))
 );
@@ -164,25 +141,4 @@ const handleSelection = (role: IRole) => {
     }
 
 };
-
-const choices = computed(() => {
-
-    return tokensStore
-        .getSortedSeats()
-        .map((id) => tokensStore.getById(id))
-        .filter((seat) => seat !== undefined)
-        .map((seat) => {
-
-            return {
-                value: seat.id,
-                text: String(
-                    (seat as ITokenSeat).name
-                    ?? (seat as ITokenSeat).index
-                    ?? seat.id
-                ),
-            } satisfies IBaseChoice;
-
-        });
-
-});
 </script>

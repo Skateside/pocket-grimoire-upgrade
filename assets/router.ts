@@ -57,11 +57,6 @@ const routes: RouteRecordRaw[] = [
                         component: () => import("./components/views/setup/SetPlayers.vue"),
                     },
                     {
-                        path: "assign-roles",
-                        name: "assign-roles",
-                        component: () => import("./components/views/setup/AssignRoles.vue"),
-                    },
-                    {
                         path: "cache",
                         name: "cache",
                         component: () => import("./components/views/setup/ClearCache.vue"),

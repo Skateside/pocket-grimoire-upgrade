@@ -2,7 +2,7 @@
     <BaseForm @submit.prevent="handleSubmit">
         <StackLayout>
             <SetPlayerCount v-model="playerCount" />
-            <AssignRoles />
+            <AssignRoles :count="Number(playerCount)" />
             <!-- <div>
                 <BaseButton type="submit">Draw Characters</BaseButton>
             </div> -->
@@ -19,13 +19,14 @@ import BaseForm from "~/components/base/BaseForm.vue";
 import SetPlayerCount from "./set-players/SetPlayerCount.vue";
 import AssignRoles from "./set-players/AssignRoles.vue";
 
-const playerCount = defineModel<string>({
+const playerCount = defineModel<string>("player-count", {
     default: String(EGameValues.DEFAULT_NEW_GAME),
 });
+// const roleSelected = defineModel("
 
-const store = useGameStore();
+const gameStore = useGameStore();
 
 const handleSubmit = () => {
-    store.setPlayerCount(Number(playerCount.value));
+    gameStore.setPlayerCount(Number(playerCount.value));
 };
 </script>

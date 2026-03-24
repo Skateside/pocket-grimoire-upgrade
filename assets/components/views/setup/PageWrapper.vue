@@ -3,7 +3,6 @@
     <ReelLayout node="menu" class="no-list">
         <li><RouterLink :to="{ name: 'select-edition' }">Select edition</RouterLink></li>
         <li><RouterLink :to="{ name: 'set-players' }">Set players</RouterLink></li>
-        <li><RouterLink :to="{ name: 'assign-roles' }">Assign roles</RouterLink></li>
         <li><RouterLink :to="{ name: 'cache' }">Cache</RouterLink></li>
     </ReelLayout>
 

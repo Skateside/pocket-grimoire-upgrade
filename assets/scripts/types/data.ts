@@ -51,8 +51,15 @@ export type IFields = Record<string, Record<string, boolean | string>>;
 
 // The breakdown of role types.
 
-// export type IGameBreakdown = Record<IRoleCoreTeam, number>;
-export type IGameBreakdown = Record<ERoleTeam, number>;
+export type IGameBreakdown = Record<
+    (
+        ERoleTeam.TOWNSFOLK
+        | ERoleTeam.OUTSIDER
+        | ERoleTeam.MINION
+        | ERoleTeam.DEMON
+    ),
+    number
+>;
 export type IGameCounts = Record<number, IGameBreakdown>;
 
 // Internationalisation information.
