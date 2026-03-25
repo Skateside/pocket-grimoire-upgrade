@@ -31,7 +31,7 @@
 import type {
     IInfoToken,
 } from "../scripts/types/data";
-import useInfoTokenStore from "../scripts/store/infoToken";
+import useInfoTokenStore from "../scripts/stores/infoToken";
 import GridLayout from "./layouts/GridLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 

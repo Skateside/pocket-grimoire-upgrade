@@ -54,7 +54,7 @@ import {
     useTemplateRef,
     watch,
 } from "vue";
-import useUiStore from "../../scripts/store/ui";
+import useUiStore from "../../scripts/stores/ui";
 import ClusterLayout from "../layouts/ClusterLayout.vue";
 import ReelLayout from "../layouts/ReelLayout.vue";
 import { words } from "../../scripts/utilities/strings";

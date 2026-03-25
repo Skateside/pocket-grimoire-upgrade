@@ -105,9 +105,9 @@ import {
     type ITokenSeat,
 } from "../scripts/types/data";
 import { computed, reactive, ref, useId, watch } from "vue";
-import useGameStore from "../scripts/store/game";
-import useRoleStore from "../scripts/store/role";
-import useTokenStore from "../scripts/store/token";
+import useGameStore from "../scripts/stores/game";
+import useRoleStore from "../scripts/stores/role";
+import useTokenStore from "../scripts/stores/token";
 import GridLayout from "./layouts/GridLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 import BaseInputSpinner from "./base/BaseInputSpinner.vue"

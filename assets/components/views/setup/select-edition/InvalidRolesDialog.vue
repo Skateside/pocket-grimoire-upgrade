@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import DialogUI from "~/components/ui/DialogUI.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import useRolesStore from "~/scripts/store/roles";
+import useRolesStore from "~/scripts/stores/roles";
 
 const rolesStore = useRolesStore();
 

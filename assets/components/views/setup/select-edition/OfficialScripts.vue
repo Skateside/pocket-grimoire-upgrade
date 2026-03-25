@@ -25,7 +25,7 @@ import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import useRolesStore from "~/scripts/store/roles";
+import useRolesStore from "~/scripts/stores/roles";
 
 const emit = defineEmits<{
     (e: "success"): void,

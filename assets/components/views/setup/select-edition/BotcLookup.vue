@@ -59,8 +59,8 @@ import BaseInput from "~/components/base/BaseInput.vue";
 import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import usePathsStore from "~/scripts/store/paths";
-import useRolesStore from "~/scripts/store/roles";
+import usePathsStore from "~/scripts/stores/paths";
+import useRolesStore from "~/scripts/stores/roles";
 import { performAjax } from "./helpers";
 import { debounce, noop } from "~/scripts/utilities/functions";
 

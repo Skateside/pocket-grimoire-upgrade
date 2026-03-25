@@ -61,8 +61,8 @@ import {
 } from "~/scripts/enums/data";
 import { computed, reactive, useId, watch } from "vue";
 import { ORDER } from "~/scripts/helpers/roles";
-import useGameStore from "~/scripts/store/game";
-import useRolesStore from "~/scripts/store/roles";
+import useGameStore from "~/scripts/stores/game";
+import useRolesStore from "~/scripts/stores/roles";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";

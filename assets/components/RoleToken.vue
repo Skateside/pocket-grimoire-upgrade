@@ -36,7 +36,7 @@
 <script lang="ts" setup>
 import { type IRole, ERoleAlignment } from "../scripts/types/data";
 import { computed } from "vue";
-import useRoleStore from "../scripts/store/role";
+import useRoleStore from "../scripts/stores/role";
 
 const props = defineProps<{
     role?: IRole | IRole["id"] | null,

@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import useBluffsStore from "../scripts/store/bluffs";
+import useBluffsStore from "../scripts/stores/bluffs";
 import ReelLayout from "./layouts/ReelLayout.vue";
 import DemonBluffGroup from "./DemonBluffGroup.vue";
 

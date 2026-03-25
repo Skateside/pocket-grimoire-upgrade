@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import type { IRoleReminder } from "../scripts/types/data";
-import useRoleStore from "../scripts/store/role";
+import useRoleStore from "../scripts/stores/role";
 import ReminderToken from "./ReminderToken.vue";
 import {
     type IDialogUIEvents,

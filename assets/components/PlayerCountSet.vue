@@ -26,7 +26,7 @@ import {
     computed,
     useId,
 } from "vue";
-import useGameStore from "../scripts/store/game";
+import useGameStore from "../scripts/stores/game";
 import ClusterLayout from "./layouts/ClusterLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 

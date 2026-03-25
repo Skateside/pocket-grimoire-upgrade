@@ -125,7 +125,7 @@ import {
     useTemplateRef,
     watch,
 } from "vue";
-import useRoleStore from "../scripts/store/role";
+import useRoleStore from "../scripts/stores/role";
 import {
     fetchTimeout,
 } from "../scripts/utilities/fetch";

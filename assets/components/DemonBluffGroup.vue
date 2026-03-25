@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import type { IDemonBluffGroup, IRole } from "../scripts/types/data";
 import { ref } from "vue";
-import useBluffsStore from "../scripts/store/bluffs";
+import useBluffsStore from "../scripts/stores/bluffs";
 import ClusterLayout from "./layouts/ClusterLayout.vue";
 import StackLayout from "./layouts/StackLayout.vue";
 import RoleToken from "./RoleToken.vue";

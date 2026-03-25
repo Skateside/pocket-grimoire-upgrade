@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { type IRoleReminder, ERoleAlignment } from "../scripts/types/data";
 import { computed } from "vue";
-import useRoleStore from "../scripts/store/role";
+import useRoleStore from "../scripts/stores/role";
 
 const props = defineProps<{
     reminder: IRoleReminder,

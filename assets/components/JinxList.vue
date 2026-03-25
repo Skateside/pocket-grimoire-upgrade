@@ -52,8 +52,8 @@
 
 <script setup lang="ts">
 import { computed, useId } from "vue";
-import useJinxStore from "../scripts/store/jinx";
-import useRoleStore from "../scripts/store/role";
+import useJinxStore from "../scripts/stores/jinx";
+import useRoleStore from "../scripts/stores/role";
 
 const suffix = useId();
 const showNotInPlay = defineModel<boolean>({ default: true });

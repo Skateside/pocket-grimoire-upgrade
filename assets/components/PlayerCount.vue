@@ -42,7 +42,7 @@
 
 <script setup lang="ts">
 import { ERoleTeam } from "../scripts/types/data";
-import useGameStore from "../scripts/store/game";
+import useGameStore from "../scripts/stores/game";
 import { computed } from "vue";
 
 const store = useGameStore();

@@ -1,5 +1,5 @@
 <template>
-    <BaseForm @submit.prevent="handleSubmit">
+    <BaseForm memory="set-players" @submit.prevent="handleSubmit">
         <StackLayout>
             <SetPlayerCount v-model="playerCount" />
             <!-- TODO: Optionally name the players -->

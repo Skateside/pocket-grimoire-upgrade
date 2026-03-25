@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { ERoleTeam } from "~/scripts/enums/data";
-import useGameStore from "~/scripts/store/game";
+import useGameStore from "~/scripts/stores/game";
 import { computed } from "vue";
 
 const props = defineProps<{

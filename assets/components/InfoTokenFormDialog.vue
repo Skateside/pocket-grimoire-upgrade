@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import type { IInfoToken } from "../scripts/types/data";
 import { computed, onMounted, useTemplateRef } from "vue";
-import useInfoTokenStore from "../scripts/store/infoToken";
+import useInfoTokenStore from "../scripts/stores/infoToken";
 import {
     type IDialogUIEvents,
     DialogUI,

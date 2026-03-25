@@ -30,8 +30,8 @@ import {
     DialogUI,
     bubbleEvents,
 } from "./ui/dialog";
-import useInfoTokenStore from "../scripts/store/infoToken";
-import useRoleStore from "../scripts/store/role";
+import useInfoTokenStore from "../scripts/stores/infoToken";
+import useRoleStore from "../scripts/stores/role";
 import ClusterLayout from "./layouts/ClusterLayout.vue";
 import RoleToken from "./RoleToken.vue";
 

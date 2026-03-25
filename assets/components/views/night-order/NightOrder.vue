@@ -42,8 +42,8 @@ import type { IRole } from "~/scripts/types/data";
 import ReelLayout from "~/components/layouts/ReelLayout.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
-import useRolesStore from "~/scripts/store/roles";
-import useTokensStore from "~/scripts/store/tokens";
+import useRolesStore from "~/scripts/stores/roles";
+import useTokensStore from "~/scripts/stores/tokens";
 
 const showDead = defineModel<boolean>("dead", { default: true });
 const showNotInPlay = defineModel<boolean>("not-in-play", { default: true });

@@ -34,8 +34,8 @@ import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import usePathsStore from "~/scripts/store/paths";
-import useRolesStore from "~/scripts/store/roles";
+import usePathsStore from "~/scripts/stores/paths";
+import useRolesStore from "~/scripts/stores/roles";
 import { isValidURL } from "~/scripts/utilities/strings";
 import { performAjax } from "./helpers";
 

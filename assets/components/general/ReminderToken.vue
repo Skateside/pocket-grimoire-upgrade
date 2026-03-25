@@ -29,7 +29,7 @@
 import type { IReminder } from "~/scripts/types/data";
 import { computed } from "vue";
 import { ETokenAlignment } from "~/scripts/enums/data";
-import useRolesStore from "~/scripts/store/roles";
+import useRolesStore from "~/scripts/stores/roles";
 
 const props = defineProps<{
     reminder: IReminder,

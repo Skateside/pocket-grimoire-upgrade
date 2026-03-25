@@ -110,12 +110,12 @@ import {
     ref,
     useTemplateRef,
 } from "vue";
-import useGameStore from "../scripts/store/game";
-import useInfoTokenStore from "../scripts/store/infoToken";
-import useJinxStore from "../scripts/store/jinx";
-import useRoleStore from "../scripts/store/role";
-import useTokensStore from "../scripts/store/tokens";
-import useUiStore from "../scripts/store/ui";
+import useGameStore from "../scripts/stores/game";
+import useInfoTokenStore from "../scripts/stores/infoToken";
+import useJinxStore from "../scripts/stores/jinx";
+import useRoleStore from "../scripts/stores/role";
+import useTokensStore from "../scripts/stores/tokens";
+import useUiStore from "../scripts/stores/ui";
 import {
     type ITabsUIInterface,
     TabsUI,

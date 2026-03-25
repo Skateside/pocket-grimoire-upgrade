@@ -34,7 +34,7 @@ import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseSpinner from "~/components/base/BaseSpinner.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import useRolesStore from "~/scripts/store/roles";
+import useRolesStore from "~/scripts/stores/roles";
 import { parseScript } from "./helpers";
 
 const emit = defineEmits<{

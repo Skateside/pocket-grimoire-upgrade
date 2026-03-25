@@ -50,8 +50,8 @@
 <script setup lang="ts">
 import type { IRole } from "../scripts/types/data";
 import { useId } from "vue";
-import useRoleStore from "../scripts/store/role";
-import useTokenStore from "../scripts/store/token";
+import useRoleStore from "../scripts/stores/role";
+import useTokenStore from "../scripts/stores/token";
 import ReelLayout from "./layouts/ReelLayout.vue";
 
 const suffix = useId();
