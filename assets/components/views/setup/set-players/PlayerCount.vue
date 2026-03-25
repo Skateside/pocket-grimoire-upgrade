@@ -1,6 +1,7 @@
 <template>
     <table class="count-table">
-        <colgroup>
+        <caption>Number of roles per team for the number of players (under normal circumstances)</caption>
+        <colgroup v-if="props.count">
             <col />
             <col
                 v-for="[count] in table.players"
@@ -17,6 +18,7 @@
                     scope="col"
                 >
                     {{ text }}
+                    <span v-if="count === props.count" class="sr-only">(selected)</span>
                 </th>
             </tr>
         </thead>

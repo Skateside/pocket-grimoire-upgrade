@@ -20,7 +20,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "update:modelValue", value: boolean): void,
 }>();
-const input = useTemplateRef<HTMLInputElement>("input");
+const input = useTemplateRef("input");
 
 const { id } = useLabel();
 const attrs = computed(() => {
@@ -31,6 +31,10 @@ const attrs = computed(() => {
 
     if (!Object.hasOwn(attrs, "id") && id.value) {
         attrs.id = id.value;
+    }
+
+    if (!Object.hasOwn(attrs, "value")) {
+        attrs.value = "on";
     }
 
     return attrs;

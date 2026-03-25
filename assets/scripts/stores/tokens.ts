@@ -151,7 +151,7 @@ const useTokensStore = defineStore("tokens", () => {
 
         const token = createToken(settings, type);
 
-        if (type === ETokenType.SEAT && isNumber(token.index)) {
+        if (helperIsSeat(token) && isNumber(token.index)) {
 
             const index = Math.max(
                 ...tokens.value
