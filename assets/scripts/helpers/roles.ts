@@ -1043,6 +1043,20 @@ export function getOrCreateScriptMeta(
 };
 
 /**
+ * Returns the number of reminders that the given role has.
+ *
+ * @param role Role whose reminders should be counted.
+ * @returns Number of reminders for the given role.
+ */
+export function getReminderCount(role: IRole) {
+
+    return (role.reminders || []).reduce((subtotal, reminder) => {
+        return subtotal + (reminder.count || 0);
+    }, 0);
+
+}
+
+/**
  * Gets the meta entry from the given script (if it exists).
  *
  * @param script Script to check through.

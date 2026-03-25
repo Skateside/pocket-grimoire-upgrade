@@ -36,6 +36,11 @@
         "name": "Unrecognised",
         "ability": "The role was not recognised",
         "edition": "special",
+        "reminders": [
+            {
+                "name": "Unrecognised"
+            }
+        ],
         "firstNight": 0,
         "otherNight": 0
     },

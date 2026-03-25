@@ -24,6 +24,7 @@ import {
     convertRole,
     convertScriptToData,
     getImage as helperGetImage,
+    getReminderCount as helperGetReminderCount,
     getScriptMeta as helperGetScriptMeta,
     getSpecial as helperGetSpecial,
     isBagDisabled,
@@ -32,13 +33,14 @@ import {
     isMetaEntry,
     isSpecial,
     isUniversal,
+    isValidReminderImport,
     isValidRoleImport,
     isValidScriptImport,
     mergeRoles,
     sortByTeam,
 } from "../helpers/roles";
 import { findBestMatch } from "../utilities/strings";
-import { deepFreeze, deepThaw, isObject, isString } from "../utilities/objects";
+import { deepFreeze, deepThaw, isNumber, isObject, isString } from "../utilities/objects";
 import { StorageNotFoundError } from "~/errors";
 
 const rolesStore = defineStore("roles", () => {
@@ -220,6 +222,7 @@ const rolesStore = defineStore("roles", () => {
     const getIsBasicRole = computed(() => isBasicRole);
     const getIsMeta = computed(() => isMetaEntry);
     const getIsUniversal = computed(() => isUniversal);
+    const getReminderCount = computed(() => helperGetReminderCount);
     const getRoleById = computed(() => innerGetRoleById);
     const getScriptById = computed(() => (id: string) => scripts.value[id]);
     const getScriptMeta = computed(() => helperGetScriptMeta);
@@ -274,6 +277,40 @@ const rolesStore = defineStore("roles", () => {
             ...unrecognised,
             name: `${unrecognised.name}: ${roleId}`,
         } as IRole;
+
+    });
+
+    const innerGetUnrecognisedReminder = () => {
+        const role = innerGetRoleById(ERoleId.UNRECOGNISED)!;
+        return role.reminders![0];
+    };
+
+    const interpretReminder = computed(() => (
+        reminder: IReminder | IReminder["id"] | null | void,
+    ) => {
+
+        if (!reminder) {
+            return innerGetUnrecognisedReminder();
+        }
+
+        if (isValidReminderImport(reminder)) {
+            return reminder;
+        }
+
+        const [roleId, indexCount] = reminder.split(":");
+        const index = Number(indexCount);
+
+        if (!roleId || !isNumber(index)) {
+            return innerGetUnrecognisedReminder();
+        }
+
+        const role = innerGetRoleById(roleId);
+
+        if (!role || !role.reminders || !Object.hasOwn(role.reminders, index)) {
+            return innerGetUnrecognisedReminder();
+        }
+
+        return role.reminders[index];
 
     });
 
@@ -420,12 +457,14 @@ const rolesStore = defineStore("roles", () => {
         getIsSpecialById,
         getIsUniversal,
         getNightOrderById,
+        getReminderCount,
         getReminderImage,
         getRoleById,
         getScriptById,
         getScriptMeta,
         getSpecial,
         interpret,
+        interpretReminder,
         // Actions.
         clearImportReport,
         setScript,

@@ -47,12 +47,7 @@ const props = defineProps<{
 const rolesStore = useRolesStore();
 const role = computed(() => rolesStore.interpret(props.role));
 const image = computed(() => rolesStore.getImage(role.value, props.alignment));
-const top = computed(() => {
-    if (!role.value?.reminders) {
-        return 0;
-    }
-    return Math.min(role.value.reminders.length, 6);
-});
+const top = computed(() => Math.min(rolesStore.getReminderCount(role.value), 6));
 const first = computed(() => (role.value?.firstNight ?? 0) > 0);
 const other = computed(() => (role.value?.otherNight ?? 0) > 0);
 const setup = computed(() => Boolean(role.value?.setup));
