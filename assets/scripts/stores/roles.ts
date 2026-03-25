@@ -139,6 +139,46 @@ const rolesStore = defineStore("roles", () => {
         invalid: [],
     });
 
+    const innerGetActiveNightOrder = (active: IRole["id"][]) => {
+
+        return {
+            first: nightOrder.value.first
+                .filter(({ id }) => active.includes(id))
+                .map(({ id }) => id),
+            other: nightOrder.value.other
+                .filter(({ id }) => active.includes(id))
+                .map(({ id }) => id),
+        };
+
+    };
+
+    const getNightOrderById = computed(() => (
+        roleId?: IRole["id"],
+        active: IRole["id"][] = [],
+    ) => {
+
+        const myNightOrder: Partial<Record<"first" | "other", number>> = {};
+
+        if (!roleId) {
+            return myNightOrder;
+        }
+
+        const activeNightOrder = innerGetActiveNightOrder(active);
+        const firstIndex = activeNightOrder.first.indexOf(roleId);
+        const otherIndex = activeNightOrder.other.indexOf(roleId);
+
+        if (firstIndex > -1) {
+            myNightOrder.first = firstIndex + 1;
+        }
+
+        if (otherIndex > -1) {
+            myNightOrder.other = otherIndex + 1;
+        }
+
+        return myNightOrder;
+
+    });
+
     const innerGetRoleById = (roleId: IRole["id"]) => {
 
         const scriptEntry = script.value.find(({ id }) => id === roleId);
@@ -189,6 +229,11 @@ const rolesStore = defineStore("roles", () => {
         const role = innerGetRoleById(roleId);
         return role?.edition === ERoleEdition.SPECIAL;
     });
+
+    const innerGetIsOrphanById = (roleId: IRole["id"]) => {
+        return !script.value.find(({ id }) => id === roleId);
+    };
+    const getIsOrphanById = computed(() => innerGetIsOrphanById);
 
     const interpret = computed(() => (
         role: IRole | IRole["id"] | null | void,
@@ -370,9 +415,11 @@ const rolesStore = defineStore("roles", () => {
         getImage,
         getIsBagDisabled,
         getIsBasicRole,
+        getIsOrphanById,
         getIsMeta,
         getIsSpecialById,
         getIsUniversal,
+        getNightOrderById,
         getReminderImage,
         getRoleById,
         getScriptById,

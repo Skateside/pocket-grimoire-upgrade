@@ -88,7 +88,7 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
 
     } else if (selected < players) {
 
-        const message = `You selected ${rolesSelectedCount.value} role(s) for ${playerCount.value} players - was that correct?`; // TODO: i18n
+        const message = `You selected ${selected} role(s) for ${players} players - was that correct?`; // TODO: i18n
 
         if (!(await popup.value.showConfirm(message))) {
             return; // User-cancelled
