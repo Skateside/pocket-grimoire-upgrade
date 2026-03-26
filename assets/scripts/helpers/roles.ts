@@ -1365,7 +1365,7 @@ export function isValidRoleImport(object: unknown): object is IRoleImport {
             object,
             "reminders",
             (item) => isString(item) || isValidReminderImport(item),
-        ) // NOTE: Fails on my imports!!
+        )
         && isPropertyOptionalArrayOf(object, "remindersGlobal", isString)
         && (!Object.hasOwn(object, "setup") || isBoolean(object.setup))
         && isPropertyOptionalArrayOf(object, "special", isValidSpecialImport)

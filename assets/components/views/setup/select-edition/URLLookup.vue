@@ -63,7 +63,7 @@ const handleSubmit = () => {
         url: model.value,
     }).promise.then(
         (value) => {
-            if (rolesStore.setScript(value)) {
+            if (rolesStore.checkImport(value)) {
                 emit("success");
             } else {
                 emit("invalid");

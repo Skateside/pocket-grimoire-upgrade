@@ -49,7 +49,7 @@ const handleSubmit = () => {
 
     const script = rolesStore.getScriptById(model.value);
 
-    if (script && rolesStore.setScript(script)) {
+    if (script && rolesStore.checkImport(script)) {
         emit("success");
     } else if (script) {
         emit("invalid");

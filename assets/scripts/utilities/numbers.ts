@@ -58,6 +58,9 @@ export function clamp(min: number, value: number, max: number) {
  * @param handler Handler to execute.
  * @returns Results from each handler's execution.
  */
-export function times<T = any>(count: number, handler: (index: number) => T) {
+export function times<Type = any>(
+    count: number,
+    handler: (index: number) => Type,
+) {
     return Array.from({ length: count }, (_ignore, index) => handler(index));
 }

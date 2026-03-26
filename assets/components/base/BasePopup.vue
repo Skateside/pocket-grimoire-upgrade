@@ -58,7 +58,10 @@ const popupType = ref(props.type);
 const messageText = ref("");
 const resolvePromise = ref<(value: boolean) => void>(() => {});
 
-const showPopup = (message?: string, type: "alert" | "confirm" = "alert") => {
+const showPopup = (
+    message?: string,
+    type: "alert" | "confirm" = "alert",
+): Promise<boolean> => {
 
     messageText.value = message ?? "";
     popupType.value = type;
@@ -82,7 +85,7 @@ const handleChoice = (value: boolean) => {
 const handleToggle = ({ newState }: ToggleEvent) => {
 
     if (newState === "closed") {
-        handleChoice(false);
+        handleChoice(popupType.value === "alert");
     }
 
     emit("toggle", newState);

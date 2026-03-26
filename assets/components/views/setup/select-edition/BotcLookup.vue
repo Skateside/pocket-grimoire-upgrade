@@ -131,7 +131,7 @@ const handleClick = (id: number) => {
             "error",
             "Unable to find script, please try a different one or lookup a different term.", // TODO: i18n
         );
-    } else if (rolesStore.setScript(botcScript.script)) {
+    } else if (rolesStore.checkImport(botcScript.script)) {
         emit("success");
     } else {
         emit("invalid");

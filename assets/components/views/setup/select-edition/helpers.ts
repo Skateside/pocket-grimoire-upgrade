@@ -55,11 +55,7 @@ export const parseScript = (data: string): IParseScriptResponse => {
     try {
         script = JSON.parse(data);
     } catch (error) {
-        return { error: "Unable to parse script." }; // TODO: i18n
-    }
-
-    if (!Array.isArray(script)) {
-        return { error: "Script is not valid." }; // TODO: i18n
+        return { error: "The script isn't valid JSON so it can't be imported." }; // TODO: i18n
     }
 
     return { script };

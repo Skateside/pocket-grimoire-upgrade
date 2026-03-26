@@ -41,7 +41,7 @@ const handleSubmit = () => {
 
     if (error) {
         emit("error", error);
-    } else if (script && rolesStore.setScript(script)) {
+    } else if (script && rolesStore.checkImport(script)) {
         emit("success");
     } else if (script) {
         emit("invalid");

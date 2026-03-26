@@ -1,6 +1,4 @@
-import type {
-    AnyFunction,
-} from "../types/lib";
+import type { AnyFunction } from "../types/lib";
 
 /**
  * Debounces a function so that it will only execute when it hasn't been called
@@ -10,21 +8,19 @@ import type {
  * @param delay Optional delay time in milliseconds. Defaults to 500.
  * @returns Debounced function.
  */
-export function debounce<T extends AnyFunction = AnyFunction>(
-    handler: T,
+export function debounce<THandler extends AnyFunction>(
+    handler: THandler,
     delay = 500,
 ) {
 
     let timeoutId = 0;
 
-    const debounced = (...args: Parameters<T>) => {
+    return (...args: Parameters<THandler>) => {
 
         window.clearTimeout(timeoutId);
         timeoutId = window.setTimeout(() => handler(...args), delay);
 
     };
-
-    return debounced as T;
 
 }
 
@@ -48,13 +44,13 @@ export function noop(..._ignore: any[]) {
  * @param keymaker Optional function to convert parameters into a string.
  * @returns Function that will return a cached value if possible.
  */
-export function memoise<R, T extends (...args: any[]) => R>(
-    handler: T,
-    keymaker = (...args: Parameters<T>) => String(args[0]),
-): T {
+export function memoise<THandler extends AnyFunction>(
+    handler: THandler,
+    keymaker = (...args: Parameters<THandler>) => String(args[0]),
+) {
 
-    const cache: Record<string, R> = Object.create(null);
-    const func = (...args: Parameters<T>) => {
+    const cache: Record<string, ReturnType<THandler>> = Object.create(null);
+    const func = (...args: Parameters<THandler>) => {
 
         const key = keymaker(...args);
 
@@ -66,6 +62,6 @@ export function memoise<R, T extends (...args: any[]) => R>(
 
     };
 
-    return func as T;
+    return func as THandler;
 
 }

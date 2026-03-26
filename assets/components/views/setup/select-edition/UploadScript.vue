@@ -69,7 +69,7 @@ const handleSubmit = () => {
 
         const { script, error } = parseScript(target!.result as string);
 
-        if (script && rolesStore.setScript(script)) {
+        if (script && rolesStore.checkImport(script)) {
             emit("success");
         } else if (script) {
             emit("invalid");

@@ -8,7 +8,7 @@ import {
  * @param array Array to reduce.
  * @returns Array with any duplicates removed.
  */
-export function unique<T = any>(array: T[]) {
+export function unique<Type = any>(array: Type[]) {
     return [...new Set(Array.from(array))];
 };
 
@@ -20,9 +20,9 @@ export function unique<T = any>(array: T[]) {
  * @param map Conversion function.
  * @returns Array with duplicates removed.
  */
-export function uniqueMap<T = any>(
-    array: T[],
-    map: (item: T, index: number) => any,
+export function uniqueMap<Type = any>(
+    array: Type[],
+    map: (item: Type, index: number) => any,
 ) {
 
     const mapped = array.map(map);
@@ -108,7 +108,7 @@ const swap = (array: any[], indexA: number, indexB: number) => {
  * @param array Array to shuffle.
  * @returns Shuffled copy of the array.
  */
-export function shuffle<T = any>(array: T[]) {
+export function shuffle<Type = any>(array: Type[]) {
 
     // Fisher-Yates (aka Knuth) Shuffle.
     const shuffled = [...array];

@@ -40,7 +40,14 @@ import {
     sortByTeam,
 } from "../helpers/roles";
 import { findBestMatch } from "../utilities/strings";
-import { deepFreeze, deepThaw, isNumber, isObject, isString } from "../utilities/objects";
+import {
+    clone,
+    deepFreeze,
+    deepThaw,
+    isNumber,
+    isObject,
+    isString,
+} from "../utilities/objects";
 import { StorageNotFoundError } from "~/errors";
 
 const rolesStore = defineStore("roles", () => {
@@ -132,13 +139,15 @@ const rolesStore = defineStore("roles", () => {
 
     });
     const importReport = reactive<{
-        given: number,
-        imported: number,
+        errors: string[],
         invalid: IRoleCheckResults["invalid"],
+        valid: IScriptFull,
+        validCount: number,
     }>({
-        given: 0,
-        imported: 0,
+        errors: [],
         invalid: [],
+        valid: [],
+        validCount: 0,
     });
     const chosenIds = ref<IRole["id"][]>([]);
 
@@ -316,12 +325,13 @@ const rolesStore = defineStore("roles", () => {
     });
 
     const clearImportReport = () => {
-        importReport.given = 0;
-        importReport.imported = 0;
+        importReport.errors.length = 0;
         importReport.invalid.length = 0;
+        importReport.valid.length = 0;
+        importReport.validCount = 0;
     };
 
-    const setScript = (
+    const checkImport = (
         rawScript: (
             IScriptImport
             | IScriptDataEntry
@@ -333,28 +343,27 @@ const rolesStore = defineStore("roles", () => {
 
         if (!Array.isArray(rawScript)) {
 
-            importReport.invalid.push({
-                role: rawScript,
-                reasons: ["script not an array"], // TODO: i18n
-            });
-
-            return;
+            importReport.errors.push("The given script is not an array."); // TODO: i18n
+            return false;
 
         }
 
-        const entries: IScriptFull = [
-            ...deepThaw(specialRoles.value),
-        ];
+        importReport.valid.push(...deepThaw(specialRoles.value));
         const checked = checkScriptImportValidity(rawScript);
         checked.invalid.forEach((invalid) => importReport.invalid.push(invalid));
+        let foundMeta = false;
 
-        const validImports: IScriptImport = [...checked.valid];
+        checked.valid.forEach((entry) => {
 
-        checked.valid.forEach((entry, index) => {
+            const isMeta = isMetaEntry(entry);
+            
+            if (isMeta && foundMeta) {
+                importReport.errors.push("Multiple meta entries, only the first will be used."); // TODO: i18n
+            } else if (isMeta) {
 
-            if (isMetaEntry(entry)) {
-                entries.push(entry);
-                return; // job done
+                importReport.valid.push(entry);
+                foundMeta = true;
+
             }
 
             const isEntryString = isString(entry);
@@ -369,10 +378,8 @@ const rolesStore = defineStore("roles", () => {
                 const role = innerGetRoleById(id);
 
                 if (role) {
-                    entries.push(deepThaw(role));
+                    importReport.valid.push(deepThaw(role));
                 } else {
-
-                    delete validImports[index];
 
                     const ids = roles.value.map(({ id }) => id);
                     const bestMatch = findBestMatch(id, ids);
@@ -393,8 +400,6 @@ const rolesStore = defineStore("roles", () => {
 
             if (!converted) {
 
-                delete validImports[index];
-
                 const invalid = {
                     role: entry,
                     reasons: ["Unable to convert given entry into a role"], // TODO: i18n
@@ -410,8 +415,6 @@ const rolesStore = defineStore("roles", () => {
 
             if (!merged) {
 
-                delete validImports[index];
-
                 const invalid = {
                     role: entry,
                     reasons: ["Failure during role merge"], // TODO: i18n
@@ -422,24 +425,29 @@ const rolesStore = defineStore("roles", () => {
 
             }
 
-            entries.push(merged);
+            importReport.valid.push(merged);
 
         });
 
-        storage.set(STORAGE_KEY, validImports.filter(Boolean));
-
-        // Generate the night order for the meta entry.
-        addNightOrders(entries);
-
-        script.value = sortByTeam(entries);
-        importReport.given = rawScript.length;
-        importReport.imported = entries.length - specialRoles.value.length;
+        importReport.validCount = (
+            importReport.valid.length - specialRoles.value.length
+        );
 
         return importReport.invalid.length === 0;
 
     };
 
-    setScript(storage.get<IScriptImport>(STORAGE_KEY, Array.isArray, []));
+    const setScriptFromImport = () => {
+
+        const entries: IScriptFull = clone(toRaw(importReport.valid));
+
+        addNightOrders(entries);
+        script.value = sortByTeam(entries);
+
+    };
+
+    checkImport(storage.get<IScriptImport>(STORAGE_KEY, Array.isArray, []));
+    setScriptFromImport();
 
     return {
         // Data.
@@ -468,8 +476,9 @@ const rolesStore = defineStore("roles", () => {
         interpret,
         interpretReminder,
         // Actions.
+        checkImport,
         clearImportReport,
-        setScript,
+        setScriptFromImport,
     }
 
 });

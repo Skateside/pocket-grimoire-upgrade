@@ -15,15 +15,38 @@
     />
 
     <p v-if="isSuccess" style="color: green">Success</p>
-    <BasePopup ref="invalid-popup" @hidden="handleInvalidPopupClose">
-        <p>The valid roles have been imported, but some roles couldn't be.</p>
-        
-        <dl>
-            <div v-for="{ role, reasons } in rolesStore.importReport.invalid">
-                <dt>{{ role.id || "(unknown role)" }}</dt>
-                <dd v-for="reason in reasons">{{ reason }}</dd>
-            </div>
-        </dl>
+    <BasePopup
+        ref="invalid-popup"
+        yes-text="Import valid"
+        no-text="Don't import"
+        @hidden="handleInvalidPopupClose"
+    >
+        <StackLayout>
+
+            <template v-if="rolesStore.importReport.errors.length">
+                <p>There were some problems with the import.</p>
+
+                <ul>
+                    <li v-for="error in rolesStore.importReport.errors">
+                        {{ error }}
+                    </li>
+                </ul>
+            </template>
+
+            <template v-if="rolesStore.importReport.invalid.length">
+                <p>There were some errors with {{ rolesStore.importReport.invalid.length }} of the roles.</p>
+    
+                <dl>
+                    <div v-for="{ role, reasons } in rolesStore.importReport.invalid">
+                        <dt>{{ role.id || "(unknown role)" }}</dt>
+                        <dd v-for="reason in reasons">{{ reason }}</dd>
+                    </div>
+                </dl>
+            </template>
+
+            <p>Would you like to import the valid {{ rolesStore.importReport.validCount }} role(s)?</p>
+
+        </StackLayout>
     </BasePopup>
     <BasePopup ref="error-popup" />
 </template>
@@ -32,7 +55,7 @@
 import { ref, useTemplateRef } from "vue";
 import { RouterLink, RouterView } from "vue-router";
 import ReelLayout from "~/components/layouts/ReelLayout.vue";
-// import InvalidRolesDialog from "./InvalidRolesDialog.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
 import useRolesStore from "~/scripts/stores/roles";
 
@@ -46,8 +69,12 @@ const handleSuccess = () => {
     window.setTimeout(() => isSuccess.value = false, 3500);
 };
 
-const handleInvalid = () => {
-    invalidPopup.value?.showAlert(); // TODO: showConfirm: Do you want to load in the other roles?
+const handleInvalid = async () => {
+
+    if (await invalidPopup.value?.showConfirm()) {
+        rolesStore.setScriptFromImport();
+    }
+
 };
 
 const handleError = (message: string) => {
