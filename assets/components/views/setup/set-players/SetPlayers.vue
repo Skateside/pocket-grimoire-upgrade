@@ -133,16 +133,36 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
     // NOTE: if `existingTokens` > 0 then don't reposition automatically.
     // const existingTokens = tokensStore.tokens.length;
 
-    tokensStore.roles.forEach((token) => tokensStore.destroy(token));
-    tokensStore.reminders.forEach((token) => tokensStore.destroy(token));
+    tokensStore.roles.forEach((token) => {
+
+        if (!tokensStore.destroy(token)) {
+            console.warn("Unable to destroy role token %o", token);
+        }
+
+    });
+    tokensStore.reminders.forEach((token) => {
+
+        if (!tokensStore.destroy(token)) {
+            console.warn("Unable to destroy reminder token %o", token);
+        }
+
+    });
     tokensStore.seats.slice(players).forEach((token) => {
-        tokensStore.destroy(token);
+
+        if (!tokensStore.destroy(token)) {
+            console.warn("Unable to destroy seat token %o", token);
+        }
+
     });
     times(players - tokensStore.seats.length, () => {
         tokensStore.createSeat();
     });
     tokensStore.seats.forEach((seat) => {
-        tokensStore.setSeatRoleId(seat, undefined);
+
+        if (!tokensStore.setSeatRoleId(seat, undefined)) {
+            console.warn("Unable to remove roleId from seat %o", seat);
+        }
+
     });
 
     playerNames.value.forEach((name, index) => {
@@ -185,7 +205,9 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
 
     });
 
-    router.push({ name: "grimoire", query: { place: "auto" } });
+    router
+        .push({ name: "grimoire", query: { place: "auto" } })
+        .then((failure) => failure && console.error(failure));
 
     // TODO: use the `data-action` attribute of the submitted to work out the next step.
     console.log({ submitter });

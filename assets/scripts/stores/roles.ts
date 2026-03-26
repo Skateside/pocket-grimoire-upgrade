@@ -234,7 +234,9 @@ const rolesStore = defineStore("roles", () => {
     const getIsUniversal = computed(() => isUniversal);
     const getReminderCount = computed(() => helperGetReminderCount);
     const getRoleById = computed(() => innerGetRoleById);
-    const getScriptById = computed(() => (id: string) => scripts.value[id]);
+    const getScriptById = computed(() => (scriptId: string) => {
+        return scripts.value[scriptId];
+    });
     const getScriptMeta = computed(() => helperGetScriptMeta);
     const getSpecial = computed(() => helperGetSpecial);
 
@@ -400,23 +402,23 @@ const rolesStore = defineStore("roles", () => {
 
             if (isEntryString || isDeprecatedScriptEntry(entry)) {
 
-                const id = (
+                const roleId = (
                     isEntryString
                     ? entry
                     : entry.id
                 );
-                const role = innerGetRoleById(id);
+                const role = innerGetRoleById(roleId);
 
                 if (role) {
                     importReport.valid.push(deepThaw(role));
                 } else {
 
                     const ids = roles.value.map(({ id }) => id);
-                    const bestMatch = findBestMatch(id, ids);
+                    const bestMatch = findBestMatch(roleId, ids);
                     importReport.invalid.push({
-                        role: { id },
+                        role: { id: roleId },
                         reasons: [
-                            `Unrecognised ID "${id}" - did you mean "${bestMatch.match}"?`
+                            `Unrecognised ID "${roleId}" - did you mean "${bestMatch.match}"?`
                         ], // TODO: i18n
                     });
 

@@ -158,17 +158,37 @@ export function getDistance(item: ICoordinates, centre: ICoordinates) {
     return Math.hypot(item.x - centre.x, item.y - centre.y);
 }
 
-const updateDataWhitelist: Record<string, (object: unknown) => boolean> = {
+type ITokenWhitelist = Exclude<
+    (
+        | keyof IToken
+        | keyof ITokenReminder
+        | keyof ITokenRole
+        | keyof ITokenSeat
+    ),
+    "id" | "type"
+>;
+
+const updateDataWhitelist: Record<
+    ITokenWhitelist,
+    (object: unknown) => boolean
+> = {
     alignment: (object: unknown) => {
-        return Object.values(ETokenAlignment).includes(object as ETokenAlignment);
+
+        return Object
+            .values(ETokenAlignment)
+            .includes(object as ETokenAlignment);
+
     },
     dead: isBoolean,
     ghostVote: isBoolean,
     index: isNumber,
     name: isString,
-    reminder: isString,
-    role: isString,
+    reminderId: isString,
+    roleId: isString,
     rotate: isBoolean,
+    x: isNumber,
+    y: isNumber,
+    z: isNumber,
 };
 
 /**
@@ -178,12 +198,14 @@ const updateDataWhitelist: Record<string, (object: unknown) => boolean> = {
  * @param object Object to filter.
  * @returns Filtered data.
  */
-export function filterUpdateData<TToken extends Partial<IToken>>(object: TToken) {
+export function filterUpdateData<
+    TToken extends Partial<IToken | ITokenReminder | ITokenRole | ITokenSeat>
+>(object: TToken) {
 
     return filterObject(object, ([key, value]) => {
         return (
             Object.hasOwn(updateDataWhitelist, key)
-            && updateDataWhitelist[key as string](value)
+            && updateDataWhitelist[key as ITokenWhitelist](value)
         );
     }) as Partial<IToken>;
 

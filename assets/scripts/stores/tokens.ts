@@ -21,7 +21,7 @@ import {
     isValidToken,
 } from "../helpers/tokens";
 import { removeAtIndex, unique } from "../utilities/arrays";
-import { isNumber } from "../utilities/objects";
+import { isNumber, isString } from "../utilities/objects";
 import { StorageNotFoundError, UnrecognisedTokenError } from "../../errors";
 
 const useTokensStore = defineStore("tokens", () => {
@@ -94,29 +94,30 @@ const useTokensStore = defineStore("tokens", () => {
     );
 
     const dead = computed(() => Object.keys(inPlay.value)
-        .filter((id) => !alive.value.includes(id))
+        .filter((tokenId) => !alive.value.includes(tokenId))
     );
 
     const active = computed(() => Object.keys(inPlay.value)
-        .filter((id) => alive.value.includes(id))
+        .filter((tokenId) => alive.value.includes(tokenId))
     );
 
     const innerGetIndex = (token: IToken) => {
         return tokens.value.indexOf(token);
     };
 
-    const innerGetIndexById = (id: IToken["id"]) => {
-        return tokens.value.findIndex(({ id: tokenId }) => tokenId === id);
+    const innerGetIndexById = (tokenId: IToken["id"]) => {
+        return tokens.value.findIndex(({ id }) => tokenId === id);
     };
 
-    const innerGetById = (id: IToken["id"]): IToken | undefined => {
-        return tokens.value[innerGetIndexById(id)];
+    const innerGetById = (tokenId: IToken["id"]): IToken | undefined => {
+        return tokens.value[innerGetIndexById(tokenId)];
     };
 
     const innerGetToken = (tokenOrId: IToken | IToken["id"]) => {
 
+        const isTokenId = isString(tokenOrId);
         const token = (
-            typeof tokenOrId === "string"
+            isTokenId
             ? innerGetById(tokenOrId)
             : tokenOrId
         );
@@ -124,7 +125,7 @@ const useTokensStore = defineStore("tokens", () => {
         if (!token) {
 
             const id = (
-                typeof tokenOrId === "string"
+                isTokenId
                 ? tokenOrId
                 : `{ id: "${tokenOrId.id}" }`
             );
@@ -217,7 +218,7 @@ const useTokensStore = defineStore("tokens", () => {
         settings: Partial<TToken>,
     ) => {
 
-        const token = innerGetById(tokenId);
+        const token = innerGetToken(tokenId);
 
         if (!token) {
             return false;

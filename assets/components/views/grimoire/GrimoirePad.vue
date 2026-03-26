@@ -150,7 +150,9 @@ const moveTo = (movableItem: HTMLElement, { x, y, z }: ICoordinates) => {
         update.z = z;
     }
 
-    tokensStore.updateById(id, update);
+    if (!tokensStore.updateById(id, update)) {
+        console.warn("moveTo() Unable to update token with ID %o", id);
+    }
 
 };
 
@@ -201,7 +203,10 @@ const startDrag = (event: MouseEvent | TouchEvent) => {
     
     endDragging();
     dragHandler = (event) => dragObject(movableItem, event);
-    tokensStore.updateById(id, { z: tokensStore.nextZ });
+
+    if (!tokensStore.updateById(id, { z: tokensStore.nextZ })) {
+        return console.warn("startDrag() Unable to update token with ID %o", id);
+    }
 
     window.addEventListener("mousemove", dragHandler);
     window.addEventListener("touchmove", dragHandler, {
