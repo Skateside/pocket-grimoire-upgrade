@@ -69,17 +69,17 @@ const useTokensStore = defineStore("tokens", () => {
         .filter((token) => helperIsSeat(token) || helperIsRole(token))
         .reduce((inPlay, token) => {
 
-            const { role } = token;
+            const { roleId } = token;
 
-            if (!role) {
+            if (!roleId) {
                 return inPlay;
             }
 
-            if (!Object.hasOwn(inPlay, role)) {
-                inPlay[role] = 0;
+            if (!Object.hasOwn(inPlay, roleId)) {
+                inPlay[roleId] = 0;
             }
 
-            inPlay[role] += 1;
+            inPlay[roleId] += 1;
 
             return inPlay;
 
@@ -89,8 +89,8 @@ const useTokensStore = defineStore("tokens", () => {
     const alive = computed(() => unique(tokens.value
         .filter(helperIsSeat)
         .filter(({ dead }) => !dead)
-        .map((token) => token.role)
-        .filter((id) => typeof id === "string"))
+        .map(({ roleId }) => roleId)
+        .filter((roleId) => typeof roleId === "string"))
     );
 
     const dead = computed(() => Object.keys(inPlay.value)
@@ -100,6 +100,10 @@ const useTokensStore = defineStore("tokens", () => {
     const active = computed(() => Object.keys(inPlay.value)
         .filter((id) => alive.value.includes(id))
     );
+
+    const innerGetIndex = (token: IToken) => {
+        return tokens.value.indexOf(token);
+    };
 
     const innerGetIndexById = (id: IToken["id"]) => {
         return tokens.value.findIndex(({ id: tokenId }) => tokenId === id);
@@ -173,22 +177,21 @@ const useTokensStore = defineStore("tokens", () => {
 
     };
 
-    const createSeat = (settings: Partial<ITokenSeat> = {}) => (
-        create(settings, ETokenType.SEAT)
-    );
-    const createReminder = (settings: Partial<ITokenReminder> = {}) => (
-        create(settings, ETokenType.REMINDER)
-    );
+    const createSeat = (settings: Partial<ITokenSeat> = {}) => {
+        return create(settings, ETokenType.SEAT)
+    };
+    const createReminder = (settings: Partial<ITokenReminder> = {}) => {
+        return create(settings, ETokenType.REMINDER)
+    };
 
     const update = <TToken extends IToken = IToken>(
-        id: IToken["id"],
+        token: TToken,
         settings: Partial<TToken>,
     ) => {
 
-        const index = innerGetIndexById(id);
-        const token = tokens.value[index];
+        const index = innerGetIndex(token);
 
-        if (!token) {
+        if (index < 0) {
             return false;
         }
 
@@ -209,8 +212,39 @@ const useTokensStore = defineStore("tokens", () => {
 
     };
 
-    const destroy = (id: IToken["id"]) => {
-        return removeAtIndex(tokens.value, innerGetIndexById(id));
+    const updateById = <TToken extends IToken = IToken>(
+        tokenId: TToken["id"],
+        settings: Partial<TToken>,
+    ) => {
+
+        const token = innerGetById(tokenId);
+
+        if (!token) {
+            return false;
+        }
+
+        return update(token, settings);
+
+    };
+
+    const setSeatName = (seat: ITokenSeat, name?: ITokenSeat["name"]) => {
+
+        return helperIsSeat(seat) && update(seat, {
+            name,
+        });
+
+    };
+
+    const setSeatRoleId = (seat: ITokenSeat, roleId?: IRole["id"]) => {
+
+        return helperIsSeat(seat) && update(seat, {
+            roleId,
+        });
+
+    };
+
+    const destroy = (token: IToken) => {
+        return removeAtIndex(tokens.value, innerGetIndex(token));
     };
 
     const getSortedSeats = computed(() => () => {
@@ -251,7 +285,10 @@ const useTokensStore = defineStore("tokens", () => {
         createSeat,
         createReminder,
         update,
+        updateById,
         destroy,
+        setSeatName,
+        setSeatRoleId,
     };
 
 });

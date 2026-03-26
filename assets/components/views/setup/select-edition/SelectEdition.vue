@@ -65,6 +65,7 @@ const invalidPopup = useTemplateRef("invalid-popup");
 const errorPopup = useTemplateRef("error-popup");
 
 const handleSuccess = () => {
+    rolesStore.setScriptFromImport();
     isSuccess.value = true;
     window.setTimeout(() => isSuccess.value = false, 3500);
 };

@@ -37,6 +37,7 @@ import {
     isValidRoleImport,
     isValidScriptImport,
     mergeRoles,
+    parseReminderId,
     sortByTeam,
 } from "../helpers/roles";
 import { findBestMatch } from "../utilities/strings";
@@ -44,7 +45,6 @@ import {
     clone,
     deepFreeze,
     deepThaw,
-    isNumber,
     isObject,
     isString,
 } from "../utilities/objects";
@@ -244,9 +244,38 @@ const rolesStore = defineStore("roles", () => {
     });
 
     const innerGetIsOrphanById = (roleId: IRole["id"]) => {
-        return !script.value.find(({ id }) => id === roleId);
+
+        if (script.value.find(({ id }) => id === roleId)) {
+            return false;
+        }
+
+        const role = innerGetRoleById(roleId);
+
+        if (!role) {
+            return true;
+        }
+
+        return ![
+            ERoleTeam.TRAVELLER,
+            ERoleTeam.FABLED,
+            ERoleTeam.LORIC,
+        ].includes(role.team);
+
     };
     const getIsOrphanById = computed(() => innerGetIsOrphanById);
+    const getIsOrphanReminderById = computed(() => (
+        reminderId: IReminder["id"]
+    ) => {
+
+        const { index, roleId } = parseReminderId(reminderId);
+
+        if (index < 0 || !roleId || innerGetIsOrphanById(roleId)) {
+            return true;
+        }
+
+        return index >= (innerGetRoleById(roleId)?.reminders?.length ?? 0);
+
+    });
 
     const interpret = computed(() => (
         role: IRole | IRole["id"] | null | void,
@@ -307,10 +336,9 @@ const rolesStore = defineStore("roles", () => {
             return reminder;
         }
 
-        const [roleId, indexCount] = reminder.split(":");
-        const index = Number(indexCount);
+        const { index, roleId } = parseReminderId(reminder);
 
-        if (!roleId || !isNumber(index)) {
+        if (!roleId) {
             return innerGetUnrecognisedReminder();
         }
 
@@ -348,7 +376,7 @@ const rolesStore = defineStore("roles", () => {
 
         }
 
-        importReport.valid.push(...deepThaw(specialRoles.value));
+        // importReport.valid.push(...deepThaw(specialRoles.value));
         const checked = checkScriptImportValidity(rawScript);
         checked.invalid.forEach((invalid) => importReport.invalid.push(invalid));
         let foundMeta = false;
@@ -359,10 +387,12 @@ const rolesStore = defineStore("roles", () => {
             
             if (isMeta && foundMeta) {
                 importReport.errors.push("Multiple meta entries, only the first will be used."); // TODO: i18n
+                return;
             } else if (isMeta) {
 
                 importReport.valid.push(entry);
                 foundMeta = true;
+                return;
 
             }
 
@@ -439,7 +469,10 @@ const rolesStore = defineStore("roles", () => {
 
     const setScriptFromImport = () => {
 
-        const entries: IScriptFull = clone(toRaw(importReport.valid));
+        const entries: IScriptFull = [
+            ...deepThaw(specialRoles.value),
+            ...clone(toRaw(importReport.valid))
+        ];
 
         addNightOrders(entries);
         script.value = sortByTeam(entries);
@@ -463,6 +496,7 @@ const rolesStore = defineStore("roles", () => {
         getIsBagDisabled,
         getIsBasicRole,
         getIsOrphanById,
+        getIsOrphanReminderById,
         getIsMeta,
         getIsSpecialById,
         getIsUniversal,

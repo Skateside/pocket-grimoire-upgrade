@@ -54,16 +54,16 @@ const nights = {
     other: "Other Nights",
 };
 
-const isDead = (id: IRole["id"]) => (
-    !rolesStore.getIsSpecialById(id)
-    && tokensStore.dead.includes(id)
+const isDead = (roleId: IRole["id"]) => (
+    !rolesStore.getIsSpecialById(roleId)
+    && tokensStore.dead.includes(roleId)
 );
-const isInPlay = (id: IRole["id"]) => (
-    rolesStore.getIsSpecialById(id)
-    || Object.hasOwn(tokensStore.inPlay, id)
+const isInPlay = (roleId: IRole["id"]) => (
+    rolesStore.getIsSpecialById(roleId)
+    || Object.hasOwn(tokensStore.inPlay, roleId)
 );
-const showRole = (id: IRole["id"]) => (
-    (!isDead(id) || showDead.value)
-    && (isInPlay(id) || showNotInPlay.value)
+const showRole = (roleId: IRole["id"]) => (
+    (!isDead(roleId) || showDead.value)
+    && (isInPlay(roleId) || showNotInPlay.value)
 );
 </script>

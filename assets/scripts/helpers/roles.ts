@@ -19,7 +19,6 @@ import type {
     IScriptFull,
     IScriptImport,
     IScriptMeta,
-    // IScripts,
 } from "../types/data";
 import {
     EJinxState,
@@ -1489,6 +1488,39 @@ export function mergeRoles(
     }
 
     return merged;
+
+}
+
+/**
+ * Parses a reminder ID into the role ID and the reminder index. If anything
+ * goes wrong, the role ID will be an empty string and the index will be -1.
+ *
+ * @param reminderId Reminder ID to parse.
+ * @returns Role ID and index.
+ */
+export function parseReminderId(reminderId: IReminder["id"]) {
+
+    const [roleId, indexString] = reminderId.split(":");
+    const index = Number(indexString);
+
+    if (
+        !isPopulatedString(roleId)
+        || !isNumber(index)
+        || index < 0
+        || !Number.isInteger(index)
+    ) {
+
+        return {
+            index: -1,
+            roleId: "",
+        };
+
+    }
+
+    return {
+        index,
+        roleId,
+    };
 
 }
 
