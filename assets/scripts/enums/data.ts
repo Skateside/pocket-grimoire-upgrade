@@ -1,8 +1,8 @@
 export enum EGameValues {
-    MIN_PLAYERS = 5,
     DEFAULT_NEW_GAME = 10,
     MAX_NON_TRAVELLER_PLAYERS = 15,
     MAX_PLAYERS = 20,
+    MIN_PLAYERS = 5,
 };
 
 export enum EJinxState {
@@ -107,7 +107,7 @@ export enum ETokenDirection {
 };
 
 export enum ETokenType {
-    SEAT,
-    ROLE,
     REMINDER,
+    ROLE,
+    SEAT,
 };

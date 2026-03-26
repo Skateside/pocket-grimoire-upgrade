@@ -456,6 +456,11 @@ export type IToken = Required<ICoordinates> & {
     type: ETokenType,
 };
 
+export type ITokenReminder = IToken & {
+    type: ETokenType.REMINDER,
+    reminderId: IReminder["id"],
+};
+
 // NOTE: The "role" token is for a role that's been added to the pad but isn't
 // for a player. That might mean a Fabled or a Loric, but might be something the
 // Story teller wanted to reference quickly.
@@ -464,18 +469,13 @@ export type ITokenRole = IToken & {
     roleId: IRole["id"],
 };
 
-export type ITokenReminder = IToken & {
-    type: ETokenType.REMINDER,
-    reminderId: IReminder["id"],
-};
-
 export type ITokenSeat = IToken & {
     type: ETokenType.SEAT,
-    index?: number,
-    roleId?: IRole["id"],
-    name?: string,
-    dead?: boolean,
-    ghostVote?: boolean,
-    rotate?: boolean,
-    alignment?: ETokenAlignment,
+    index: number,
+    roleId: IRole["id"] | void,
+    name: string | void,
+    dead: boolean,
+    ghostVote: boolean,
+    rotate: boolean,
+    alignment: ETokenAlignment,
 };

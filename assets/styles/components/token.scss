@@ -58,8 +58,9 @@
 
 .token__name {
     position: absolute;
-    top: 100%;
+    inset-block-start: 100%;
+    inset-inline-start: 0;
     width: 100%;
-    margin-top: var(--sizing-md);
+    margin-block-start: var(--sizing-md);
     background-color: #ddd;
 }

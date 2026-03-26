@@ -15,6 +15,7 @@ import {
     isString,
 } from "../utilities/objects";
 import { randomId } from "../utilities/strings";
+import type { ExcludeRecord } from "../types/lib";
 
 const PREFIX = "token-";
 
@@ -211,6 +212,26 @@ export function filterUpdateData<
 
 }
 
+type TokenExclusive<TToken extends IToken> = ExcludeRecord<TToken, IToken>;
+
+const defaultValues = {
+    [ETokenType.REMINDER]: {
+        reminderId: ":-1",
+    } satisfies TokenExclusive<ITokenReminder>,
+    [ETokenType.ROLE]: {
+        roleId: "",
+    } satisfies TokenExclusive<ITokenRole>,
+    [ETokenType.SEAT]: {
+        alignment: ETokenAlignment.DEFAULT,
+        dead: false,
+        ghostVote: true,
+        index: -1,
+        name: undefined,
+        roleId: undefined,
+        rotate: false,
+    } satisfies TokenExclusive<ITokenSeat>,
+};
+
 /**
  * Creates a token for a specific type.
  *
@@ -229,6 +250,6 @@ export function createToken(
         x: 0,
         y: 0,
         z: 0,
-    }, filterUpdateData(settings)) satisfies IToken;
+    }, defaultValues[type], filterUpdateData(settings)) satisfies IToken;
 
 };

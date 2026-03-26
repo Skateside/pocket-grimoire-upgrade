@@ -159,7 +159,7 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
     });
     tokensStore.seats.forEach((seat) => {
 
-        if (!tokensStore.setSeatRoleId(seat, undefined)) {
+        if (seat.roleId && !tokensStore.setSeatRoleId(seat, undefined)) {
             console.warn("Unable to remove roleId from seat %o", seat);
         }
 

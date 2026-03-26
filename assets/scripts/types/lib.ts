@@ -22,3 +22,7 @@ export type FieldElement = (
 export type DeepWritable<TObject = any> = {
     -readonly [Property in keyof TObject]: DeepWritable<TObject[Property]>
 };
+
+export type ExcludeRecord<TBase extends AnyObject, TExclude extends AnyObject> = {
+    [Key in Exclude<keyof TBase, keyof TExclude>]: TBase[Key]
+};
