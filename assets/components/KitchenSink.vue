@@ -7,7 +7,8 @@
             <p>Default: <BaseButton text="click me" /></p>
             <p>Different node (<code>&lt;a&gt;</code>): <BaseButton node="a" href="#a" text="click me" /></p>
             <p>Different node (<code>&lt;span&gt;</code>): <BaseButton node="span" text="click me" /></p>
-            <p>Router Link: <BaseButton text="Main" to="/" /></p>
+            <p>Router Link: <BaseButton text="Main (path)" to="/" /></p>
+            <p>Router Link: <BaseButton text="Main (name)" :to="{ name: 'main' }" /></p>
             <p>
                 Optional slot:
                 <BaseButton>
@@ -74,16 +75,33 @@
             
             <h3>Stand-alone inputs</h3>
 
-            <BaseLabel label="Basic input">
-                <BaseInput v-model="basicString" />
-            </BaseLabel>
+            <StackLayout gap="0.5em">
+                <BaseLabel label="Basic input">
+                    <BaseInput v-model="basicString" />
+                </BaseLabel>
 
-            <BaseLabel label="Input number spinner">
-                <BaseInputSpinner v-model="basicNumeric" />
-            </BaseLabel>
+                <BaseLabel label="Input number spinner">
+                    <BaseInputSpinner v-model="basicNumeric" />
+                </BaseLabel>
 
-            <BaseChoice label="Choice" v-model="basicString" :choices="choices" name="choice" empty-text="Please select" />
-            <BaseChoice label="Choice (open)" v-model="basicString" :choices="choices" name="choice" :open="true" />
+                <BaseChoice label="Choice" v-model="basicString" :choices="choices" name="choice" empty-text="Please select" />
+                <BaseChoice label="Choice (open)" v-model="basicString" :choices="choices" name="choice" :open="true" />
+            </StackLayout>
+
+            <h3>Input with output</h3>
+            <BaseLabel label="Range">
+                <BaseInput v-model="basicNumeric" type="range" min="0" max="100" step="1" />
+                <BaseOutput :value="basicNumeric" />
+            </BaseLabel>
+        </article>
+
+        <article>
+            <h2>Popups</h2>
+            <p><button type="button" @click="showPopup('alert')">Alert</button></p>
+            <p><button type="button" @click="showPopup('confirm')">Confirm</button></p>
+            <p>Result: {{ result }}</p>
+
+            <BasePopup ref="popup" />
         </article>
 
     </StackLayout>
@@ -91,18 +109,38 @@
 
 <script setup lang="ts">
 import type { IBaseChoice } from "~/scripts/types/base";
+import { ref, useTemplateRef } from "vue";
 import StackLayout from "./layouts/StackLayout.vue";
 import BaseButton from "./base/BaseButton.vue";
 import BaseLabel from "./base/BaseLabel.vue";
 import BaseInput from "./base/BaseInput.vue";
 import BaseInputSpinner from "./base/BaseInputSpinner.vue";
 import BaseChoice from "./base/BaseChoice.vue";
+import BaseOutput from "./base/BaseOutput.vue";
+import BasePopup from "./base/BasePopup.vue";
 
 const basicString = defineModel<string>("basic-string", { default: "" });
-const basicNumeric = defineModel<string>("basic-numeric", { default: "" });
+const basicNumeric = defineModel<string>("basic-numeric", { default: "0" });
 const choices: IBaseChoice[] = [
     { value: "a", text: "Alpha" },
     { value: "b", text: "Bravo" },
     { value: "c", text: "Charlie" },
 ];
+
+const result = ref<boolean | null>(null);
+const popup = useTemplateRef("popup");
+
+const showPopup = async (type: "alert" | "confirm") => {
+
+    const message = (
+        type === "alert"
+        ? "An alert only has an \"OK\" option"
+        : "A confirm has a \"yes\" and a \"no\" option"
+    );
+    
+    result.value = null;
+    result.value = await popup.value?.showPopup(message, type) ?? null;
+    // NOTE: `.showAlert(message)` and `.showConfirm(message)` helpers.
+
+};
 </script>
