@@ -378,7 +378,6 @@ const rolesStore = defineStore("roles", () => {
 
         }
 
-        // importReport.valid.push(...deepThaw(specialRoles.value));
         const checked = checkScriptImportValidity(rawScript);
         checked.invalid.forEach((invalid) => importReport.invalid.push(invalid));
         let foundMeta = false;
@@ -471,10 +470,19 @@ const rolesStore = defineStore("roles", () => {
 
     const setScriptFromImport = () => {
 
-        const entries: IScriptFull = [
-            ...deepThaw(specialRoles.value),
-            ...clone(toRaw(importReport.valid))
-        ];
+        storage.set(STORAGE_KEY, importReport.valid);
+
+        const entries: IScriptFull = [...clone(toRaw(importReport.valid))];
+        const roleIds = entries.map(({ id }) => id);
+
+        // This is mainly done to prevent a second meta entry being added.
+        deepThaw(specialRoles.value).forEach((role) => {
+
+            if (!roleIds.includes(role.id)) {
+                entries.push(role);
+            }
+
+        });
 
         addNightOrders(entries);
         script.value = sortByTeam(entries);

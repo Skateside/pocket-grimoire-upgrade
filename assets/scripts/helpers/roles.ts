@@ -212,11 +212,13 @@ const roleChecks: IRoleCheck[] = [
         || (
             Array.isArray(object)
             && object.length > 0
-            && object.length < 3
+            && object.length <= 3
             && object.every(isAnyUrl)
         )
     ), true),
-    makeArrayOfCheck("jinxes", isValidJinxImport, true),
+    makeArrayOfCheck("jinxes", (object) => {
+        return isValidJinxImport(object) || isValidJinx(object);
+    }, true),
     makeArrayOfCheck("reminders", (object) => (
         isPopulatedString(object) || isValidReminderImport(object)
     ), true),
@@ -1207,6 +1209,24 @@ export function isSpecial(object: unknown): object is IRole & { edition: ERoleEd
  */
 export function isUniversal(object: unknown): object is IRole & { id: ERoleId.UNIVERSAL } {
     return isSpecial(object) && object.id === ERoleId.UNIVERSAL;
+}
+
+/**
+ * Checks to see if the given object is a valid jinx.
+ *
+ * @param object Object to check.
+ * @returns `true` if the object is a valid jinx, `false` otherwise.
+ */
+export function isValidJinx(object: unknown): object is IJinx {
+
+    return (
+        isObject(object)
+        && isPropertyString(object, "target")
+        && isPropertyString(object, "trick")
+        && isPropertyString(object, "reason")
+        && Object.values(EJinxState).includes(object.state)
+    );
+
 }
 
 /**

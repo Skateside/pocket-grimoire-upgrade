@@ -472,8 +472,8 @@ export type ITokenRole = IToken & {
 export type ITokenSeat = IToken & {
     type: ETokenType.SEAT,
     index: number,
-    roleId: IRole["id"] | void,
-    name: string | void,
+    roleId: IRole["id"] | undefined,
+    name: string | undefined,
     dead: boolean,
     ghostVote: boolean,
     rotate: boolean,

@@ -49,15 +49,15 @@ const useTokensStore = defineStore("tokens", () => {
 
     const byType = computed(() => {
         return Object.groupBy(tokens.value, ({ type }) => type) as {
-            [ETokenType.SEAT]?: ITokenSeat[],
-            [ETokenType.ROLE]?: ITokenRole[],
             [ETokenType.REMINDER]?: ITokenReminder[],
+            [ETokenType.ROLE]?: ITokenRole[],
+            [ETokenType.SEAT]?: ITokenSeat[],
         };
     });
 
-    const seats = computed(() => byType.value[ETokenType.SEAT] || []);
-    const roles = computed(() => byType.value[ETokenType.ROLE] || []);
     const reminders = computed(() => byType.value[ETokenType.REMINDER] || []);
+    const roles = computed(() => byType.value[ETokenType.ROLE] || []);
+    const seats = computed(() => byType.value[ETokenType.SEAT] || []);
 
     const nextZ = computed(() => (
         tokens.value.length
