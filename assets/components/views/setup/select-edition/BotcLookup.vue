@@ -40,9 +40,6 @@
                 </div>
             </SidebarLayout>
         </StackLayout>
-        <div aria-live="polite">
-            <p v-if="errorMessage">{{ errorMessage }}</p>
-        </div>
     </BaseForm>
 
 </template>
@@ -50,6 +47,7 @@
 <script setup lang="ts">
 import type { AnyFunction } from "~/scripts/types/lib";
 import type { IBotcScriptResponse } from "~/scripts/types/data";
+import type { ISelectEditionEvents } from "~/scripts/types/components";
 import { ref } from "vue";
 import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
@@ -64,15 +62,12 @@ import useRolesStore from "~/scripts/stores/roles";
 import { performAjax } from "./helpers";
 import { debounce, noop } from "~/scripts/utilities/functions";
 
-const emit = defineEmits<{
-    (e: "success"): void,
-}>();
+const emit = defineEmits<ISelectEditionEvents>();
 const scriptType = defineModel<string>("script-type", { default: "" });
 const term = defineModel<string>("term", { default: "" });
 const pathsStore = usePathsStore();
 const rolesStore = useRolesStore();
 const previousTerm = ref("");
-const errorMessage = ref("");
 const isLoading = ref(false);
 const scripts = ref<IBotcScriptResponse[]>([]);
 const abortPrevious = ref<AnyFunction>(noop);
@@ -107,11 +102,10 @@ const lookupScript = () => {
 
     promise.then((botcScripts) => {
 
-        errorMessage.value = "";
         isLoading.value = false;
         scripts.value = botcScripts;
 
-    }).catch((error) => errorMessage.value = error);
+    }).catch((error) => emit("error", error));
 
 };
 
@@ -133,12 +127,14 @@ const handleClick = (id: number) => {
     const botcScript = scripts.value.find(({ id: scriptId }) => scriptId === id);
 
     if (!botcScript) {
-        errorMessage.value = "Unable to find script, please try a different one or lookup a different term."; // TODO: i18n
-        return;
-    }
-
-    if (rolesStore.setScript(botcScript.script)) {
+        emit(
+            "error",
+            "Unable to find script, please try a different one or lookup a different term.", // TODO: i18n
+        );
+    } else if (rolesStore.setScript(botcScript.script)) {
         emit("success");
+    } else {
+        emit("invalid");
     }
 
 };

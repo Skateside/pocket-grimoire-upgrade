@@ -2,7 +2,7 @@ import type {
     II18nData,
     IInfoToken,
     IRole,
-    IRoleScript,
+    IScriptImport,
 } from "./data";
 
 declare global {
@@ -12,7 +12,7 @@ declare global {
             i18n: II18nData,
             infoTokens: IInfoToken[],
             roles: IRole[],
-            scripts: Record<string, IRoleScript>,
+            scripts: Record<string, IScriptImport>,
         },
     }
 }

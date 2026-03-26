@@ -26,6 +26,7 @@
 </template>
 
 <script setup lang="ts">
+import type { ISelectEditionEvents } from "~/scripts/types/components";
 import { ref } from "vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
@@ -39,9 +40,7 @@ import useRolesStore from "~/scripts/stores/roles";
 import { isValidURL } from "~/scripts/utilities/strings";
 import { performAjax } from "./helpers";
 
-const emit = defineEmits<{
-    (e: "success"): void,
-}>();
+const emit = defineEmits<ISelectEditionEvents>();
 const model = defineModel<string>({ default: "" });
 const pathsStore = usePathsStore();
 const rolesStore = useRolesStore();
@@ -55,8 +54,7 @@ const handleSubmit = () => {
     }
 
     if (!model.value || !isValidURL(model.value)) {
-        errorMessage.value = "Please enter a valid URL"; // TODO: i18n
-        return;
+        return emit("error", "Please enter a valid URL"); // TODO: i18n
     }
 
     isLoading.value = true;
@@ -67,9 +65,11 @@ const handleSubmit = () => {
         (value) => {
             if (rolesStore.setScript(value)) {
                 emit("success");
+            } else {
+                emit("invalid");
             }
         },
-        (error) => errorMessage.value = error,
+        (error) => emit("error", error),
     ).finally(() => isLoading.value = false);
 
 };

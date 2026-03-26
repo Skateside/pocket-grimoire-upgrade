@@ -140,6 +140,7 @@ const rolesStore = defineStore("roles", () => {
         imported: 0,
         invalid: [],
     });
+    const chosenIds = ref<IRole["id"][]>([]);
 
     const innerGetActiveNightOrder = (active: IRole["id"][]) => {
 
@@ -442,6 +443,7 @@ const rolesStore = defineStore("roles", () => {
 
     return {
         // Data.
+        chosenIds,
         importReport,
         script,
         // Getters.

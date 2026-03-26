@@ -97,12 +97,15 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
     }
     
     // set player count
-    // gameStore.setPlayerCount(Number(playerCount.value));
+    // gameStore.setPlayerCount(players);
     // create tokens
+    // -> create any _extra_ tokens and remove any unwanted ones
     // add names to tokens
     console.log({ submitter });
     // if "draw characters" then show character selection popup
+    // -> rolesStore.chosenIds = [...]
     // else add roles to tokens
+    // -> shuffle roleIds, assign them to the tokens.
 
 };
 </script>

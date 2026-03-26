@@ -19,13 +19,11 @@
                 </div>
             </SidebarLayout>
         </StackLayout>
-        <div aria-live="polite">
-            <p v-if="errorMessage">{{ errorMessage }}</p>
-        </div>
     </BaseForm>
 </template>
 
 <script setup lang="ts">
+import type { ISelectEditionEvents } from "~/scripts/types/components";
 import { ref, useTemplateRef } from "vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
@@ -37,12 +35,9 @@ import BaseButton from "~/components/base/BaseButton.vue";
 import useRolesStore from "~/scripts/stores/roles";
 import { parseScript } from "./helpers";
 
-const emit = defineEmits<{
-    (e: "success"): void,
-}>();
+const emit = defineEmits<ISelectEditionEvents>();
 const rolesStore = useRolesStore();
 const form = useTemplateRef("form");
-const errorMessage = ref("");
 const isLoading = ref(false);
 const model = ref("");
 
@@ -53,16 +48,19 @@ const handleSubmit = () => {
     }
 
     if (!form.value) {
-        errorMessage.value = "Unable to find the form - please reload and try again."; // TODO: i18n
-        return;
+
+        return emit(
+            "error",
+            "Unable to find the form - please reload and try again.", // TODO: i18n
+        );
+
     }
 
     const formData = form.value.getData();
     const file = formData.get("upload");
 
     if (!file) {
-        errorMessage.value = "Please upload a script."; // TODO: i18n
-        return;
+        return emit("error", "Please upload a script"); // TODO: i18n
     }
 
     const reader = new FileReader();
@@ -72,14 +70,13 @@ const handleSubmit = () => {
         const { script, error } = parseScript(target!.result as string);
 
         if (script && rolesStore.setScript(script)) {
-
-            isLoading.value = false;
             emit("success");
-            return;
-
+        } else if (script) {
+            emit("invalid");
+        } else {
+            emit("error", error ?? "File reading error. Plaese try again."); // TODO: i18n
         }
         
-        errorMessage.value = error as string;
         isLoading.value = false;
 
     });

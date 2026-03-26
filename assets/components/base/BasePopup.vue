@@ -47,15 +47,20 @@ const props = withDefaults(defineProps<{
     yesText: "Yes",
     noText: "No",
 });
+const emit = defineEmits<{
+    (e: "toggle", state: string): void,
+    (e: "shown"): void,
+    (e: "hidden"): void,
+}>();
 const slots = useSlots();
 const popup = useTemplateRef("popup");
 const popupType = ref(props.type);
 const messageText = ref("");
 const resolvePromise = ref<(value: boolean) => void>(() => {});
 
-const showPopup = (message: string, type: "alert" | "confirm" = "alert") => {
+const showPopup = (message?: string, type: "alert" | "confirm" = "alert") => {
 
-    messageText.value = message;
+    messageText.value = message ?? "";
     popupType.value = type;
 
     popup.value?.showPopover();
@@ -66,8 +71,8 @@ const showPopup = (message: string, type: "alert" | "confirm" = "alert") => {
 
 };
 
-const showAlert = (message: string) => showPopup(message, "alert");
-const showConfirm = (message: string) => showPopup(message, "confirm");
+const showAlert = (message?: string) => showPopup(message, "alert");
+const showConfirm = (message?: string) => showPopup(message, "confirm");
 
 const handleChoice = (value: boolean) => {
     resolvePromise.value(value);
@@ -75,9 +80,19 @@ const handleChoice = (value: boolean) => {
 };
 
 const handleToggle = ({ newState }: ToggleEvent) => {
+
     if (newState === "closed") {
         handleChoice(false);
     }
+
+    emit("toggle", newState);
+
+    if (newState === "open") {
+        emit("shown");
+    } else if (newState === "closed") {
+        emit("hidden");
+    }
+
 };
 
 defineExpose({
