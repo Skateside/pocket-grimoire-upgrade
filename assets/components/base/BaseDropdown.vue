@@ -1,10 +1,11 @@
 <template>
     <select @input="handleInput" :id="id">
         <option
-            v-for="{ text, value } in choices"
+            v-for="{ text, value, disabled } in choices"
             :key="value"
             :value="value"
             :selected="value === props.modelValue"
+            :disabled="disabled"
         >
             {{ text }}
         </option>
@@ -30,7 +31,7 @@ const choices = computed(() => {
 const choices = [...props.choices];
 
     if (props.emptyText) {
-        choices.unshift({ text: props.emptyText, value: "" });
+        choices.unshift({ text: props.emptyText, value: "", disabled: true });
     }
 
     return choices;

@@ -48,4 +48,5 @@ export type IBaseInputTypes = (
 export type IBaseChoice = {
     text: string,
     value: string,
+    disabled?: boolean,
 };

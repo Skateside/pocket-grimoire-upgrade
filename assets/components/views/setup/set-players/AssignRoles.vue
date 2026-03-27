@@ -1,206 +1,86 @@
 <template>
+    <!-- <p>{{ props.playerCount }} player(s)</p>
+    <p>Their names are: {{ JSON.stringify(props.playerNames) }}</p>
+    <p>Selected roles are: {{ JSON.stringify(props.rolesSelected.map(({ name }) => name)) }}</p> -->
+
+    <!-- <p>Choose player</p>
+    <p>Select role / pick random</p> -->
+
     <StackLayout>
-        <BaseLabel label="Show character abilities" :nested="true">
-            <BaseCheckbox
-                v-model="showAbilities"
-                name="abilities"
-            />
+        <BaseLabel label="Choose a player">
+            <BaseDropdown name="chosen-player" v-model="chosenPlayer" :choices="players" empty-text="Please select" />
         </BaseLabel>
-        <BaseLabel label="Allow duplicate characters" :nested="true">
-            <BaseCheckbox
-                v-model="allowDuplicates"
-                name="duplicates"
-            />
-        </BaseLabel>
+
+        <ClusterLayout>
+            <BaseLabel label="Choose a role">
+                <BaseDropdown name="chosen-role" v-model="chosenRole" :choices="roles" empty-text="Please select" />
+            </BaseLabel>
+            <BaseButton>Show role</BaseButton>
+        </ClusterLayout>
+
         <div>
-            <BaseButton @click="selectRandom">Highlight random</BaseButton>
+            <BaseButton>Draw random role</BaseButton>
         </div>
     </StackLayout>
 
-    <template v-for="team in ORDER">
-        <fieldset v-if="rolesStore.scriptByType[team]?.length">
-            <legend>{{ team }} ({{ teamCounts[team] }}/{{ gameStore.getTeamCount(team, props.count) }})</legend>
-            <GridLayout min-width="10ch">
-                <div v-for="role in rolesStore.scriptByType[team]" :key="role.id">
-                    <BaseInputSpinner
-                        v-if="allowDuplicates && included[role.id]"
-                        v-model="counts[role.id]"
-                        readonly
-                        :aria-label="`Number of ${role.name} to add`"
-                        :min="0"
-                    />
-                    <StackLayout class="assign-roles__picker">
-                        <label :for="`role-${role.id}-${suffix}`">
-                            <BaseCheckbox
-                                v-model="included[role.id]"
-                                :name="`role[${role.id}]`"
-                                :id="`role-${role.id}-${suffix}`"
-                                :disabled="rolesStore.getIsBagDisabled(role)"
-                                :aria-describedby="showAbilities ? `role-ability-${role.id}-${suffix}` : undefined"
-                                @change="() => handleSelection(role)"
-                            />
-                            <StackLayout node="span">
-                                <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
-                                <strong>{{ role.name }}</strong>
-                            </StackLayout>
-                        </label>
-                        <span v-if="showAbilities" :id="`role-ability-${role.id}-${suffix}`">{{ role.ability }}</span>
-                    </StackLayout>
-                </div>
-            </GridLayout>
-        </fieldset>
-    </template>
+    <BasePopup ref="popup" />
+
 </template>
 
 <script setup lang="ts">
-import type { IGameBreakdown, IRole, IRoleCounts } from "~/scripts/types/data";
-import {
-    ERoleSpecialType,
-    ERoleSpecialName,
-    ERoleTeam,
-} from "~/scripts/enums/data";
-import { computed, reactive, useId, watch } from "vue";
-import { ORDER } from "~/scripts/helpers/roles";
-import useGameStore from "~/scripts/stores/game";
-import useRolesStore from "~/scripts/stores/roles";
-import GridLayout from "~/components/layouts/GridLayout.vue";
+import type { IRole } from "~/scripts/types/data";
+import { computed } from "vue";
+import type { IBaseChoice } from "~/scripts/types/base";
+import { times } from "~/scripts/utilities/numbers";
+import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseDropdown from "~/components/base/BaseDropdown.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
-import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
-import BaseLabel from "~/components/base/BaseLabel.vue";
-import { shuffle } from "~/scripts/utilities/arrays";
+import BasePopup from "~/components/base/BasePopup.vue";
+import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
 
 const props = defineProps<{
-    count: number,
-    modelValue: IRoleCounts,
+    playerCount: number,
+    playerNames: string[],
+    rolesSelected: IRole[],
 }>();
-const emit = defineEmits<{
-    (e: "update:model-value", value: IRoleCounts): void,
-}>();
+const chosenPlayer = defineModel<string>("player", { default: "" });
+const chosenRole = defineModel<string>("role", { default: "" });
 
-const suffix = useId();
-const gameStore = useGameStore();
-const rolesStore = useRolesStore();
-const showAbilities = defineModel<boolean>("abilities", { default: true });
-const allowDuplicates = defineModel<boolean>("duplicates", { default: false });
-const included = reactive<Record<IRole["id"], boolean>>(
-    Object.fromEntries(rolesStore.script.map(({ id }) => [id, false]))
-);
-const counts = reactive<IRoleCounts>(
-    Object.fromEntries(rolesStore.script.map(({ id }) => [id, 0]))
-);
-const teams = computed<Record<IRole["id"], ERoleTeam>>(() => Object.fromEntries(
-    rolesStore.script
-        .filter((role) => !rolesStore.getIsMeta(role))
-        .map((role) => [role.id, (role as IRole).team])
-));
-const teamCounts = computed(() => {
+const players = computed(() => {
 
-    const teamCounts = Object.fromEntries(ORDER.map((team) => [team, 0]));
+    const choices: IBaseChoice[] = [];
 
-    Object.entries(counts).forEach(([id, count]) => {
+    times(props.playerCount, (index) => {
 
-        const team = teams.value[id];
+        choices.push({
+            text: props.playerNames[index] ?? `Player ${index + 1}`,
+            value: String(index),
+        });
 
-        if (!team) {
+    });
+
+    return choices;
+    
+});
+
+const roles = computed(() => {
+
+    const roles: IBaseChoice[] = [];
+    const roleIds: IRole["id"][] = [];
+
+    props.rolesSelected.forEach((role) => {
+
+        if (roleIds.includes(role.id)) {
             return;
         }
 
-        teamCounts[team] += Number(count);
+        roleIds.push(role.id);
+        roles.push({ text: role.name, value: role.id });
 
     });
 
-    return teamCounts;
+    return roles;
 
 });
-
-watch(counts, (value) => {
-
-    Object.entries(value).forEach(([id, count]) => {
-
-        if (count < 1) {
-            included[id] = false;
-        }
-
-    });
-
-    emit("update:model-value", value);
-
-});
-
-const handleSelection = (role: IRole) => {
-
-    const { id } = role;
-
-    counts[id] = Number(included[id]);
-
-    if (
-        included[id]
-        && (
-            rolesStore.getSpecial(
-                role,
-                ERoleSpecialType.SELECTION,
-                ERoleSpecialName.BAG_DUPLICATE,
-            )
-            || rolesStore.getSpecial(
-                role,
-                ERoleSpecialType.SELECTION,
-                ERoleSpecialName.GOOD_DUPLICATE,
-            )
-        )
-    ) {
-        allowDuplicates.value = true;
-    }
-
-};
-
-const selectRandom = () => {
-
-    const types = rolesStore.scriptByType;
-    const breakdown = gameStore.getBreakdown(props.count);
-
-    const random: IRole["id"][] = [];
-
-    for (const [team, count] of Object.entries(breakdown)) {
-
-        const roles = types[team as keyof IGameBreakdown].filter((role) => (
-            rolesStore.getIsBasicRole(role)
-            && !rolesStore.getIsBagDisabled(role)
-        ));
-        const shuffled = shuffle(roles);
-        const sliced = shuffled.slice(0, count);
-
-        random.push(...sliced.map(({ id }) => id));
-
-    }
-
-    rolesStore.script.forEach((role) => {
-
-        if (!rolesStore.getIsBasicRole(role)) {
-            return;
-        }
-
-        const { id } = role;
-        included[id] = random.includes(id);
-        handleSelection(role);
-
-    });
-
-};
 </script>
-
-<style lang="scss" scoped>
-.assign-roles__picker {
-    position: relative;
-
-    > label::after {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        inset-inline-start: 0;
-        inset-block-start: 0;
-    }
-}
-</style>

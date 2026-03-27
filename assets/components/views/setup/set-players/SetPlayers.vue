@@ -17,10 +17,19 @@
                 <li>
                     <details :name="`set-players-${suffix}`">
                         <summary>Choose roles</summary>
-                        <AssignRoles v-model="roleCounts" :count="Number(playerCount)" />
+                        <SelectRoles v-model="roleCounts" :count="Number(playerCount)" />
                     </details>
                 </li>
-                <!-- TODO: Manually assign (Gardener, Revolutionary etc.) -->
+                <li>
+                    <details :name="`set-players-${suffix}`">
+                        <summary>Assign roles (optional)</summary>
+                        <AssignRoles
+                            :player-count="Number(playerCount)"
+                            :player-names="playerNames"
+                            :roles-selected="rolesSelected"
+                        />
+                    </details>
+                </li>
             </ol>
             <ClusterLayout>
                 <BaseButton type="submit" data-action="draw-characters">Draw Characters</BaseButton>
@@ -37,22 +46,23 @@ import { EGameValues } from "~/scripts/enums/data";
 import { computed, onMounted, useId, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 import useGameStore from "~/scripts/stores/game";
-// import useRolesStore from "~/scripts/stores/roles";
+import useRolesStore from "~/scripts/stores/roles";
 import useTokensStore from "~/scripts/stores/tokens";
 import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
+import BasePopup from "~/components/base/BasePopup.vue";
 import SetPlayerCount from "./SetPlayerCount.vue";
 import NamePlayers from "./NamePlayers.vue";
+import SelectRoles from "./SelectRoles.vue";
 import AssignRoles from "./AssignRoles.vue";
-import BasePopup from "~/components/base/BasePopup.vue";
 import { shuffle } from "~/scripts/utilities/arrays";
 import { times } from "~/scripts/utilities/numbers";
 
 const router = useRouter();
 const gameStore = useGameStore();
-// const rolesStore = useRolesStore();
+const rolesStore = useRolesStore();
 const tokensStore = useTokensStore();
 
 const suffix = useId();
@@ -65,11 +75,23 @@ const roleCounts = defineModel<IRoleCounts>("role-counts", {
 const playerNames = defineModel<string[]>("player-names", {
     default: [],
 });
-const rolesSelectedCount = computed(() => {
+const rolesSelected = computed(() => {
 
-    return Object
-        .values(roleCounts.value)
-        .reduce((subTotal, count) => subTotal + Number(count), 0);
+    const roles: IRole[] = [];
+
+    Object.entries(roleCounts.value).forEach(([roleId, count]) => {
+
+        const role = rolesStore.getRoleById(roleId);
+
+        if (!role) {
+            return console.warn("Can't find role with ID %o", roleId);
+        }
+
+        times(count, () => roles.push(role));
+
+    });
+
+    return roles;
 
 });
 
@@ -108,7 +130,7 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
         return console.warn("Popup hasn't been found");
     }
 
-    const selected = rolesSelectedCount.value;
+    const selected = rolesSelected.value.length;
     const players = Number(playerCount.value);
 
     if (selected > players) {
@@ -133,27 +155,18 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
     // NOTE: if `existingTokens` > 0 then don't reposition automatically.
     // const existingTokens = tokensStore.tokens.length;
 
-    tokensStore.roles.forEach((token) => {
+    [
+        ...tokensStore.reminders,
+        ...tokensStore.roles,
+        ...tokensStore.seats.slice(players),
+    ].forEach((token) => {
 
         if (!tokensStore.destroy(token)) {
-            console.warn("Unable to destroy role token %o", token);
+            console.warn("Unable to destroy %s token %o", token.type, token);
         }
-
+    
     });
-    tokensStore.reminders.forEach((token) => {
 
-        if (!tokensStore.destroy(token)) {
-            console.warn("Unable to destroy reminder token %o", token);
-        }
-
-    });
-    tokensStore.seats.slice(players).forEach((token) => {
-
-        if (!tokensStore.destroy(token)) {
-            console.warn("Unable to destroy seat token %o", token);
-        }
-
-    });
     times(players - tokensStore.seats.length, () => {
         tokensStore.createSeat();
     });
@@ -183,22 +196,18 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
 
     });
 
-    const roleIds: IRole["id"][] = shuffle(
-        Object.entries(roleCounts.value)
-            .map(([roleId, count]) => (new Array(count).fill(roleId)))
-            .flat()
-    );
-    roleIds.forEach((roleId, index) => {
+    shuffle(rolesSelected.value).forEach((role, index) => {
 
         const seat = tokensStore.seats[index];
 
-        if (seat && !tokensStore.setSeatRoleId(seat, roleId)) {
+        if (seat && !tokensStore.setSeatRoleId(seat, role.id)) {
 
             console.warn(
-                "Unable to set role ID of seat %o (index %o) to %o",
+                "Unable to set role ID of seat %o (index %o) to %o (role %o)",
                 seat,
                 index,
-                roleId,
+                role.id,
+                role,
             );
 
         }

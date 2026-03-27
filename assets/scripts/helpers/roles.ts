@@ -1052,7 +1052,7 @@ export function getOrCreateScriptMeta(
 export function getReminderCount(role: IRole) {
 
     return (role.reminders || []).reduce((subtotal, reminder) => {
-        return subtotal + (reminder.count || 0);
+        return subtotal + (reminder.count ?? 1);
     }, 0);
 
 }
