@@ -66,7 +66,7 @@ const routes: RouteRecordRaw[] = [
             {
                 path: "grimoire",
                 name: "grimoire",
-                component: () => import("./components/views/grimoire/GrimoirePad.vue"),
+                component: () => import("./components/views/grimoire/GrimoireWrapper.vue"),
             },
             {
                 path: "night-order",

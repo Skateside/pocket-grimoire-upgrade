@@ -91,7 +91,9 @@ import {
 } from "~/scripts/utilities/elements";
 
 // const emit = defineEmits<{
-//     (e: "seat-click", id: string): void,
+//     (e: "reminder-click", tokenId: string): void,
+//     (e: "role-click", tokenId: string): void,
+//     (e: "seat-click", tokenId: string): void,
 // }>();
 const rolesStore = useRolesStore();
 const tokensStore = useTokensStore();

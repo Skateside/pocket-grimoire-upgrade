@@ -97,11 +97,32 @@
 
         <article>
             <h2>Popups</h2>
+            <p>A popup is used to draw the user's attention to something specific, or to confirm a user's action.</p>
             <p><button type="button" @click="showPopup('alert')">Alert</button></p>
             <p><button type="button" @click="showPopup('confirm')">Confirm</button></p>
             <p>Result: {{ result }}</p>
 
             <BasePopup ref="popup" />
+        </article>
+
+        <article>
+            <h2>Modals</h2>
+            <p>A modal is used to show content to the user.</p>
+            <p>The background can be hidden with then <code>:cover="true"</code> property. This also prevents the "click off" functionality.</p>
+            <StackLayout>
+                <BaseLabel label="Cover">
+                    <BaseCheckbox v-model="isModalCover" />
+                </BaseLabel>
+                <BaseLabel label="No heading">
+                    <BaseCheckbox v-model="isModalNoHeading" />
+                </BaseLabel>
+            </StackLayout>
+            <p><button id="modal-trigger" type="button" @click="modal?.show()">Show modal</button></p>
+
+            <BaseModal ref="modal" :cover="isModalCover" :no-heading="isModalNoHeading" title="Test Modal">
+                <p>We can remove the heading with the <code>:no-heading="true"</code> property and we can modify it with the <code>&lt;template #heading&gt;</code> template (although this will get rid of the default "close" button). We can create custom "close" buttons.</p>
+                <p><button type="button" @click="() => modal?.hide()">Close me</button></p>
+            </BaseModal>
         </article>
 
     </StackLayout>
@@ -115,9 +136,11 @@ import BaseButton from "./base/BaseButton.vue";
 import BaseLabel from "./base/BaseLabel.vue";
 import BaseInput from "./base/BaseInput.vue";
 import BaseInputSpinner from "./base/BaseInputSpinner.vue";
+import BaseCheckbox from "./base/BaseCheckbox.vue";
 import BaseChoice from "./base/BaseChoice.vue";
 import BaseOutput from "./base/BaseOutput.vue";
 import BasePopup from "./base/BasePopup.vue";
+import BaseModal from "./base/BaseModal.vue";
 
 const basicString = defineModel<string>("basic-string", { default: "" });
 const basicNumeric = defineModel<string>("basic-numeric", { default: "0" });
@@ -143,4 +166,8 @@ const showPopup = async (type: "alert" | "confirm") => {
     // NOTE: `.showAlert(message)` and `.showConfirm(message)` helpers.
 
 };
+
+const modal = useTemplateRef("modal");
+const isModalCover = defineModel<boolean>("modal-cover", { default: false });
+const isModalNoHeading = defineModel<boolean>("modal-heading", { default: false });
 </script>
