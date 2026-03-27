@@ -1,10 +1,16 @@
 <template>
-    <!-- <p>{{ props.playerCount }} player(s)</p>
-    <p>Their names are: {{ JSON.stringify(props.playerNames) }}</p>
-    <p>Selected roles are: {{ JSON.stringify(props.rolesSelected.map(({ name }) => name)) }}</p> -->
+    <!--
+    TODO: work out what this should look like.
 
-    <!-- <p>Choose player</p>
-    <p>Select role / pick random</p> -->
+    Two possibilities for this feature:
+        1. Gardener: The Storyteller wants to assign some/all roles.
+            - This interface should be quick and easy because there might be
+              many roles.
+        2. Revolutionary: One player wants to pick a role at random.
+            - This interface should allow the user to pick a role without seeing
+              all of them.
+
+    -->
 
     <StackLayout>
         <BaseChoice label="Choose a player" name="chosen-player" v-model="chosenPlayer" :choices="players" empty-text="Please select" />
@@ -15,7 +21,7 @@
         </ClusterLayout>
 
         <div>
-            <BaseButton>Draw random role</BaseButton>
+            <BaseButton @click="selectRandomRole">Draw random role</BaseButton>
         </div>
     </StackLayout>
 
@@ -33,6 +39,7 @@ import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
 import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
+import { shuffle } from "~/scripts/utilities/arrays";
 
 const props = defineProps<{
     playerCount: number,
@@ -78,4 +85,12 @@ const roles = computed(() => {
     return roles;
 
 });
+
+const selectRandomRole = () => {
+    const role = shuffle(props.rolesSelected)[0];
+
+    if (role) {
+        chosenRole.value = role.id;
+    }
+};
 </script>

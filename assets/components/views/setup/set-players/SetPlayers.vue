@@ -20,7 +20,7 @@
                         <SelectRoles v-model="roleCounts" :count="Number(playerCount)" />
                     </details>
                 </li>
-                <li>
+                <!-- <li>
                     <details :name="`set-players-${suffix}`">
                         <summary>Assign roles (optional)</summary>
                         <AssignRoles
@@ -29,7 +29,7 @@
                             :roles-selected="rolesSelected"
                         />
                     </details>
-                </li>
+                </li> -->
             </ol>
             <ClusterLayout>
                 <BaseButton type="submit" data-action="draw-characters">Draw Characters</BaseButton>
@@ -56,7 +56,7 @@ import BasePopup from "~/components/base/BasePopup.vue";
 import SetPlayerCount from "./SetPlayerCount.vue";
 import NamePlayers from "./NamePlayers.vue";
 import SelectRoles from "./SelectRoles.vue";
-import AssignRoles from "./AssignRoles.vue";
+// import AssignRoles from "./AssignRoles.vue";
 import { shuffle } from "~/scripts/utilities/arrays";
 import { times } from "~/scripts/utilities/numbers";
 
