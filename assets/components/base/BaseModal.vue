@@ -13,7 +13,7 @@
                     <h3>{{ props.title }}</h3>
                     <div>
                         <button
-                            class="no-button"
+                            class="modal__close no-button"
                             type="button"
                             aria-label="close"
                             @click="hide"
@@ -62,21 +62,17 @@ const handleClick = ({ target }: MouseEvent) => {
 
 const show = () => {
 
-    if (isShowing.value || !modal.value) {
-        return;
+    if (!isShowing.value) {
+        modal.value?.showModal();
     }
-
-    modal.value.showModal();
 
 };
 
 const hide = () => {
 
-    if (!isShowing.value || !modal.value) {
-        return;
+    if (isShowing.value) {
+        modal.value?.close();
     }
-
-    modal.value.close();
 
 };
 
@@ -101,5 +97,11 @@ defineExpose({ show, hide });
     --l-box-border-width: 2px;
     --l-box-border-colour: #000;
     --l-box-padding: 1em;
+}
+
+.modal__close {
+    line-height: 1;
+    font-size: 2em;
+    cursor: pointer;
 }
 </style>

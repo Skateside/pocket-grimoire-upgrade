@@ -17,7 +17,7 @@
                 "--y": seat.y,
                 "--z": seat.z,
             }'
-            @movable-click="() => console.log('seat-click', seat.id)"
+            @movable-click="() => emit('seat-click', seat.id)"
         >
             <span class="token__contents">
                 <RoleToken
@@ -90,11 +90,11 @@ import {
     resizeObserver,
 } from "~/scripts/utilities/elements";
 
-// const emit = defineEmits<{
-//     (e: "reminder-click", tokenId: string): void,
-//     (e: "role-click", tokenId: string): void,
-//     (e: "seat-click", tokenId: string): void,
-// }>();
+const emit = defineEmits<{
+    (e: "reminder-click", tokenId: string): void,
+    (e: "role-click", tokenId: string): void,
+    (e: "seat-click", tokenId: string): void,
+}>();
 const rolesStore = useRolesStore();
 const tokensStore = useTokensStore();
 const idsInPlay = computed(() => Object.keys(tokensStore.inPlay));

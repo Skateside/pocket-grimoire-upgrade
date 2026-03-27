@@ -191,7 +191,11 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
-    const innerGetRoleById = (roleId: IRole["id"]) => {
+    const innerGetRoleById = (roleId: IRole["id"] | undefined) => {
+
+        if (!roleId) {
+            return; // Passed no ID so return nothing.
+        }
 
         const scriptEntry = script.value.find(({ id }) => id === roleId);
 
