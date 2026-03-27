@@ -7,14 +7,10 @@
     <p>Select role / pick random</p> -->
 
     <StackLayout>
-        <BaseLabel label="Choose a player">
-            <BaseDropdown name="chosen-player" v-model="chosenPlayer" :choices="players" empty-text="Please select" />
-        </BaseLabel>
+        <BaseChoice label="Choose a player" name="chosen-player" v-model="chosenPlayer" :choices="players" empty-text="Please select" />
 
         <ClusterLayout>
-            <BaseLabel label="Choose a role">
-                <BaseDropdown name="chosen-role" v-model="chosenRole" :choices="roles" empty-text="Please select" />
-            </BaseLabel>
+            <BaseChoice label="Choose a role" name="chosen-role" v-model="chosenRole" :choices="roles" empty-text="Please select" />
             <BaseButton>Show role</BaseButton>
         </ClusterLayout>
 
@@ -32,8 +28,7 @@ import type { IRole } from "~/scripts/types/data";
 import { computed } from "vue";
 import type { IBaseChoice } from "~/scripts/types/base";
 import { times } from "~/scripts/utilities/numbers";
-import BaseLabel from "~/components/base/BaseLabel.vue";
-import BaseDropdown from "~/components/base/BaseDropdown.vue";
+import BaseChoice from "~/components/base/BaseChoice.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
