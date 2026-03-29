@@ -49,6 +49,23 @@ export function randomGameId({ groups = 3, length = 3, glue = "-" } = {}) {
 }
 
 /**
+ * Interprets the given object as a string. `null` or `undefined` will return an
+ * empty string.
+ *
+ * @param object Object to interpret.
+ * @returns Interpretted string.
+ */
+export function interpret(object: any) {
+
+    return (
+        (object === null || object === undefined)
+        ? ''
+        : String(object)
+    );
+
+}
+
+/**
  * Takes a string containing placeholders (denoted between `{` and `}`) and
  * replaces them with the entries in `replacements`.
  *
@@ -67,7 +84,7 @@ export function supplant(
 
     return template.replace(/\{([^{}]*)\}/g, (whole: string, index: string) => {
 
-        return String(
+        return interpret(
             Object.hasOwn(replacements, index)
             ? (
                 Array.isArray(replacements)
@@ -82,13 +99,23 @@ export function supplant(
 }
 
 /**
- * Splits the given string up into a collection of words.
+ * Splits the given string up into a collection of words. An empty string (or a
+ * string that is empty after being trimmed) will return an empty array.
  *
  * @param words String to break up into words.
  * @returns Array of words.
  */
-export function words<TWord = string>(words: string) {
-    return String(words).trim().split(/\s+/) as TWord[];
+export function words<TWord = string>(sentence: string) {
+
+    const words: TWord[] = [];
+    const trimmed = interpret(sentence).trim();
+
+    if (trimmed.length) {
+        words.push(...trimmed.split(/\s+/) as TWord[]);
+    }
+
+    return words;
+
 }
 
 /**

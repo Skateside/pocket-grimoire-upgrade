@@ -1,5 +1,10 @@
 <template>
-    <component :is="node" class="button" v-bind="attrs">
+    <component
+        :is="node"
+        class="button"
+        :class="className"
+        v-bind="attrs"
+    >
         <template v-if="slots.default">
             <slot />
         </template>
@@ -13,6 +18,7 @@
 import type { ILayoutsNode } from "../../scripts/types/layouts";
 import { type Component, computed, useAttrs, useSlots } from "vue";
 import { RouterLink } from "vue-router";
+import { interpret, words } from "~/scripts/utilities/strings";
 
 defineOptions({
     inheritAttrs: false,
@@ -20,6 +26,7 @@ defineOptions({
 const props = withDefaults(defineProps<{
     node?: ILayoutsNode,
     text?: string,
+    variant?: string,
 }>(), {
     node: "button",
 });
@@ -56,5 +63,8 @@ const node = computed(() => {
 
     return node;
 
+});
+const className = computed(() => {
+    return words(interpret(props.variant)).map((word) => `button--${word}`);
 });
 </script>

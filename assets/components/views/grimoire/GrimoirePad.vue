@@ -70,19 +70,20 @@
 import type { ICoordinates, IPad } from "~/scripts/types/data";
 import {
     computed,
-    // nextTick,
+    nextTick,
     onMounted,
     onUnmounted,
     shallowReactive,
     ref,
     useTemplateRef,
 } from "vue";
-// import usePositioner from "~/composables/usePositioner";
+import { useRouter } from "vue-router";
+import usePositioner from "~/composables/usePositioner";
 import useRolesStore from "~/scripts/stores/roles";
 import useTokensStore from "~/scripts/stores/tokens";
 import CentreLayout from "~/components/layouts/CentreLayout.vue";
-import ReminderToken from "~/components/general/ReminderToken.vue";
-import RoleToken from "~/components/general/RoleToken.vue";
+import ReminderToken from "./ReminderToken.vue";
+import RoleToken from "./RoleToken.vue";
 import { debounce, noop } from "~/scripts/utilities/functions";
 import { clamp } from "~/scripts/utilities/numbers";
 import {
@@ -99,7 +100,7 @@ const rolesStore = useRolesStore();
 const tokensStore = useTokensStore();
 const idsInPlay = computed(() => Object.keys(tokensStore.inPlay));
 const grimoire = useTemplateRef("grimoire");
-// const seats = useTemplateRef("seats");
+const seats = useTemplateRef("seats");
 const isDragging = ref<boolean>(false);
 const pad = shallowReactive<IPad>({
     left: 0,
@@ -107,11 +108,11 @@ const pad = shallowReactive<IPad>({
     right: 0,
     bottom: 0,
 });
-// const positioner = usePositioner(pad, seats);
+const positioner = usePositioner(pad, seats);
 const observer = ref<IResizeObserverResponse | null>(null);
+const router = useRouter();
 
-/*
-const setPositions = () => {
+const setPositions = () => new Promise<void>((resolve) => {
 
     updatePadDimensions();
 
@@ -127,10 +128,11 @@ const setPositions = () => {
 
         });
 
+        resolve();
+
     });
 
-};
-*/
+});
 
 const getMovableItem = (target: Element) => {
     return (target as HTMLElement).closest<HTMLElement>(".movable__item");
@@ -290,6 +292,12 @@ onMounted(() => {
 
     if (grimoire.value) {
         observer.value = resizeObserver(grimoire.value, updateEventually);
+    }
+
+    const url = new URL(window.location.href);
+
+    if (url.searchParams.get("place") === "auto") {
+        setPositions().then(() => router.replace({ name: "grimoire" }));
     }
 
 });

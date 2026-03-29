@@ -108,6 +108,9 @@ const rolesStore = defineStore("roles", () => {
     });
     const specialRoles = computed(() => roles.value.filter(isSpecial));
     const script = ref<IScriptFull>([]);
+    const scriptRoles = computed(() => {
+        return script.value.filter(isBasicRole);
+    });
     const scriptByType = computed(() => {
 
         return Object.groupBy(
@@ -503,6 +506,7 @@ const rolesStore = defineStore("roles", () => {
         script,
         // Getters.
         roles,
+        scriptRoles,
         scripts,
         nightOrder,
         scriptByType,

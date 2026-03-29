@@ -33,6 +33,11 @@ import { ref, useTemplateRef } from "vue";
 import BoxLayout from "../layouts/BoxLayout.vue";
 import SidebarLayout from "../layouts/SidebarLayout.vue";
 
+const emit = defineEmits<{
+    (e: "hide"): void,
+    (e: "show"): void,
+    (e: "toggle", state: string): void,
+}>();
 const props = defineProps<{
     cover?: boolean,
     show?: boolean,
@@ -48,6 +53,14 @@ const handleToggle = ({ newState }: ToggleEvent) => {
 
     if (isShowing.value) {
         modal.value?.focus();
+    }
+
+    emit("toggle", newState);
+
+    if (isShowing.value) {
+        emit("show");
+    } else {
+        emit("hide");
     }
 
 };

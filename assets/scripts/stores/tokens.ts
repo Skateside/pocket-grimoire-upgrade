@@ -248,6 +248,18 @@ const useTokensStore = defineStore("tokens", () => {
         return removeAtIndex(tokens.value, innerGetIndex(token));
     };
 
+    const destroyById = (tokenId: IToken["id"]) => {
+
+        const token = innerGetById(tokenId);
+
+        return (
+            token
+            ? destroy(token)
+            : false
+        );
+
+    };
+
     const getSortedSeats = computed(() => () => {
 
         const centre = getCentre(seats.value);
@@ -288,6 +300,7 @@ const useTokensStore = defineStore("tokens", () => {
         update,
         updateById,
         destroy,
+        destroyById,
         setSeatName,
         setSeatRoleId,
     };

@@ -9,8 +9,13 @@
 </template>
 
 <script setup lang="ts">
+import { onErrorCaptured } from "vue";
 import { RouterView, RouterLink } from "vue-router";
 import ReelLayout from "../../layouts/ReelLayout.vue";
+
+onErrorCaptured((error, instance, info) => {
+    console.log({ error, instance, info });
+});
 </script>
 
 <style>
