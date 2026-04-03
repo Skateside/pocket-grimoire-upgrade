@@ -32,7 +32,7 @@ import {
     ERoleTeam,
     ETokenAlignment,
 } from "../enums/data";
-import { unique, uniqueMap } from "../utilities/arrays";
+import { removeItem, unique, uniqueMap } from "../utilities/arrays";
 import {
     clone,
     deepThaw,
@@ -251,7 +251,16 @@ function filterNightOrder<TNightType extends keyof INightSheets[IRole["id"]]>(
     // Add in the special roles of "dawn", "dusk", "minion info", and "demon
     // info" if they're not there already.
 
-    const { DAWN, DEMON_INFO, DUSK, MINION_INFO } = ERoleId;
+    const {
+        DAWN,
+        DEMON_INFO,
+        DUSK,
+        MINION_INFO,
+        META,
+        NO_ROLE,
+        UNIVERSAL,
+        UNRECOGNISED,
+    } = ERoleId;
 
     if (!filtered.includes(DAWN)) {
         filtered.unshift(DAWN);
@@ -268,6 +277,13 @@ function filterNightOrder<TNightType extends keyof INightSheets[IRole["id"]]>(
     if (!filtered.includes(DUSK)) {
         filtered.push(DUSK);
     }
+
+    // Remove any unwanted special roles. These are just there for internal
+    // Pocket Grimoire functionality and shouldn't be seen by the end user.
+
+    [META, NO_ROLE, UNIVERSAL, UNRECOGNISED].forEach((roleId) => {
+        removeItem(filtered, roleId);
+    });
 
     return filtered;
 
@@ -294,9 +310,21 @@ function createNightOrder<TNightType extends keyof INightSheets[IRole["id"]]>(
         return filterNightOrder(rawNightOrder, nightSheets, nightType);
     }
 
+    const ignoreSpecials = [
+        ERoleId.META,
+        ERoleId.NO_ROLE,
+        ERoleId.UNIVERSAL,
+        ERoleId.UNRECOGNISED,
+    ];
+
     const nightOrder = filterObject(
         nightSheets,
-        ([_id, nights]) => isNumber(nights[nightType]),
+        ([id, nights]) => {
+            return (
+                isNumber(nights[nightType])
+                && !ignoreSpecials.includes(id as ERoleId)
+            );
+        },
     ) as { [k: IRole["id"]]: { [nightType]: number } };
     const order = Object.entries(nightOrder)
         .map(([id, nights]) => [id, nights[nightType]]) as [string, number][];
