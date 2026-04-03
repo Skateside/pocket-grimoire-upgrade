@@ -5,8 +5,10 @@ namespace App\Model;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use App\Enums\{
     ReminderFlagEnums,
+    RoleIdEnums,
     RoleSpecialNameEnums,
     RoleSpecialTypeEnums,
+    RoleTeamEnums,
 };
 
 class TPIResourcesModel
@@ -25,6 +27,16 @@ class TPIResourcesModel
      * @var string File name where the data will be saved.
      */
     const FILENAME_DESTINATION = 'fetched-roles.json';
+
+    /**
+     * @var string Format of the default image location.
+     */
+    const LOCATION_DEFAULT = '/roles/%s.svg';
+
+    /**
+     * @var string Format of the alternative image(s) location.
+     */
+    const LOCATION_ALTERNATIVE = '/roles/alternative/%s.svg';
 
     /**
      * @var string Location of the roles data.
@@ -461,7 +473,7 @@ class TPIResourcesModel
         return array_map(function ($role) use ($images) {
 
             if (!array_key_exists($role['id'], $images)) {
-                return $role;
+                return $this->generateImages($role);
             }
 
             $image = $images[$role['id']];
@@ -480,6 +492,55 @@ class TPIResourcesModel
             return $role;
 
         }, $roles);
+    }
+
+    /**
+     * Generates the image(s) for the given role.
+     *
+     * @param array $role Role whose images should be generated.
+     * @return array Role with generated images.
+     */
+    protected function generateImages(array $role): array
+    {
+        if (in_array($role['id'], [
+            RoleIdEnums::DAWN->value,
+            RoleIdEnums::DUSK->value,
+            RoleIdEnums::DEMON_INFO->value,
+            RoleIdEnums::MINION_INFO->value,
+        ])) {
+            $role['image'] = sprintf(static::LOCATION_DEFAULT, $role['id']);
+            return $role;
+        }
+
+        switch ($role['team']) {
+
+            case RoleTeamEnums::TRAVELLER->value:
+
+                $role['image'] = [
+                    sprintf(static::LOCATION_DEFAULT, $role['id']),
+                    sprintf(static::LOCATION_ALTERNATIVE, "{$role['id']}_g"),
+                    sprintf(static::LOCATION_ALTERNATIVE, "{$role['id']}_e"),
+                ];
+
+                break;
+
+            case RoleTeamEnums::FABLED->value:
+            case RoleTeamEnums::LORIC->value:
+                $role['image'] = sprintf(static::LOCATION_DEFAULT, $role['id']);
+                break;
+
+            default:
+
+                $role['image'] = [
+                    sprintf(static::LOCATION_DEFAULT, $role['id']),
+                    sprintf(static::LOCATION_ALTERNATIVE, $role['id']),
+                ];
+
+                break;
+
+        }
+
+        return $role;
     }
 
     /**
