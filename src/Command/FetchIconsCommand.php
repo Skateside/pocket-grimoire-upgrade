@@ -60,49 +60,23 @@ class FetchIconsCommand
         $roles = array_filter($data, function ($role) use($specialRoleIds) {
             return !in_array($role['id'], $specialRoleIds);
         });
-        $failures = [];
+        $total = count($roles);
 
         if ($io->isVerbose()) {
-            $io->section('Fetching remote icons');
-            $io->progressStart(count($roles));
+            $io->section('Downloading icons');
         }
 
-        foreach ($roles as $role) {
+        $results = $this->iconsModel->fetchSVGs($roles);
 
-            $io->progressAdvance();
-            $fetched = $this->iconsModel->fetchIcon($role['id']);
-
-            if ($fetched === false) {
-                $failures[] = [$role['id'], 'Not found'];
-                continue;
-            }
-
-            if ($this->iconsModel->writeIcons(
-                $role['id'],
-                $fetched,
-                $role['team'],
-            ) === false) {
-                $failures[] = [$role['id'], 'Not written'];
-                continue;
-            }
-
+        if (!$results['success']) {
+            $io->getErrorStyle()->warning('Problem fetching SVGs: ' . $results['body']);
+        } elseif ($results['body'] < $total) {
+            $missing = $total - $results['body'];
+            $io->getErrorStyle()->warning("{$missing} icon(s) failed");
         }
 
-        $count = count($failures);
-
-        if ($count > 0) {
-
-            if ($io->isVerbose()) {
-
-                $io->section('Failures');
-                $io->table(['Role ID', 'Reason'], $failures);
-
-            } else {
-                $io->getErrorStyle()->warning("Failed to fetch {$count} icon(s)");
-            }
-
-        } elseif ($io->isVerbose()) {
-            $io->writeln('Remote icons fetched');
+        if ($io->isVerbose()) {
+            $io->writeln('Icons downloaded');
         }
 
         $io->getErrorStyle()->success('Icons downloaded and copied');

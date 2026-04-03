@@ -1,663 +1,683 @@
 {
-    "_meta": "/icons/_meta.svg",
-    "_norole": "/icons/_norole.svg",
+    "_meta": "/roles/_meta.svg",
+    "_norole": "/roles/_norole.svg",
     "_universal": {
         "image": "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
         "reminders": [
-            "/icons/good.svg",
-            "/icons/evil.svg"
+            "/roles/good.svg",
+            "/roles/evil.svg"
         ]
     },
-    "_unrecognised": "/icons/_unrecognised.svg",
+    "_unrecognised": "/roles/_unrecognised.svg",
     "acrobat": [
-        "/icons/acrobat.svg",
-        "/icons/alternative/acrobat.svg"
+        "/roles/acrobat.svg",
+        "/roles/alternative/acrobat.svg"
     ],
     "alchemist": [
-        "/icons/alchemist.svg",
-        "/icons/alternative/alchemist.svg"
+        "/roles/alchemist.svg",
+        "/roles/alternative/alchemist.svg"
     ],
     "alhadikhia": [
-        "/icons/alhadikhia.svg",
-        "/icons/alternative/alhadikhia.svg"
+        "/roles/alhadikhia.svg",
+        "/roles/alternative/alhadikhia.svg"
     ],
     "alsaahir": [
-        "/icons/alsaahir.svg",
-        "/icons/alternative/alsaahir.svg"
+        "/roles/alsaahir.svg",
+        "/roles/alternative/alsaahir.svg"
     ],
     "amnesiac": [
-        "/icons/amnesiac.svg",
-        "/icons/alternative/amnesiac.svg"
+        "/roles/amnesiac.svg",
+        "/roles/alternative/amnesiac.svg"
     ],
-    "angel": "/icons/angel.svg",
+    "angel": "/roles/angel.svg",
     "apprentice": [
-        "/icons/apprentice.svg",
-        "/icons/alternative/apprentice_g.svg",
-        "/icons/alternative/apprentice_e.svg"
+        "/roles/apprentice.svg",
+        "/roles/alternative/apprentice_g.svg",
+        "/roles/alternative/apprentice_e.svg"
     ],
     "artist": [
-        "/icons/artist.svg",
-        "/icons/alternative/artist.svg"
+        "/roles/artist.svg",
+        "/roles/alternative/artist.svg"
     ],
     "assassin": [
-        "/icons/assassin.svg",
-        "/icons/alternative/assassin.svg"
+        "/roles/assassin.svg",
+        "/roles/alternative/assassin.svg"
     ],
     "atheist": [
-        "/icons/atheist.svg",
-        "/icons/alternative/atheist.svg"
+        "/roles/atheist.svg",
+        "/roles/alternative/atheist.svg"
     ],
     "balloonist": [
-        "/icons/balloonist.svg",
-        "/icons/alternative/balloonist.svg"
+        "/roles/balloonist.svg",
+        "/roles/alternative/balloonist.svg"
     ],
     "banshee": [
-        "/icons/banshee.svg",
-        "/icons/alternative/banshee.svg"
+        "/roles/banshee.svg",
+        "/roles/alternative/banshee.svg"
     ],
     "barber": [
-        "/icons/barber.svg",
-        "/icons/alternative/barber.svg"
+        "/roles/barber.svg",
+        "/roles/alternative/barber.svg"
     ],
     "barista": [
-        "/icons/barista.svg",
-        "/icons/alternative/barista_g.svg",
-        "/icons/alternative/barista_e.svg"
+        "/roles/barista.svg",
+        "/roles/alternative/barista_g.svg",
+        "/roles/alternative/barista_e.svg"
     ],
     "baron": [
-        "/icons/baron.svg",
-        "/icons/alternative/baron.svg"
+        "/roles/baron.svg",
+        "/roles/alternative/baron.svg"
     ],
     "beggar": [
-        "/icons/beggar.svg",
-        "/icons/alternative/beggar_g.svg",
-        "/icons/alternative/beggar_e.svg"
+        "/roles/beggar.svg",
+        "/roles/alternative/beggar_g.svg",
+        "/roles/alternative/beggar_e.svg"
     ],
-    "bigwig": "/icons/bigwig.svg",
+    "bigwig": "/roles/bigwig.svg",
     "bishop": [
-        "/icons/bishop.svg",
-        "/icons/alternative/bishop_g.svg",
-        "/icons/alternative/bishop_e.svg"
+        "/roles/bishop.svg",
+        "/roles/alternative/bishop_g.svg",
+        "/roles/alternative/bishop_e.svg"
     ],
     "boffin": [
-        "/icons/boffin.svg",
-        "/icons/alternative/boffin.svg"
+        "/roles/boffin.svg",
+        "/roles/alternative/boffin.svg"
     ],
     "bonecollector": [
-        "/icons/bonecollector.svg",
-        "/icons/alternative/bonecollector_g.svg",
-        "/icons/alternative/bonecollector_e.svg"
+        "/roles/bonecollector.svg",
+        "/roles/alternative/bonecollector_g.svg",
+        "/roles/alternative/bonecollector_e.svg"
     ],
     "boomdandy": [
-        "/icons/boomdandy.svg",
-        "/icons/alternative/boomdandy.svg"
+        "/roles/boomdandy.svg",
+        "/roles/alternative/boomdandy.svg"
     ],
-    "bootlegger": "/icons/bootlegger.svg",
+    "bootlegger": "/roles/bootlegger.svg",
     "bountyhunter": [
-        "/icons/bountyhunter.svg",
-        "/icons/alternative/bountyhunter.svg"
+        "/roles/bountyhunter.svg",
+        "/roles/alternative/bountyhunter.svg"
     ],
-    "buddhist": "/icons/buddhist.svg",
+    "buddhist": "/roles/buddhist.svg",
     "bureaucrat": [
-        "/icons/bureaucrat.svg",
-        "/icons/alternative/bureaucrat_g.svg",
-        "/icons/alternative/bureaucrat_e.svg"
+        "/roles/bureaucrat.svg",
+        "/roles/alternative/bureaucrat_g.svg",
+        "/roles/alternative/bureaucrat_e.svg"
     ],
     "butcher": [
-        "/icons/butcher.svg",
-        "/icons/alternative/butcher_g.svg",
-        "/icons/alternative/butcher_e.svg"
+        "/roles/butcher.svg",
+        "/roles/alternative/butcher_g.svg",
+        "/roles/alternative/butcher_e.svg"
     ],
     "butler": [
-        "/icons/butler.svg",
-        "/icons/alternative/butler.svg"
+        "/roles/butler.svg",
+        "/roles/alternative/butler.svg"
+    ],
+    "cacklejack": [
+        "/roles/cacklejack.svg",
+        "/roles/alternative/cacklejack_g.svg",
+        "/roles/alternative/butcher_e.svg"
     ],
     "cannibal": [
-        "/icons/cannibal.svg",
-        "/icons/alternative/cannibal.svg"
+        "/roles/cannibal.svg",
+        "/roles/alternative/cannibal.svg"
     ],
     "cerenovus": [
-        "/icons/cerenovus.svg",
-        "/icons/alternative/cerenovus.svg"
+        "/roles/cerenovus.svg",
+        "/roles/alternative/cerenovus.svg"
     ],
     "chambermaid": [
-        "/icons/chambermaid.svg",
-        "/icons/alternative/chambermaid.svg"
+        "/roles/chambermaid.svg",
+        "/roles/alternative/chambermaid.svg"
     ],
     "chef": [
-        "/icons/chef.svg",
-        "/icons/alternative/chef.svg"
+        "/roles/chef.svg",
+        "/roles/alternative/chef.svg"
     ],
     "choirboy": [
-        "/icons/choirboy.svg",
-        "/icons/alternative/choirboy.svg"
+        "/roles/choirboy.svg",
+        "/roles/alternative/choirboy.svg"
     ],
     "clockmaker": [
-        "/icons/clockmaker.svg",
-        "/icons/alternative/clockmaker.svg"
+        "/roles/clockmaker.svg",
+        "/roles/alternative/clockmaker.svg"
     ],
     "courtier": [
-        "/icons/courtier.svg",
-        "/icons/alternative/courtier.svg"
+        "/roles/courtier.svg",
+        "/roles/alternative/courtier.svg"
     ],
     "cultleader": [
-        "/icons/cultleader.svg",
-        "/icons/alternative/cultleader.svg"
+        "/roles/cultleader.svg",
+        "/roles/alternative/cultleader.svg"
     ],
     "damsel": [
-        "/icons/damsel.svg",
-        "/icons/alternative/damsel.svg"
+        "/roles/damsel.svg",
+        "/roles/alternative/damsel.svg"
     ],
-    "dawn": "/icons/dawn.svg",
-    "demoninfo": "/icons/demoninfo.svg",
+    "dawn": "/roles/dawn.svg",
+    "demoninfo": "/roles/demoninfo.svg",
+    "deusexfiasco": "/roles/deusexfiasco.svg",
     "deviant": [
-        "/icons/deviant.svg",
-        "/icons/alternative/deviant_g.svg",
-        "/icons/alternative/deviant_e.svg"
+        "/roles/deviant.svg",
+        "/roles/alternative/deviant_g.svg",
+        "/roles/alternative/deviant_e.svg"
     ],
     "devilsadvocate": [
-        "/icons/devilsadvocate.svg",
-        "/icons/alternative/devilsadvocate.svg"
+        "/roles/devilsadvocate.svg",
+        "/roles/alternative/devilsadvocate.svg"
     ],
-    "djinn": "/icons/djinn.svg",
-    "doomsayer": "/icons/doomsayer.svg",
+    "djinn": "/roles/djinn.svg",
+    "doomsayer": "/roles/doomsayer.svg",
     "dreamer": [
-        "/icons/dreamer.svg",
-        "/icons/alternative/dreamer.svg"
+        "/roles/dreamer.svg",
+        "/roles/alternative/dreamer.svg"
     ],
     "drunk": [
-        "/icons/drunk.svg",
-        "/icons/alternative/drunk.svg"
+        "/roles/drunk.svg",
+        "/roles/alternative/drunk.svg"
     ],
-    "duchess": "/icons/duchess.svg",
-    "dusk": "/icons/dusk.svg",
+    "duchess": "/roles/duchess.svg",
+    "dusk": "/roles/dusk.svg",
     "empath": [
-        "/icons/empath.svg",
-        "/icons/alternative/empath.svg"
+        "/roles/empath.svg",
+        "/roles/alternative/empath.svg"
     ],
     "engineer": [
-        "/icons/engineer.svg",
-        "/icons/alternative/engineer.svg"
+        "/roles/engineer.svg",
+        "/roles/alternative/engineer.svg"
     ],
     "eviltwin": [
-        "/icons/eviltwin.svg",
-        "/icons/alternative/eviltwin.svg"
+        "/roles/eviltwin.svg",
+        "/roles/alternative/eviltwin.svg"
     ],
     "exorcist": [
-        "/icons/exorcist.svg",
-        "/icons/alternative/exorcist.svg"
+        "/roles/exorcist.svg",
+        "/roles/alternative/exorcist.svg"
     ],
     "fanggu": [
-        "/icons/fanggu.svg",
-        "/icons/alternative/fanggu.svg"
+        "/roles/fanggu.svg",
+        "/roles/alternative/fanggu.svg"
     ],
     "farmer": [
-        "/icons/farmer.svg",
-        "/icons/alternative/farmer.svg"
+        "/roles/farmer.svg",
+        "/roles/alternative/farmer.svg"
     ],
     "fearmonger": [
-        "/icons/fearmonger.svg",
-        "/icons/alternative/fearmonger.svg"
+        "/roles/fearmonger.svg",
+        "/roles/alternative/fearmonger.svg"
     ],
-    "ferryman": "/icons/ferryman.svg",
-    "fibbin": "/icons/fibbin.svg",
-    "fiddler": "/icons/fiddler.svg",
+    "ferryman": "/roles/ferryman.svg",
+    "fibbin": "/roles/fibbin.svg",
+    "fiddler": "/roles/fiddler.svg",
     "fisherman": [
-        "/icons/fisherman.svg",
-        "/icons/alternative/fisherman.svg"
+        "/roles/fisherman.svg",
+        "/roles/alternative/fisherman.svg"
     ],
     "flowergirl": [
-        "/icons/flowergirl.svg",
-        "/icons/alternative/flowergirl.svg"
+        "/roles/flowergirl.svg",
+        "/roles/alternative/flowergirl.svg"
     ],
     "fool": [
-        "/icons/fool.svg",
-        "/icons/alternative/fool.svg"
+        "/roles/fool.svg",
+        "/roles/alternative/fool.svg"
     ],
     "fortuneteller": [
-        "/icons/fortuneteller.svg",
-        "/icons/alternative/fortuneteller.svg"
+        "/roles/fortuneteller.svg",
+        "/roles/alternative/fortuneteller.svg"
     ],
     "gambler": [
-        "/icons/gambler.svg",
-        "/icons/alternative/gambler.svg"
+        "/roles/gambler.svg",
+        "/roles/alternative/gambler.svg"
     ],
     "gangster": [
-        "/icons/gangster.svg",
-        "/icons/alternative/gangster_g.svg",
-        "/icons/alternative/gangster_e.svg"
+        "/roles/gangster.svg",
+        "/roles/alternative/gangster_g.svg",
+        "/roles/alternative/gangster_e.svg"
     ],
-    "gardener": "/icons/gardener.svg",
+    "gardener": "/roles/gardener.svg",
     "general": [
-        "/icons/general.svg",
-        "/icons/alternative/general.svg"
+        "/roles/general.svg",
+        "/roles/alternative/general.svg"
     ],
     "gnome": [
-        "/icons/gnome.svg",
-        "/icons/alternative/gnome_g.svg",
-        "/icons/alternative/gnome_e.svg"
+        "/roles/gnome.svg",
+        "/roles/alternative/gnome_g.svg",
+        "/roles/alternative/gnome_e.svg"
     ],
     "goblin": [
-        "/icons/goblin.svg",
-        "/icons/alternative/goblin.svg"
+        "/roles/goblin.svg",
+        "/roles/alternative/goblin.svg"
     ],
     "godfather": [
-        "/icons/godfather.svg",
-        "/icons/alternative/godfather.svg"
+        "/roles/godfather.svg",
+        "/roles/alternative/godfather.svg"
     ],
+    "godofug": "/roles/godofug.svg",
     "golem": [
-        "/icons/golem.svg",
-        "/icons/alternative/golem.svg"
+        "/roles/golem.svg",
+        "/roles/alternative/golem.svg"
     ],
     "goon": [
-        "/icons/goon.svg",
-        "/icons/alternative/goon.svg"
+        "/roles/goon.svg",
+        "/roles/alternative/goon.svg"
     ],
     "gossip": [
-        "/icons/gossip.svg",
-        "/icons/alternative/gossip.svg"
+        "/roles/gossip.svg",
+        "/roles/alternative/gossip.svg"
     ],
     "grandmother": [
-        "/icons/grandmother.svg",
-        "/icons/alternative/grandmother.svg"
+        "/roles/grandmother.svg",
+        "/roles/alternative/grandmother.svg"
     ],
     "gunslinger": [
-        "/icons/gunslinger.svg",
-        "/icons/alternative/gunslinger_g.svg",
-        "/icons/alternative/gunslinger_e.svg"
+        "/roles/gunslinger.svg",
+        "/roles/alternative/gunslinger_g.svg",
+        "/roles/alternative/gunslinger_e.svg"
     ],
     "harlot": [
-        "/icons/harlot.svg",
-        "/icons/alternative/harlot_g.svg",
-        "/icons/alternative/harlot_e.svg"
+        "/roles/harlot.svg",
+        "/roles/alternative/harlot_g.svg",
+        "/roles/alternative/harlot_e.svg"
     ],
     "harpy": [
-        "/icons/harpy.svg",
-        "/icons/alternative/harpy.svg"
+        "/roles/harpy.svg",
+        "/roles/alternative/harpy.svg"
     ],
     "hatter": [
-        "/icons/hatter.svg",
-        "/icons/alternative/hatter.svg"
+        "/roles/hatter.svg",
+        "/roles/alternative/hatter.svg"
     ],
-    "hellslibrarian": "/icons/hellslibrarian.svg",
+    "hellslibrarian": "/roles/hellslibrarian.svg",
     "heretic": [
-        "/icons/heretic.svg",
-        "/icons/alternative/heretic.svg"
+        "/roles/heretic.svg",
+        "/roles/alternative/heretic.svg"
+    ],
+    "hermit": [
+        "/roles/hermit.svg",
+        "/roles/alternative/hermit.svg"
     ],
     "highpriestess": [
-        "/icons/highpriestess.svg",
-        "/icons/alternative/highpriestess.svg"
+        "/roles/highpriestess.svg",
+        "/roles/alternative/highpriestess.svg"
     ],
-    "hindu": "/icons/hindu.svg",
+    "hindu": "/roles/hindu.svg",
     "huntsman": [
-        "/icons/huntsman.svg",
-        "/icons/alternative/huntsman.svg"
+        "/roles/huntsman.svg",
+        "/roles/alternative/huntsman.svg"
     ],
     "imp": [
-        "/icons/imp.svg",
-        "/icons/alternative/imp.svg"
+        "/roles/imp.svg",
+        "/roles/alternative/imp.svg"
     ],
     "innkeeper": [
-        "/icons/innkeeper.svg",
-        "/icons/alternative/innkeeper.svg"
+        "/roles/innkeeper.svg",
+        "/roles/alternative/innkeeper.svg"
     ],
     "investigator": [
-        "/icons/investigator.svg",
-        "/icons/alternative/investigator.svg"
+        "/roles/investigator.svg",
+        "/roles/alternative/investigator.svg"
     ],
     "judge": [
-        "/icons/judge.svg",
-        "/icons/alternative/judge_g.svg",
-        "/icons/alternative/judge_e.svg"
+        "/roles/judge.svg",
+        "/roles/alternative/judge_g.svg",
+        "/roles/alternative/judge_e.svg"
     ],
     "juggler": [
-        "/icons/juggler.svg",
-        "/icons/alternative/juggler.svg"
+        "/roles/juggler.svg",
+        "/roles/alternative/juggler.svg"
     ],
     "kazali": [
-        "/icons/kazali.svg",
-        "/icons/alternative/kazali.svg"
+        "/roles/kazali.svg",
+        "/roles/alternative/kazali.svg"
     ],
     "king": [
-        "/icons/king.svg",
-        "/icons/alternative/king.svg"
+        "/roles/king.svg",
+        "/roles/alternative/king.svg"
     ],
     "klutz": [
-        "/icons/klutz.svg",
-        "/icons/alternative/klutz.svg"
+        "/roles/klutz.svg",
+        "/roles/alternative/klutz.svg"
     ],
+    "knaves": "/roles/knaves.svg",
     "knight": [
-        "/icons/knight.svg",
-        "/icons/alternative/knight.svg"
+        "/roles/knight.svg",
+        "/roles/alternative/knight.svg"
     ],
     "legion": [
-        "/icons/legion.svg",
-        "/icons/alternative/legion.svg"
+        "/roles/legion.svg",
+        "/roles/alternative/legion.svg"
     ],
     "leviathan": [
-        "/icons/leviathan.svg",
-        "/icons/alternative/leviathan.svg"
+        "/roles/leviathan.svg",
+        "/roles/alternative/leviathan.svg"
     ],
     "librarian": [
-        "/icons/librarian.svg",
-        "/icons/alternative/librarian.svg"
+        "/roles/librarian.svg",
+        "/roles/alternative/librarian.svg"
     ],
     "lilmonsta": [
-        "/icons/lilmonsta.svg",
-        "/icons/alternative/lilmonsta.svg"
+        "/roles/lilmonsta.svg",
+        "/roles/alternative/lilmonsta.svg"
     ],
     "lleech": [
-        "/icons/lleech.svg",
-        "/icons/alternative/lleech.svg"
+        "/roles/lleech.svg",
+        "/roles/alternative/lleech.svg"
     ],
     "lordoftyphon": [
-        "/icons/lordoftyphon.svg",
-        "/icons/alternative/lordoftyphon.svg"
+        "/roles/lordoftyphon.svg",
+        "/roles/alternative/lordoftyphon.svg"
     ],
     "lunatic": [
-        "/icons/lunatic.svg",
-        "/icons/alternative/lunatic.svg"
+        "/roles/lunatic.svg",
+        "/roles/alternative/lunatic.svg"
     ],
     "lycanthrope": [
-        "/icons/lycanthrope.svg",
-        "/icons/alternative/lycanthrope.svg"
+        "/roles/lycanthrope.svg",
+        "/roles/alternative/lycanthrope.svg"
     ],
     "magician": [
-        "/icons/magician.svg",
-        "/icons/alternative/magician.svg"
+        "/roles/magician.svg",
+        "/roles/alternative/magician.svg"
     ],
     "marionette": [
-        "/icons/marionette.svg",
-        "/icons/alternative/marionette.svg"
+        "/roles/marionette.svg",
+        "/roles/alternative/marionette.svg"
     ],
     "mastermind": [
-        "/icons/mastermind.svg",
-        "/icons/alternative/mastermind.svg"
+        "/roles/mastermind.svg",
+        "/roles/alternative/mastermind.svg"
     ],
     "mathematician": [
-        "/icons/mathematician.svg",
-        "/icons/alternative/mathematician.svg"
+        "/roles/mathematician.svg",
+        "/roles/alternative/mathematician.svg"
     ],
     "matron": [
-        "/icons/matron.svg",
-        "/icons/alternative/matron_g.svg",
-        "/icons/alternative/matron_e.svg"
+        "/roles/matron.svg",
+        "/roles/alternative/matron_g.svg",
+        "/roles/alternative/matron_e.svg"
     ],
     "mayor": [
-        "/icons/mayor.svg",
-        "/icons/alternative/mayor.svg"
+        "/roles/mayor.svg",
+        "/roles/alternative/mayor.svg"
     ],
     "mezepheles": [
-        "/icons/mezepheles.svg",
-        "/icons/alternative/mezepheles.svg"
+        "/roles/mezepheles.svg",
+        "/roles/alternative/mezepheles.svg"
     ],
-    "minioninfo": "/icons/minioninfo.svg",
+    "minioninfo": "/roles/minioninfo.svg",
     "minstrel": [
-        "/icons/minstrel.svg",
-        "/icons/alternative/minstrel.svg"
+        "/roles/minstrel.svg",
+        "/roles/alternative/minstrel.svg"
     ],
     "monk": [
-        "/icons/monk.svg",
-        "/icons/alternative/monk.svg"
+        "/roles/monk.svg",
+        "/roles/alternative/monk.svg"
     ],
     "moonchild": [
-        "/icons/moonchild.svg",
-        "/icons/alternative/moonchild.svg"
+        "/roles/moonchild.svg",
+        "/roles/alternative/moonchild.svg"
     ],
     "mutant": [
-        "/icons/mutant.svg",
-        "/icons/alternative/mutant.svg"
+        "/roles/mutant.svg",
+        "/roles/alternative/mutant.svg"
     ],
     "nightwatchman": [
-        "/icons/nightwatchman.svg",
-        "/icons/alternative/nightwatchman.svg"
+        "/roles/nightwatchman.svg",
+        "/roles/alternative/nightwatchman.svg"
     ],
     "noble": [
-        "/icons/noble.svg",
-        "/icons/alternative/noble.svg"
+        "/roles/noble.svg",
+        "/roles/alternative/noble.svg"
     ],
     "nodashii": [
-        "/icons/nodashii.svg",
-        "/icons/alternative/nodashii.svg"
+        "/roles/nodashii.svg",
+        "/roles/alternative/nodashii.svg"
     ],
     "ogre": [
-        "/icons/ogre.svg",
-        "/icons/alternative/ogre.svg"
+        "/roles/ogre.svg",
+        "/roles/alternative/ogre.svg"
     ],
     "ojo": [
-        "/icons/ojo.svg",
-        "/icons/alternative/ojo.svg"
+        "/roles/ojo.svg",
+        "/roles/alternative/ojo.svg"
     ],
     "oracle": [
-        "/icons/oracle.svg",
-        "/icons/alternative/oracle.svg"
+        "/roles/oracle.svg",
+        "/roles/alternative/oracle.svg"
     ],
     "organgrinder": [
-        "/icons/organgrinder.svg",
-        "/icons/alternative/organgrinder.svg"
+        "/roles/organgrinder.svg",
+        "/roles/alternative/organgrinder.svg"
     ],
     "pacifist": [
-        "/icons/pacifist.svg",
-        "/icons/alternative/pacifist.svg"
+        "/roles/pacifist.svg",
+        "/roles/alternative/pacifist.svg"
     ],
     "philosopher": [
-        "/icons/philosopher.svg",
-        "/icons/alternative/philosopher.svg"
+        "/roles/philosopher.svg",
+        "/roles/alternative/philosopher.svg"
     ],
     "pithag": [
-        "/icons/pithag.svg",
-        "/icons/alternative/pithag.svg"
+        "/roles/pithag.svg",
+        "/roles/alternative/pithag.svg"
     ],
     "pixie": [
-        "/icons/pixie.svg",
-        "/icons/alternative/pixie.svg"
+        "/roles/pixie.svg",
+        "/roles/alternative/pixie.svg"
     ],
     "plaguedoctor": [
-        "/icons/plaguedoctor.svg",
-        "/icons/alternative/plaguedoctor.svg"
+        "/roles/plaguedoctor.svg",
+        "/roles/alternative/plaguedoctor.svg"
     ],
     "po": [
-        "/icons/po.svg",
-        "/icons/alternative/po.svg"
+        "/roles/po.svg",
+        "/roles/alternative/po.svg"
     ],
     "poisoner": [
-        "/icons/poisoner.svg",
-        "/icons/alternative/poisoner.svg"
+        "/roles/poisoner.svg",
+        "/roles/alternative/poisoner.svg"
     ],
     "politician": [
-        "/icons/politician.svg",
-        "/icons/alternative/politician.svg"
+        "/roles/politician.svg",
+        "/roles/alternative/politician.svg"
     ],
-    "pope": "/icons/pope.svg",
+    "pope": "/roles/pope.svg",
     "poppygrower": [
-        "/icons/poppygrower.svg",
-        "/icons/alternative/poppygrower.svg"
+        "/roles/poppygrower.svg",
+        "/roles/alternative/poppygrower.svg"
     ],
     "preacher": [
-        "/icons/preacher.svg",
-        "/icons/alternative/preacher.svg"
+        "/roles/preacher.svg",
+        "/roles/alternative/preacher.svg"
+    ],
+    "princess": [
+        "/roles/princess.svg",
+        "/roles/alternative/princess.svg"
     ],
     "professor": [
-        "/icons/professor.svg",
-        "/icons/alternative/professor.svg"
+        "/roles/professor.svg",
+        "/roles/alternative/professor.svg"
     ],
     "psychopath": [
-        "/icons/psychopath.svg",
-        "/icons/alternative/psychopath.svg"
+        "/roles/psychopath.svg",
+        "/roles/alternative/psychopath.svg"
     ],
     "pukka": [
-        "/icons/pukka.svg",
-        "/icons/alternative/pukka.svg"
+        "/roles/pukka.svg",
+        "/roles/alternative/pukka.svg"
     ],
     "puzzlemaster": [
-        "/icons/puzzlemaster.svg",
-        "/icons/alternative/puzzlemaster.svg"
+        "/roles/puzzlemaster.svg",
+        "/roles/alternative/puzzlemaster.svg"
     ],
     "ravenkeeper": [
-        "/icons/ravenkeeper.svg",
-        "/icons/alternative/ravenkeeper.svg"
+        "/roles/ravenkeeper.svg",
+        "/roles/alternative/ravenkeeper.svg"
     ],
     "recluse": [
-        "/icons/recluse.svg",
-        "/icons/alternative/recluse.svg"
+        "/roles/recluse.svg",
+        "/roles/alternative/recluse.svg"
     ],
-    "revolutionary": "/icons/revolutionary.svg",
+    "revolutionary": "/roles/revolutionary.svg",
     "riot": [
-        "/icons/riot.svg",
-        "/icons/alternative/riot.svg"
+        "/roles/riot.svg",
+        "/roles/alternative/riot.svg"
     ],
     "sage": [
-        "/icons/sage.svg",
-        "/icons/alternative/sage.svg"
+        "/roles/sage.svg",
+        "/roles/alternative/sage.svg"
     ],
     "sailor": [
-        "/icons/sailor.svg",
-        "/icons/alternative/sailor.svg"
+        "/roles/sailor.svg",
+        "/roles/alternative/sailor.svg"
     ],
     "saint": [
-        "/icons/saint.svg",
-        "/icons/alternative/saint.svg"
+        "/roles/saint.svg",
+        "/roles/alternative/saint.svg"
     ],
     "savant": [
-        "/icons/savant.svg",
-        "/icons/alternative/savant.svg"
+        "/roles/savant.svg",
+        "/roles/alternative/savant.svg"
     ],
     "scapegoat": [
-        "/icons/scapegoat.svg",
-        "/icons/alternative/scapegoat_g.svg",
-        "/icons/alternative/scapegoat_e.svg"
+        "/roles/scapegoat.svg",
+        "/roles/alternative/scapegoat_g.svg",
+        "/roles/alternative/scapegoat_e.svg"
     ],
     "scarletwoman": [
-        "/icons/scarletwoman.svg",
-        "/icons/alternative/scarletwoman.svg"
+        "/roles/scarletwoman.svg",
+        "/roles/alternative/scarletwoman.svg"
     ],
     "seamstress": [
-        "/icons/seamstress.svg",
-        "/icons/alternative/seamstress.svg"
+        "/roles/seamstress.svg",
+        "/roles/alternative/seamstress.svg"
     ],
-    "sentinel": "/icons/sentinel.svg",
+    "sentinel": "/roles/sentinel.svg",
     "shabaloth": [
-        "/icons/shabaloth.svg",
-        "/icons/alternative/shabaloth.svg"
+        "/roles/shabaloth.svg",
+        "/roles/alternative/shabaloth.svg"
     ],
     "shugenja": [
-        "/icons/shugenja.svg",
-        "/icons/alternative/shugenja.svg"
+        "/roles/shugenja.svg",
+        "/roles/alternative/shugenja.svg"
     ],
     "slayer": [
-        "/icons/slayer.svg",
-        "/icons/alternative/slayer.svg"
+        "/roles/slayer.svg",
+        "/roles/alternative/slayer.svg"
     ],
     "snakecharmer": [
-        "/icons/snakecharmer.svg",
-        "/icons/alternative/snakecharmer.svg"
+        "/roles/snakecharmer.svg",
+        "/roles/alternative/snakecharmer.svg"
     ],
     "snitch": [
-        "/icons/snitch.svg",
-        "/icons/alternative/snitch.svg"
+        "/roles/snitch.svg",
+        "/roles/alternative/snitch.svg"
     ],
     "soldier": [
-        "/icons/soldier.svg",
-        "/icons/alternative/soldier.svg"
+        "/roles/soldier.svg",
+        "/roles/alternative/soldier.svg"
     ],
-    "spiritofivory": "/icons/spiritofivory.svg",
+    "spiritofivory": "/roles/spiritofivory.svg",
     "spy": [
-        "/icons/spy.svg",
-        "/icons/alternative/spy.svg"
+        "/roles/spy.svg",
+        "/roles/alternative/spy.svg"
     ],
     "steward": [
-        "/icons/steward.svg",
-        "/icons/alternative/steward.svg"
+        "/roles/steward.svg",
+        "/roles/alternative/steward.svg"
     ],
-    "stormcatcher": "/icons/stormcatcher.svg",
+    "stormcatcher": "/roles/stormcatcher.svg",
     "summoner": [
-        "/icons/summoner.svg",
-        "/icons/alternative/summoner.svg"
+        "/roles/summoner.svg",
+        "/roles/alternative/summoner.svg"
     ],
     "sweetheart": [
-        "/icons/sweetheart.svg",
-        "/icons/alternative/sweetheart.svg"
+        "/roles/sweetheart.svg",
+        "/roles/alternative/sweetheart.svg"
     ],
     "tealady": [
-        "/icons/tealady.svg",
-        "/icons/alternative/tealady.svg"
+        "/roles/tealady.svg",
+        "/roles/alternative/tealady.svg"
     ],
     "thief": [
-        "/icons/thief.svg",
-        "/icons/alternative/thief_g.svg",
-        "/icons/alternative/thief_e.svg"
+        "/roles/thief.svg",
+        "/roles/alternative/thief_g.svg",
+        "/roles/alternative/thief_e.svg"
     ],
     "tinker": [
-        "/icons/tinker.svg",
-        "/icons/alternative/tinker.svg"
+        "/roles/tinker.svg",
+        "/roles/alternative/tinker.svg"
     ],
-    "tor": "/icons/tor.svg",
+    "tor": "/roles/tor.svg",
     "towncrier": [
-        "/icons/towncrier.svg",
-        "/icons/alternative/towncrier.svg"
+        "/roles/towncrier.svg",
+        "/roles/alternative/towncrier.svg"
     ],
-    "toymaker": "/icons/toymaker.svg",
+    "toymaker": "/roles/toymaker.svg",
     "undertaker": [
-        "/icons/undertaker.svg",
-        "/icons/alternative/undertaker.svg"
+        "/roles/undertaker.svg",
+        "/roles/alternative/undertaker.svg"
     ],
-    "ventriloquist": "/icons/ventriloquist.svg",
+    "ventriloquist": "/roles/ventriloquist.svg",
     "vigormortis": [
-        "/icons/vigormortis.svg",
-        "/icons/alternative/vigormortis.svg"
+        "/roles/vigormortis.svg",
+        "/roles/alternative/vigormortis.svg"
     ],
     "villageidiot": [
-        "/icons/villageidiot.svg",
-        "/icons/alternative/villageidiot.svg"
+        "/roles/villageidiot.svg",
+        "/roles/alternative/villageidiot.svg"
     ],
     "virgin": [
-        "/icons/virgin.svg",
-        "/icons/alternative/virgin.svg"
+        "/roles/virgin.svg",
+        "/roles/alternative/virgin.svg"
     ],
     "vizier": [
-        "/icons/vizier.svg",
-        "/icons/alternative/vizier.svg"
+        "/roles/vizier.svg",
+        "/roles/alternative/vizier.svg"
     ],
     "vortox": [
-        "/icons/vortox.svg",
-        "/icons/alternative/vortox.svg"
+        "/roles/vortox.svg",
+        "/roles/alternative/vortox.svg"
     ],
     "voudon": [
-        "/icons/voudon.svg",
-        "/icons/alternative/voudon_g.svg",
-        "/icons/alternative/voudon_e.svg"
+        "/roles/voudon.svg",
+        "/roles/alternative/voudon_g.svg",
+        "/roles/alternative/voudon_e.svg"
     ],
     "washerwoman": [
-        "/icons/washerwoman.svg",
-        "/icons/alternative/washerwoman.svg"
+        "/roles/washerwoman.svg",
+        "/roles/alternative/washerwoman.svg"
     ],
     "widow": [
-        "/icons/widow.svg",
-        "/icons/alternative/widow.svg"
+        "/roles/widow.svg",
+        "/roles/alternative/widow.svg"
     ],
     "witch": [
-        "/icons/witch.svg",
-        "/icons/alternative/witch.svg"
+        "/roles/witch.svg",
+        "/roles/alternative/witch.svg"
     ],
     "wizard": [
-        "/icons/wizard.svg",
-        "/icons/alternative/wizard.svg"
+        "/roles/wizard.svg",
+        "/roles/alternative/wizard.svg"
+    ],
+    "wraith": [
+        "/roles/wraith.svg",
+        "/roles/alternative/wraith.svg"
     ],
     "xaan": [
-        "/icons/xaan.svg",
-        "/icons/alternative/xaan.svg"
+        "/roles/xaan.svg",
+        "/roles/alternative/xaan.svg"
     ],
     "yaggababble": [
-        "/icons/yaggababble.svg",
-        "/icons/alternative/yaggababble.svg"
+        "/roles/yaggababble.svg",
+        "/roles/alternative/yaggababble.svg"
     ],
     "zealot": [
-        "/icons/zealot.svg",
-        "/icons/alternative/zealot.svg"
+        "/roles/zealot.svg",
+        "/roles/alternative/zealot.svg"
     ],
-    "zenomancer": "/icons/zenomancer.svg",
+    "zenomancer": "/roles/zenomancer.svg",
     "zombuul": [
-        "/icons/zombuul.svg",
-        "/icons/alternative/zombuul.svg"
+        "/roles/zombuul.svg",
+        "/roles/alternative/zombuul.svg"
     ]
 }
