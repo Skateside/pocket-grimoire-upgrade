@@ -1,7 +1,6 @@
 <template>
     <ReelLayout node="menu" class="no-list">
         <li><RouterLink :to="{ name: 'main' }">New Layout</RouterLink></li>
-        <li><RouterLink :to="{ name: 'original' }">Original</RouterLink></li>
         <li><RouterLink :to="{ name: 'kitchen-sink' }">Kitchen Sink</RouterLink></li>
     </ReelLayout>
 
