@@ -76,11 +76,6 @@ const routes: RouteRecordRaw[] = [
         ],
     },
     {
-        path: "/original",
-        name: "original",
-        component: () => import("./components/PocketGrimoire.vue"),
-    },
-    {
         path: "/kitchensink",
         name: "kitchen-sink",
         component: () => import("./components/KitchenSink.vue"),
