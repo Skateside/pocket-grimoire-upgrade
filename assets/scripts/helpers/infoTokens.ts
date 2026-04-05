@@ -1,25 +1,14 @@
 import type { IInfoToken, IInfoTokenRaw } from "../types/data";
-import { toHTML, strip } from "../utilities/markdown";
 import {
     filterObject,
     isBoolean,
     isObject,
     isPropertyString,
+    isString,
 } from "../utilities/objects";
-import { randomId, removeMarkup } from "../utilities/strings";
+import { randomId } from "../utilities/strings";
 
 const PREFIX = "info-token-";
-
-const COLOURS = Object.freeze([
-    "blue",
-    "dark-orange",
-    "dark-purple",
-    "green",
-    "grey",
-    "orange",
-    "purple",
-    "red",
-]);
 
 /**
  * Converts a raw info token into a fully valid info token.
@@ -27,27 +16,91 @@ const COLOURS = Object.freeze([
  * @param raw Raw info token to convert.
  * @returns Converted info token.
  */
-export function convertFromRaw(raw: IInfoToken | IInfoTokenRaw) {
+export function convertFromRaw(
+    raw: IInfoToken | IInfoTokenRaw,
+): IInfoToken | null {
 
-    const rawKeys: (keyof IInfoTokenRaw)[] = [
-        "colour",
+    if (!isValidRawInfoToken(raw)) {
+        return null;
+    }
+
+    const keys: (keyof IInfoToken)[] = [
         "id",
         "isCustom",
-        "markdown",
+        "roleIds",
+        "text",
     ];
     const infoToken = Object.assign(
         Object.create(null),
-        filterObject(raw, ([key]) => rawKeys.includes(key)),
+        filterObject(raw, ([key]) => keys.includes(key)),
     ) as IInfoToken;
 
-    infoToken.text = strip(raw.markdown);
-    infoToken.markup = toHTML(removeMarkup(raw.markdown));
-    infoToken.isCustom = Boolean(raw.isCustom);
-    infoToken.roleIds = (raw as IInfoToken).roleIds ?? [];
+    if (!Object.hasOwn(infoToken, "isCustom")) {
+        infoToken.isCustom = infoToken.id.startsWith(PREFIX);
+    }
+
+    infoToken.roleIds = (infoToken.roleIds ?? []).filter(isString);
 
     return infoToken;
 
-};
+}
+
+/**
+ * Creates a custom info token based on the given text.
+ *
+ * @param markdown Text to turn into a custom info token.
+ * @returns Custom info token.
+ */
+export function create(text: IInfoTokenRaw["text"]) {
+
+    const raw = {
+        text,
+        id: randomId(PREFIX),
+    } satisfies IInfoTokenRaw;
+
+    return convertFromRaw(raw);
+
+}
+
+/**
+ * Checks to see if the given info token is custom.
+ *
+ * @param object Info token to check.
+ * @returns `true` if the given info token is custom, `false` otherwise.
+ */
+export function isCustom(
+    object: unknown,
+): object is IInfoToken & { isCustom: true } {
+    return isValidInfoToken(object) && object.isCustom;
+}
+
+/**
+ * Checks to see if the given info token is not custom.
+ *
+ * @param object Info token to check.
+ * @returns `true` if the given info token is not custom, `false` otherwise.
+ */
+export function isNotCustom(
+    object: unknown,
+): object is IInfoToken & { isCustom: false } {
+    return isValidInfoToken(object) && !object.isCustom;
+}
+
+export function isValidInfoToken(object: unknown): object is IInfoToken {
+
+    if (!isValidRawInfoToken(object)) {
+        return false;
+    }
+
+    const infoToken = object as IInfoToken;
+
+    return (
+        isBoolean(infoToken.isCustom)
+        && Array.isArray(infoToken.roleIds)
+        && infoToken.roleIds.every(isString)
+    );
+
+}
 
 /**
  * Checks to see if the given raw info token is valid.
@@ -55,44 +108,13 @@ export function convertFromRaw(raw: IInfoToken | IInfoTokenRaw) {
  * @param raw Raw info token to check.
  * @returns `true` if it's valid, `false` otherwise.
  */
-export function isValidRawInfoToken(raw: unknown): raw is IInfoTokenRaw {
+export function isValidRawInfoToken(object: unknown): object is IInfoTokenRaw {
 
-    const isValid = (
-        isObject(raw)
-        && isPropertyString(raw, "id")
-        && isPropertyString(raw, "markdown")
-        && (
-            isPropertyString(raw, "colour")
-            && COLOURS.includes(raw.colour)
-        )
+    return (
+        isObject(object)
+        && isPropertyString(object, "id")
+        && isPropertyString(object, "text")
     );
-
-    if (
-        isValid
-        && Object.hasOwn(raw, "isCustom")
-        && (!isBoolean(raw.isCustom) || !raw.id.startsWith(PREFIX))
-    ) {
-        return false;
-    }
-
-    return isValid;
-
-}
-
-/**
- * Creates a custom info token based on the given markdown.
- *
- * @param markdown Markdown to turn into a custom info token.
- * @returns Custom info token.
- */
-export function makeRawInfoToken(markdown: string) {
-
-    return convertFromRaw({
-        markdown,
-        id: randomId(PREFIX),
-        colour: "grey",
-        isCustom: true,
-    });
 
 }
 
@@ -103,26 +125,21 @@ export function makeRawInfoToken(markdown: string) {
  * @param infoToken Info token to reduce.
  * @returns Reduced raw into token.
  */
-export function reduceToRaw(infoToken: IInfoToken) {
+export function reduceToRaw(infoToken: IInfoToken): IInfoTokenRaw {
 
     return {
         id: infoToken.id,
-        markdown: infoToken.markdown,
-        colour: infoToken.colour,
-    } satisfies IInfoTokenRaw
+        text: infoToken.text,
+    } satisfies IInfoTokenRaw;
 
 }
 
 /**
- * Flags the given info token as custom by mutating it.
+ * Flags the given info token as custom without mutating the given info token.
  *
  * @param infoToken Info token to flag.
  * @returns Flagged into token.
  */
-export function setAsCustom(infoToken: IInfoToken) {
-
-    infoToken.isCustom = true;
-
-    return infoToken;
-
-};
+export function setAsCustom(infoToken: IInfoToken): IInfoToken {
+    return { ...infoToken, isCustom: true };
+}

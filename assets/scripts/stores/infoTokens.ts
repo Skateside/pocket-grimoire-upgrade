@@ -1,20 +1,26 @@
-import type { IInfoToken, IInfoTokenRaw, IRole } from "../types/data";
+import type {
+    IInfoToken,
+    // IInfoTokenRaw,
+    // IRole,
+} from "../types/data";
 import type { IStorage } from "../classes/Storage";
 import {
     convertFromRaw,
-    isValidRawInfoToken,
-    makeRawInfoToken,
+    // isValidRawInfoToken,
+    // makeRawInfoToken,
+    isCustom,
+    isNotCustom,
     reduceToRaw,
     setAsCustom,
 } from "../helpers/infoTokens";
 import { defineStore } from "pinia";
 import { computed, inject, ref, watch } from "vue";
-import { removeAtIndex, removeItem } from "../utilities/arrays";
-import { deepThaw, getFromGlobal } from "../utilities/objects";
+// import { removeAtIndex, removeItem } from "../utilities/arrays";
+// import { deepThaw, getFromGlobal } from "../utilities/objects";
 import {
-    CannotChangeOfficialIntoTokenError,
+    // CannotChangeOfficialIntoTokenError,
     StorageNotFoundError,
-    UnrecognisedInfoTokenError,
+    // UnrecognisedInfoTokenError,
 } from "../../errors";
 
 const useInfoTokensStore = defineStore("info-tokens", () => {
@@ -27,29 +33,23 @@ const useInfoTokensStore = defineStore("info-tokens", () => {
 
     const STORAGE_KEY = "info-tokens";
 
-    const infoTokens = ref<IInfoToken[]>([
-        ...deepThaw(getFromGlobal(window.PG.infoTokens, Array.isArray, []))
-            .filter(isValidRawInfoToken)
-            .map(convertFromRaw),
-        ...storage
-            .get<IInfoToken[]>(STORAGE_KEY, Array.isArray, [])
-            .filter(isValidRawInfoToken)
+    const infoTokens = ref<IInfoToken[]>([]);
+
+    if (Array.isArray(window.PG?.infoTokens)) {
+
+        window.PG.infoTokens
             .map(convertFromRaw)
-            .map(setAsCustom),
-    ]);
-    const activeId = ref<IInfoToken["id"] | null>(null);
-    const active = computed<IInfoToken | null>(() => {
-        if (activeId.value) {
-            return innerGetById(activeId.value) ?? null;
-        }
-        return null;
-    });
-    const official = computed(() => {
-        return infoTokens.value.filter(({ isCustom }) => !isCustom);
-    });
-    const custom = computed(() => {
-        return infoTokens.value.filter(({ isCustom }) => isCustom);
-    });
+            .filter((result) => result !== null)
+            .forEach((infoToken) => infoTokens.value.push(infoToken));
+
+    }
+
+    storage
+        .get<IInfoToken[]>(STORAGE_KEY, Array.isArray, [])
+        .map(convertFromRaw)
+        .filter((result) => result !== null)
+        .map(setAsCustom)
+        .forEach((infoToken) => infoTokens.value.push(infoToken));
 
     watch(infoTokens, (value) => {
 
@@ -61,134 +61,166 @@ const useInfoTokensStore = defineStore("info-tokens", () => {
 
     }, { deep: true });
 
-    const clear = () => {
-        infoTokens.value = infoTokens.value.filter(({ isCustom }) => !isCustom);
-    };
+    const official = computed(() => {
+        return infoTokens.value.filter(isNotCustom);
+    });
+    const custom = computed(() => {
+        return infoTokens.value.filter(isCustom);
+    });
 
-    const innerGetById = (id: IInfoToken["id"]) => {
-        return infoTokens.value.find(({ id: infoTokenId }) => infoTokenId === id);
-    };
 
-    const getById = computed(() => innerGetById);
+    // const activeId = ref<IInfoToken["id"] | null>(null);
+    // const active = computed<IInfoToken | null>(() => {
+    //     if (activeId.value) {
+    //         return innerGetById(activeId.value) ?? null;
+    //     }
+    //     return null;
+    // });
+    // const official = computed(() => {
+    //     return infoTokens.value.filter(({ isCustom }) => !isCustom);
+    // });
+    // const custom = computed(() => {
+    //     return infoTokens.value.filter(({ isCustom }) => isCustom);
+    // });
 
-    const getIndexOrDie = (id: IInfoToken["id"]) => {
+    // watch(infoTokens, (value) => {
 
-        const index = infoTokens.value.findIndex(({ id: infoTokenId }) => {
-            return infoTokenId === id;
-        });
+    //     const raw = value
+    //         .filter(({ isCustom }) => isCustom)
+    //         .map(reduceToRaw);
 
-        if (index < 0) {
-            throw new UnrecognisedInfoTokenError(id);
-        }
+    //     storage.set(STORAGE_KEY, raw);
 
-        return index;
+    // }, { deep: true });
 
-    }
+    // const clear = () => {
+    //     infoTokens.value = infoTokens.value.filter(({ isCustom }) => !isCustom);
+    // };
 
-    const getCustomIndex = (id: IInfoToken["id"]) => {
+    // const innerGetById = (id: IInfoToken["id"]) => {
+    //     return infoTokens.value.find(({ id: infoTokenId }) => infoTokenId === id);
+    // };
 
-        const index = getIndexOrDie(id);
-        const infoToken = infoTokens.value[index];
+    // const getById = computed(() => innerGetById);
 
-        if (!infoToken.isCustom) {
-            throw new CannotChangeOfficialIntoTokenError(id);
-        }
+    // const getIndexOrDie = (id: IInfoToken["id"]) => {
 
-        return index;
+    //     const index = infoTokens.value.findIndex(({ id: infoTokenId }) => {
+    //         return infoTokenId === id;
+    //     });
 
-    };
+    //     if (index < 0) {
+    //         throw new UnrecognisedInfoTokenError(id);
+    //     }
 
-    const addInfoToken = (markdown: IInfoTokenRaw["markdown"]) => {
-        infoTokens.value.push(makeRawInfoToken(markdown));
-    };
+    //     return index;
 
-    const updateInfoToken = (
-        id: IInfoToken["id"],
-        markdown: IInfoTokenRaw["markdown"],
-    ) => {
+    // }
 
-        const index = getCustomIndex(id);
+    // const getCustomIndex = (id: IInfoToken["id"]) => {
 
-        infoTokens.value[index] = convertFromRaw({
-            ...infoTokens.value[index],
-            markdown,
-        });
+    //     const index = getIndexOrDie(id);
+    //     const infoToken = infoTokens.value[index];
 
-    };
+    //     if (!infoToken.isCustom) {
+    //         throw new CannotChangeOfficialIntoTokenError(id);
+    //     }
 
-    const removeInfoToken = (id: IInfoToken["id"]) => {
-        removeAtIndex(infoTokens.value, getCustomIndex(id));
-    };
+    //     return index;
 
-    const setActive = (id: IInfoToken["id"]) => {
+    // };
 
-        activeId.value = id;
+    // const addInfoToken = (markdown: IInfoTokenRaw["markdown"]) => {
+    //     infoTokens.value.push(makeRawInfoToken(markdown));
+    // };
 
-        return Boolean(innerGetById(id));
+    // const updateInfoToken = (
+    //     id: IInfoToken["id"],
+    //     markdown: IInfoTokenRaw["markdown"],
+    // ) => {
 
-    };
+    //     const index = getCustomIndex(id);
 
-    const clearActive = () => {
+    //     infoTokens.value[index] = convertFromRaw({
+    //         ...infoTokens.value[index],
+    //         markdown,
+    //     });
 
-        clearRoles();
-        activeId.value = null;
+    // };
 
-    };
+    // const removeInfoToken = (id: IInfoToken["id"]) => {
+    //     removeAtIndex(infoTokens.value, getCustomIndex(id));
+    // };
 
-    const addRole = (id: IRole["id"]) => {
+    // const setActive = (id: IInfoToken["id"]) => {
 
-        const { roleIds } = innerGetById(activeId.value || "") || {};
+    //     activeId.value = id;
 
-        if (!roleIds) {
-            return console.warn("can't add role, no active info token");
-        }
+    //     return Boolean(innerGetById(id));
 
-        if (!roleIds.includes(id)) {
-            roleIds.push(id);
-        }
+    // };
 
-    };
+    // const clearActive = () => {
 
-    const removeRole = (id: IRole["id"]) => {
+    //     clearRoles();
+    //     activeId.value = null;
 
-        const { roleIds } = innerGetById(activeId.value || "") || {};
+    // };
 
-        if (!roleIds) {
-            return console.warn("can't remove role, no active info token");
-        }
+    // const addRole = (id: IRole["id"]) => {
 
-        removeItem(roleIds, id);
+    //     const { roleIds } = innerGetById(activeId.value || "") || {};
 
-    };
+    //     if (!roleIds) {
+    //         return console.warn("can't add role, no active info token");
+    //     }
 
-    const clearRoles = () => {
+    //     if (!roleIds.includes(id)) {
+    //         roleIds.push(id);
+    //     }
 
-        const infoToken = innerGetById(activeId.value || "");
+    // };
 
-        if (infoToken) {
-            infoToken.roleIds.length = 0;
-        }
+    // const removeRole = (id: IRole["id"]) => {
 
-    };
+    //     const { roleIds } = innerGetById(activeId.value || "") || {};
+
+    //     if (!roleIds) {
+    //         return console.warn("can't remove role, no active info token");
+    //     }
+
+    //     removeItem(roleIds, id);
+
+    // };
+
+    // const clearRoles = () => {
+
+    //     const infoToken = innerGetById(activeId.value || "");
+
+    //     if (infoToken) {
+    //         infoToken.roleIds.length = 0;
+    //     }
+
+    // };
 
     return {
         // State.
         infoTokens,
         // Getters.
-        active,
+        // active,
         custom,
-        getById,
+        // getById,
         official,
-        // Actions.
-        addInfoToken,
-        addRole,
-        clear,
-        clearActive,
-        clearRoles,
-        removeInfoToken,
-        removeRole,
-        setActive,
-        updateInfoToken,
+        // // Actions.
+        // addInfoToken,
+        // addRole,
+        // clear,
+        // clearActive,
+        // clearRoles,
+        // removeInfoToken,
+        // removeRole,
+        // setActive,
+        // updateInfoToken,
     };
 
 });

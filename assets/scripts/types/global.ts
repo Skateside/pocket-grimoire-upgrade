@@ -1,6 +1,6 @@
 import type {
     II18nData,
-    IInfoToken,
+    IInfoTokenRaw,
     IRole,
     IScriptImport,
 } from "./data";
@@ -10,7 +10,7 @@ declare global {
         PATHS: Record<string, string>,
         PG: {
             i18n: II18nData,
-            infoTokens: IInfoToken[],
+            infoTokens: IInfoTokenRaw[],
             roles: IRole[],
             scripts: Record<string, IScriptImport>,
         },

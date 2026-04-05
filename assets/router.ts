@@ -69,6 +69,11 @@ const routes: RouteRecordRaw[] = [
                 component: () => import("./components/views/grimoire/GrimoireWrapper.vue"),
             },
             {
+                path: "info-tokens",
+                name: "info-tokens",
+                component: () => import("./components/views/info-tokens/InfoTokens.vue"),
+            },
+            {
                 path: "night-order",
                 name: "night-order",
                 component: () => import("./components/views/night-order/NightOrder.vue"),

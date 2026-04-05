@@ -1,52 +1,42 @@
 [
     {
         "id": "isdemon",
-        "markdown": "This is the **Demon**",
-        "colour": "red"
+        "text": "This is the Demon"
     },
     {
         "id": "isminion",
-        "markdown": "These are your **Minions**",
-        "colour": "red"
+        "text": "These are your Minions"
     },
     {
         "id": "notinplay",
-        "markdown": "These characters are **not in play**",
-        "colour": "blue"
+        "text": "These characters are not in play"
     },
     {
         "id": "nominatetoday",
-        "markdown": "Did you **nominate** today?",
-        "colour": "green"
+        "text": "Did you nominate today?"
     },
     {
         "id": "playeris",
-        "markdown": "**This player** is",
-        "colour": "purple"
+        "text": "This player is"
     },
     {
         "id": "votetoday",
-        "markdown": "Did you **vote** today?",
-        "colour": "dark-purple"
+        "text": "Did you vote today?"
     },
     {
         "id": "useability",
-        "markdown": "Use your **ability**?",
-        "colour": "dark-orange"
+        "text": "Use your ability?"
     },
     {
         "id": "makechoice",
-        "markdown": "Make a **choice**",
-        "colour": "dark-orange"
+        "text": "Make a choice"
     },
     {
         "id": "youare",
-        "markdown": "**You** are",
-        "colour": "orange"
+        "text": "You are"
     },
     {
         "id": "selectedyou",
-        "markdown": "This character **selected** you",
-        "colour": "dark-orange"
+        "text": "This character selected you"
     }
 ]

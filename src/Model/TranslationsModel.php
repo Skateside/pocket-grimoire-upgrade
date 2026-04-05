@@ -130,7 +130,7 @@ class TranslationsModel
             });
 
             if ($index !== false) {
-                $json[$index]['markdown'] = $translation;
+                $json[$index]['text'] = $translation;
             }
         }
 
