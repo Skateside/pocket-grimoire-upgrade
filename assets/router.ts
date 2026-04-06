@@ -78,6 +78,11 @@ const routes: RouteRecordRaw[] = [
                 name: "night-order",
                 component: () => import("./components/views/night-order/NightOrder.vue"),
             },
+            {
+                path: "jinxes",
+                name: "jinxes",
+                component: () => import("./components/views/jinxes/JinxList.vue"),
+            },
         ],
     },
     {

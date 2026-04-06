@@ -224,6 +224,18 @@ const rolesStore = defineStore("roles", () => {
 
     const getImage = computed(() => helperGetImage);
 
+    const getImageById = computed(() => (roleId: IRole["id"]) => {
+
+        const role = innerGetRoleById(roleId);
+
+        if (role) {
+            return helperGetImage(role);
+        }
+
+        return undefined;
+
+    });
+
     const getReminderImage = computed(() => (
         reminder: IReminder,
         alignment: ETokenAlignment = ETokenAlignment.DEFAULT,
@@ -519,6 +531,7 @@ const rolesStore = defineStore("roles", () => {
         nightOrder,
         scriptByType,
         getImage,
+        getImageById,
         getIsBagDisabled,
         getIsBasicRole,
         getIsOrphanById,

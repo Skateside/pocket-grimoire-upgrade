@@ -1,7 +1,6 @@
 import type { DeepReadonly } from "vue";
 import type { AnyObject } from "../types/lib";
 import type {
-    // IJinx,
     IJinxImport,
     IReminder,
     IRole,
@@ -21,7 +20,6 @@ import type {
     IScriptMeta,
 } from "../types/data";
 import {
-    // EJinxState,
     EReminderFlag,
     ERoleEdition,
     ERoleId,
@@ -216,9 +214,7 @@ const roleChecks: IRoleCheck[] = [
             && object.every(isAnyUrl)
         )
     ), true),
-    makeArrayOfCheck("jinxes", (object) => {
-        return isValidJinxImport(object);// || isValidJinx(object);
-    }, true),
+    makeArrayOfCheck("jinxes", isValidJinxImport, true),
     makeArrayOfCheck("reminders", (object) => (
         isPopulatedString(object) || isValidReminderImport(object)
     ), true),
@@ -454,55 +450,6 @@ export const ORDER = Object.freeze([
     ERoleTeam.FABLED,
     ERoleTeam.LORIC,
 ]);
-
-/**
- * Converts a jinx import into a full jinx.
- *
- * @param roleId ID of the role that the jinx will be added to.
- * @param jinx Imported jinx data.
- * @returns Either the converted jinx or `null` if it can't be converted.
- */
-// export function convertJinx(roleId: IRole["id"], jinx: IJinxImport) {
-
-//     const converted: IJinx = Object.create(null);
-
-//     if (!isObject(jinx) || !isString(jinx.id) || !isString(jinx.reason)) {
-//         return null; // can't convert this jinx.
-//     }
-
-//     converted.target = roleId;
-//     converted.trick = jinx.id;
-//     converted.reason = jinx.reason;
-//     converted.state = EJinxState.THEORETICAL;
-
-//     return converted;
-
-// }
-
-/**
- * Converts an array of imported jinxes into full jinxes. The imported jinxes
- * might be undefined because the role might not have them.
- *
- * @param roleId ID of the role that the jinxes will be added to.
- * @param jinxes Array of jinx imports.
- * @returns The converted jinxes. If no jinxes were given, nothing is returned.
- */
-// export function convertJinxes(
-//     roleId: IRole["id"],
-//     jinxes: IJinxImport[] | void,
-// ) {
-
-//     if (!Array.isArray(jinxes)) {
-//         return; // no jinxes, nothing to convert.
-//     }
-
-//     return uniqueJinxes(
-//         jinxes
-//             .map((jinx) => convertJinx(roleId, jinx))
-//             .filter((jinx) => jinx !== null)
-//     );
-
-// }
 
 /**
  * Converts a reminder import into a full reminder.
@@ -1238,24 +1185,6 @@ export function isSpecial(object: unknown): object is IRole & { edition: ERoleEd
 export function isUniversal(object: unknown): object is IRole & { id: ERoleId.UNIVERSAL } {
     return isSpecial(object) && object.id === ERoleId.UNIVERSAL;
 }
-
-/**
- * Checks to see if the given object is a valid jinx.
- *
- * @param object Object to check.
- * @returns `true` if the object is a valid jinx, `false` otherwise.
- */
-// export function isValidJinx(object: unknown): object is IJinx {
-
-//     return (
-//         isObject(object)
-//         && isPropertyString(object, "target")
-//         && isPropertyString(object, "trick")
-//         && isPropertyString(object, "reason")
-//         && Object.values(EJinxState).includes(object.state)
-//     );
-
-// }
 
 /**
  * Validates that the given object is a valid jinx import.
