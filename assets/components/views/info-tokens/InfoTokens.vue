@@ -43,11 +43,13 @@
     <InfoTokenModal
         ref="info-token-modal"
         :info-token="infoToken"
-        @hide="infoToken = null"
+        @hide="handleModalHide"
         @update="updateInfoToken"
         @delete="deleteInfoToken"
+        @see-roles="seeRoles"
     />
 
+    <RoleSelectModal ref="role-modal" @role-click="addRole" />
     <BasePopup ref="popup" />
 </template>
 
@@ -59,8 +61,13 @@ import GridLayout from "~/components/layouts/GridLayout.vue";
 import InfoTokenForm from "./InfoTokenForm.vue";
 import InfoTokenModal from "./InfoTokenModal.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
+import RoleSelectModal from "../grimoire/RoleSelectModal.vue";
 
 const infoTokensStore = useInfoTokensStore();
+const infoToken = ref<IInfoToken | null>(null);
+const infoTokenModal = useTemplateRef("info-token-modal");
+const roleModal = useTemplateRef("role-modal");
+const popup = useTemplateRef("popup");
 
 const createInfoToken = (text: IInfoToken["text"]) => {
     infoTokensStore.create(text);
@@ -78,13 +85,36 @@ const deleteInfoToken = (id: IInfoToken["id"]) => {
     }
 };
 
-const infoToken = ref<IInfoToken | null>(null);
-const infoTokenModal = useTemplateRef("info-token-modal");
-const popup = useTemplateRef("popup");
-
 const selectInfoToken = (token: IInfoToken) => {
     infoToken.value = token;
     infoTokenModal.value?.show();
+};
+
+const handleModalHide = () => {
+
+    if (!infoToken.value) {
+        return;
+    }
+
+    infoTokensStore.clearRoles(infoToken.value.id);
+    infoToken.value = null
+
+};
+
+const seeRoles = () => {
+    roleModal.value?.show();
+};
+
+const addRole = (roleId: IInfoToken["roleIds"][number]) => {
+
+    if (!infoToken.value) {
+        return popup.value?.showAlert("No info token set, please refresh and try again."); // TODO: i18n
+    }
+
+    // Note: `false` here might mean that the roleId is already being shown.
+    infoTokensStore.addRole(infoToken.value.id, roleId);
+    roleModal.value?.hide();
+
 };
 </script>
 

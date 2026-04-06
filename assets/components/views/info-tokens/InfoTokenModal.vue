@@ -34,15 +34,24 @@
                 </button>
             </div>
         </SidebarLayout>
-
-        <p v-if="!isEdit">{{ props.infoToken?.text }}</p>
-
+            
         <InfoTokenForm
             v-if="isEdit"
             button="Update"
+            cancel="Cancel"
             :value="props.infoToken?.text"
             @text-change="(text) => updateText(text)"
+            @cancel="isEdit = false"
         />
+        <div v-else>
+            <p>{{ props.infoToken?.text }}</p>
+            <p><button type="button" @click="seeRoles">Add role</button></p>
+            <ul v-if="props.infoToken?.roleIds.length">
+                <li v-for="roleId in props.infoToken.roleIds" :key="roleId">
+                    <RoleToken :role="roleId" />
+                </li>
+            </ul>
+        </div>
     </BaseModal>
 </template>
 
@@ -53,10 +62,12 @@ import BaseModal from "~/components/base/BaseModal.vue";
 import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
 import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 import InfoTokenForm from "./InfoTokenForm.vue";
+import RoleToken from "../grimoire/RoleToken.vue";
 
 const emit = defineEmits<{
     (e: "delete", id: IInfoToken["id"]): void,
     (e: "hide"): void,
+    (e: "see-roles"): void,
     (e: "update", id: IInfoToken["id"], text: IInfoToken["text"]): void,
 }>();
 const props = defineProps<{
@@ -93,6 +104,10 @@ const deleteInfoToken = () => {
     emit("delete", props.infoToken.id);
     modal.value?.hide();
 
+};
+
+const seeRoles = () => {
+    emit("see-roles");
 };
 
 defineExpose({

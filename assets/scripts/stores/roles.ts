@@ -109,7 +109,15 @@ const rolesStore = defineStore("roles", () => {
     const specialRoles = computed(() => roles.value.filter(isSpecial));
     const script = ref<IScriptFull>([]);
     const scriptRoles = computed(() => {
-        return script.value.filter(isBasicRole);
+
+        return script.value.filter((role) => {
+            return (
+                isBasicRole(role)
+                && role.team !== ERoleTeam.FABLED
+                && role.team !== ERoleTeam.LORIC
+            );
+        }) as IRole[];
+
     });
     const scriptByType = computed(() => {
 
