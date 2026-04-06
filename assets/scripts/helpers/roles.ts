@@ -1,7 +1,7 @@
 import type { DeepReadonly } from "vue";
 import type { AnyObject } from "../types/lib";
 import type {
-    IJinx,
+    // IJinx,
     IJinxImport,
     IReminder,
     IRole,
@@ -21,7 +21,7 @@ import type {
     IScriptMeta,
 } from "../types/data";
 import {
-    EJinxState,
+    // EJinxState,
     EReminderFlag,
     ERoleEdition,
     ERoleId,
@@ -217,7 +217,7 @@ const roleChecks: IRoleCheck[] = [
         )
     ), true),
     makeArrayOfCheck("jinxes", (object) => {
-        return isValidJinxImport(object) || isValidJinx(object);
+        return isValidJinxImport(object);// || isValidJinx(object);
     }, true),
     makeArrayOfCheck("reminders", (object) => (
         isPopulatedString(object) || isValidReminderImport(object)
@@ -462,22 +462,22 @@ export const ORDER = Object.freeze([
  * @param jinx Imported jinx data.
  * @returns Either the converted jinx or `null` if it can't be converted.
  */
-export function convertJinx(roleId: IRole["id"], jinx: IJinxImport) {
+// export function convertJinx(roleId: IRole["id"], jinx: IJinxImport) {
 
-    const converted: IJinx = Object.create(null);
+//     const converted: IJinx = Object.create(null);
 
-    if (!isObject(jinx) || !isString(jinx.id) || !isString(jinx.reason)) {
-        return null; // can't convert this jinx.
-    }
+//     if (!isObject(jinx) || !isString(jinx.id) || !isString(jinx.reason)) {
+//         return null; // can't convert this jinx.
+//     }
 
-    converted.target = roleId;
-    converted.trick = jinx.id;
-    converted.reason = jinx.reason;
-    converted.state = EJinxState.THEORETICAL;
+//     converted.target = roleId;
+//     converted.trick = jinx.id;
+//     converted.reason = jinx.reason;
+//     converted.state = EJinxState.THEORETICAL;
 
-    return converted;
+//     return converted;
 
-}
+// }
 
 /**
  * Converts an array of imported jinxes into full jinxes. The imported jinxes
@@ -487,22 +487,22 @@ export function convertJinx(roleId: IRole["id"], jinx: IJinxImport) {
  * @param jinxes Array of jinx imports.
  * @returns The converted jinxes. If no jinxes were given, nothing is returned.
  */
-export function convertJinxes(
-    roleId: IRole["id"],
-    jinxes: IJinxImport[] | void,
-) {
+// export function convertJinxes(
+//     roleId: IRole["id"],
+//     jinxes: IJinxImport[] | void,
+// ) {
 
-    if (!Array.isArray(jinxes)) {
-        return; // no jinxes, nothing to convert.
-    }
+//     if (!Array.isArray(jinxes)) {
+//         return; // no jinxes, nothing to convert.
+//     }
 
-    return uniqueJinxes(
-        jinxes
-            .map((jinx) => convertJinx(roleId, jinx))
-            .filter((jinx) => jinx !== null)
-    );
+//     return uniqueJinxes(
+//         jinxes
+//             .map((jinx) => convertJinx(roleId, jinx))
+//             .filter((jinx) => jinx !== null)
+//     );
 
-}
+// }
 
 /**
  * Converts a reminder import into a full reminder.
@@ -766,9 +766,9 @@ export function convertRole(
 
     if (Array.isArray(role.jinxes)) {
 
-        const jinxes = convertJinxes(converted.id, role.jinxes);
+        const jinxes = uniqueJinxes(role.jinxes);
 
-        if (jinxes?.length) {
+        if (jinxes.length) {
             converted.jinxes = jinxes;
         }
 
@@ -1245,17 +1245,17 @@ export function isUniversal(object: unknown): object is IRole & { id: ERoleId.UN
  * @param object Object to check.
  * @returns `true` if the object is a valid jinx, `false` otherwise.
  */
-export function isValidJinx(object: unknown): object is IJinx {
+// export function isValidJinx(object: unknown): object is IJinx {
 
-    return (
-        isObject(object)
-        && isPropertyString(object, "target")
-        && isPropertyString(object, "trick")
-        && isPropertyString(object, "reason")
-        && Object.values(EJinxState).includes(object.state)
-    );
+//     return (
+//         isObject(object)
+//         && isPropertyString(object, "target")
+//         && isPropertyString(object, "trick")
+//         && isPropertyString(object, "reason")
+//         && Object.values(EJinxState).includes(object.state)
+//     );
 
-}
+// }
 
 /**
  * Validates that the given object is a valid jinx import.
@@ -1615,8 +1615,15 @@ export function sortByTeam(script: IScriptFull) {
  * @param jinxes Jinxes to filter.
  * @returns De-duplicated array of jinxes.
  */
-export function uniqueJinxes(jinxes: IJinx[]) {
-    return uniqueMap(jinxes, ({ target, trick }) => `${target}|${trick}`);
+export function uniqueJinxes(jinxes: IJinxImport[]) {
+
+    const unique = jinxes.reduce((jinxes, { id, reason }) => {
+        jinxes[id] = reason;
+        return jinxes;
+    }, {} as Record<IJinxImport["id"], IJinxImport["reason"]>);
+
+    return Object.entries(unique).map(([id, reason]) => ({ id, reason }));
+
 }
 
 /**

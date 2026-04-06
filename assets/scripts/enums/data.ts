@@ -6,10 +6,12 @@ export enum EGameValues {
 };
 
 export enum EJinxState {
+    NON_EXISTENT,
     THEORETICAL,
     POTENTIAL,
     ACTIVE,
 };
+// state: "non existent" = this jinx doesn't exist.
 // state: "theoretical" = this jinx exists but only the target is in the script.
 // state: "potential" = the target and trick are both in the script.
 // state: "active" = the target and trick are both in play.

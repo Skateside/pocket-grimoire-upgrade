@@ -1,15 +1,65 @@
-import type { IJinx, IRole, IRoleJinxRaw } from "../types/data";
+import type {
+    IJinx,
+    // IRole,
+    // IRoleJinxRaw,
+} from "../types/data";
 import { EJinxState } from "../enums/data";
 import { defineStore } from "pinia";
 import { computed } from "vue";
-import useRoleStore from "./role";
+import useRolesStore from "./roles";
 import useTokensStore from "./tokens";
 
-/**
- * @deprecated `useJinxesStore()` instead.
- */
-const useJinxStore = defineStore("jinx", () => {
+const useJinxesStore = defineStore("jinxes", () => {
 
+    const rolesStore = useRolesStore();
+    const tokensStore = useTokensStore();
+
+    const jinxes = computed(() => {
+
+        const jinxes: IJinx[] = [];
+
+        rolesStore.scriptRoles.forEach((role) => {
+
+            (role.jinxes || []).forEach((jinx) => {
+
+                jinxes.push({
+                    target: role.id,
+                    trick: jinx.id,
+                    reason: jinx.reason,
+                    state: EJinxState.THEORETICAL,
+                });
+
+            });
+
+        });
+
+        const roleIds = rolesStore.scriptRoles.map(({ id }) => id);
+
+        jinxes.forEach((jinx) => {
+
+            if (roleIds.includes(jinx.target) && roleIds.includes(jinx.trick)) {
+                jinx.state = EJinxState.POTENTIAL;
+            }
+
+            if (
+                tokensStore.inPlay[jinx.target] > 0
+                && tokensStore.inPlay[jinx.trick] > 0
+            ) {
+                jinx.state = EJinxState.ACTIVE;
+            }
+
+        });
+
+        return jinxes;
+
+    });
+
+    return {
+        // Getters.
+        jinxes,
+    };
+
+    /*
     const roleStore = useRoleStore();
     const tokensStore = useTokensStore();
 
@@ -86,7 +136,8 @@ const useJinxStore = defineStore("jinx", () => {
         getIsActive,
         jinxes,
     };
+    */
 
 });
 
-export default useJinxStore;
+export default useJinxesStore;
