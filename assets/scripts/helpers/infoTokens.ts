@@ -58,7 +58,7 @@ export function create(text: IInfoTokenRaw["text"]) {
         id: randomId(PREFIX),
     } satisfies IInfoTokenRaw;
 
-    return convertFromRaw(raw);
+    return convertFromRaw(raw)!;
 
 }
 

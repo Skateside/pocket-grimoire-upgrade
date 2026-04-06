@@ -50,13 +50,13 @@ const props = defineProps<{
     required?: boolean,
 }>();
 const emit = defineEmits<{
-    (e: "update:model-value", value: string): void,
+    (e: "update:modelValue", value: string): void,
 }>();
 const attrs = useAttrs();
 const model = ref(props.modelValue);
 
 const handleInput = (value: string) => {
-    emit("update:model-value", value);
+    emit("update:modelValue", value);
 };
 
 watch(props, (value) => {

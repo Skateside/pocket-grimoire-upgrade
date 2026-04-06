@@ -30,7 +30,7 @@ const props = defineProps<{
     modelValue: string,
 }>();
 const emit = defineEmits<{
-    (e: "update:model-value", value: string): void,
+    (e: "update:modelValue", value: string): void,
 }>();
 const model = ref(props.modelValue);
 const playerCount = computed(() => {
@@ -42,6 +42,6 @@ const playerCount = computed(() => {
 });
 
 const handleInput = ({ target }: Event) => {
-    emit("update:model-value", (target as HTMLInputElement).value);
+    emit("update:modelValue", (target as HTMLInputElement).value);
 };
 </script>

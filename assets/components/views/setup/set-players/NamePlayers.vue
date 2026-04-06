@@ -25,11 +25,11 @@ const props = defineProps<{
     modelValue: string[],
 }>();
 const emit = defineEmits<{
-    (e: "update:model-value", value: string[]): void,
+    (e: "update:modelValue", value: string[]): void,
 }>();
 const names = reactive<string[]>(new Array(props.count).fill(""));
 
 const updateNames = () => {
-    emit("update:model-value", names);
+    emit("update:modelValue", names);
 };
 </script>

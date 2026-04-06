@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<{
     variant?: string,
 }>(), {
     node: "button",
+    variant: "primary",
 });
 const slots = useSlots();
 const attrs = computed(() => {

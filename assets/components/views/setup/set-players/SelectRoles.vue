@@ -76,7 +76,7 @@ const props = defineProps<{
     modelValue: IRoleCounts,
 }>();
 const emit = defineEmits<{
-    (e: "update:model-value", value: IRoleCounts): void,
+    (e: "update:modelValue", value: IRoleCounts): void,
 }>();
 
 const suffix = useId();
@@ -125,7 +125,7 @@ watch(counts, (value) => {
 
     });
 
-    emit("update:model-value", value);
+    emit("update:modelValue", value);
 
 });
 

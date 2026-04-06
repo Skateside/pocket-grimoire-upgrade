@@ -1,11 +1,13 @@
 import type {
     IInfoToken,
+    IInfoTokenRaw,
     // IInfoTokenRaw,
     // IRole,
 } from "../types/data";
 import type { IStorage } from "../classes/Storage";
 import {
     convertFromRaw,
+    create as helperCreate,
     // isValidRawInfoToken,
     // makeRawInfoToken,
     isCustom,
@@ -22,6 +24,7 @@ import {
     StorageNotFoundError,
     // UnrecognisedInfoTokenError,
 } from "../../errors";
+import { removeItem } from "../utilities/arrays";
 
 const useInfoTokensStore = defineStore("info-tokens", () => {
 
@@ -68,6 +71,64 @@ const useInfoTokensStore = defineStore("info-tokens", () => {
         return infoTokens.value.filter(isCustom);
     });
 
+    const create = (text: IInfoTokenRaw["text"]) => {
+
+        const token = helperCreate(text);
+
+        infoTokens.value.push(token);
+
+        return token;
+
+    };
+
+    const innerGetById = (infoTokenId: IInfoTokenRaw["id"]) => {
+
+        return infoTokens.value.find(({ id }) => {
+            return infoTokenId === id;
+        });
+
+    };
+
+    const innerGetCustomById = (infoTokenId: IInfoTokenRaw["id"]) => {
+
+        const infoToken = innerGetById(infoTokenId);
+
+        if (!infoToken?.isCustom) {
+            return undefined;
+        }
+
+        return infoToken;
+
+    };
+
+    const updateText = (
+        infoTokenId: IInfoTokenRaw["id"],
+        text: IInfoTokenRaw["text"],
+    ) => {
+
+        const infoToken = innerGetCustomById(infoTokenId);
+
+        if (!infoToken) {
+            return false;
+        }
+
+        infoToken.text = text;
+
+        return true;
+
+    };
+
+    const deleteInfoToken = (infoTokenId: IInfoTokenRaw["id"]) => {
+
+        const infoToken = innerGetCustomById(infoTokenId);
+
+        if (!infoToken) {
+            return false;
+        }
+
+        return removeItem(infoTokens.value, infoToken);
+
+    };
 
     // const activeId = ref<IInfoToken["id"] | null>(null);
     // const active = computed<IInfoToken | null>(() => {
@@ -211,7 +272,10 @@ const useInfoTokensStore = defineStore("info-tokens", () => {
         custom,
         // getById,
         official,
-        // // Actions.
+        // Actions.
+        create,
+        updateText,
+        delete: deleteInfoToken,
         // addInfoToken,
         // addRole,
         // clear,
