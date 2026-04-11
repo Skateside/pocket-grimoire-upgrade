@@ -81,7 +81,7 @@ class TPIResourcesModel
      *
      * @return array Success status and the body of the results.
      */
-    public function getLocale(string $filename): array
+    public function getLocal(string $filename): array
     {
         $file = $this->dataDirectory . DIRECTORY_SEPARATOR . $filename;
 

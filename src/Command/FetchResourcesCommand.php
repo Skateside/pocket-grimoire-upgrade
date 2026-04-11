@@ -34,13 +34,13 @@ class FetchResourcesCommand
             $io->progressStart(5);
         }
 
-        $rawSpecials = $this->resourcesModel->getLocale(TPIResourcesModel::FILENAME_SPECIAL_ROLES);
+        $rawSpecials = $this->resourcesModel->getLocal(TPIResourcesModel::FILENAME_SPECIAL_ROLES);
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
-        $rawImages = $this->resourcesModel->getLocale(TPIResourcesModel::FILENAME_IMAGES);
+        $rawImages = $this->resourcesModel->getLocal(TPIResourcesModel::FILENAME_IMAGES);
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
