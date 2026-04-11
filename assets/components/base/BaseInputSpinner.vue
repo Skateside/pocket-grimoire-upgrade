@@ -37,10 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseLabelProvide } from '../../scripts/types/base';
+import type { IBaseLabelProvide } from "~/types/base";
 import { computed, inject, useAttrs, useTemplateRef } from "vue";
-import { clamp } from '../../scripts/utilities/numbers';
-import SidebarLayout from "../layouts/SidebarLayout.vue";
+import { clamp } from "~/utilities/numbers";
+import SidebarLayout from "~/layouts/SidebarLayout.vue";
 
 defineOptions({
     inheritAttrs: false,

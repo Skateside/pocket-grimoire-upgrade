@@ -1,17 +1,6 @@
-import type {
-    ICoordinates,
-    IPad
-} from "../scripts/types/data";
-import {
-    type Ref,
-    type Reactive,
-    ref,
-    toValue,
-    watchEffect,
-} from "vue";
-import {
-    times,
-} from "../scripts/utilities/numbers";
+import type { ICoordinates, IPad } from "../types/data";
+import { type Ref, type Reactive, ref, toValue, watchEffect } from "vue";
+import { times } from "../utilities/numbers";
 
 type ILayoutData = {
     width: number,

@@ -30,8 +30,8 @@
 
 <script setup lang="ts">
 import { ref, useTemplateRef } from "vue";
-import BoxLayout from "../layouts/BoxLayout.vue";
-import SidebarLayout from "../layouts/SidebarLayout.vue";
+import BoxLayout from "~/layouts/BoxLayout.vue";
+import SidebarLayout from "~/layouts/SidebarLayout.vue";
 
 const emit = defineEmits<{
     (e: "hide"): void,

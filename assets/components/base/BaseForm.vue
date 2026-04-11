@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseFormExpose } from "~/scripts/types/base";
+import type { IBaseFormExpose } from "~/types/base";
 import { computed, onMounted, useAttrs, useTemplateRef } from "vue";
 import useFieldSaver from "~/composables/useFieldSaver";
 

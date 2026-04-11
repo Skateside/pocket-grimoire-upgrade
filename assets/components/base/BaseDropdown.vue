@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseChoice } from "~/scripts/types/base";
+import type { IBaseChoice } from "~/types/base";
 import { computed } from "vue";
 import useLabel from "~/composables/useLabel";
 

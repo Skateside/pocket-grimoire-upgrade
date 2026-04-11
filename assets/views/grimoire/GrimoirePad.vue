@@ -1,0 +1,317 @@
+<template>
+    <div ref="grimoire" class="grimoire movable">
+
+        <button
+            v-for="seat in tokensStore.seats"
+            :key="seat.id"
+            ref="seats"
+            type="button"
+            class="token token--seat movable__item"
+            :class='{
+                "is-dead": seat.dead,
+                "is-rotated": seat.rotate,
+            }'
+            :id="seat.id"
+            :style='{
+                "--x": seat.x,
+                "--y": seat.y,
+                "--z": seat.z,
+            }'
+            @movable-click="() => emit('seat-click', seat.id)"
+        >
+            <span class="token__contents">
+                <RoleToken
+                    v-if="seat.roleId"
+                    :role="seat.roleId"
+                    :alignment="seat.alignment"
+                    :orphan="rolesStore.getIsOrphanById(seat.roleId)"
+                />
+                <template v-else>{{ seat.name || seat.index }}</template>
+            </span>
+            <CentreLayout
+                v-for="(number, key) in rolesStore.getNightOrderById(seat.roleId, idsInPlay)"
+                :key="key"
+                node="span"
+                type="contents"
+                class="token__night"
+                :class="`token__night--${key}`"
+            >
+                {{ number }}
+            </CentreLayout>
+            <span class="token__name" v-if="seat.name">{{ seat.name }}</span>
+        </button>
+
+        <button
+            v-for="reminder in tokensStore.reminders"
+            type="button"
+            class="token token--reminder movable__item"
+            :id="reminder.id"
+            :style='{
+                "--x": reminder.x,
+                "--y": reminder.y,
+                "--z": reminder.z,
+            }'
+        >
+            <span class="token__contents">
+                <ReminderToken
+                    v-if="reminder.reminderId"
+                    :reminder="reminder.reminderId"
+                    :orphan="rolesStore.getIsOrphanReminderById(reminder.reminderId)"
+                />
+                <!-- :alignment="seat.alignment" -->
+                <!-- <template v-else>{{ seat.name || seat.index }}</template> -->
+            </span>
+        </button>
+
+    </div>
+</template>
+
+<script setup lang="ts">
+import type { ICoordinates, IPad } from "~/types/data";
+import {
+    computed,
+    nextTick,
+    onMounted,
+    onUnmounted,
+    shallowReactive,
+    ref,
+    useTemplateRef,
+} from "vue";
+import { useRouter } from "vue-router";
+import usePositioner from "~/composables/usePositioner";
+import useRolesStore from "~/stores/roles";
+import useTokensStore from "~/stores/tokens";
+import CentreLayout from "~/layouts/CentreLayout.vue";
+import ReminderToken from "./ReminderToken.vue";
+import RoleToken from "./RoleToken.vue";
+import { debounce, noop } from "~/utilities/functions";
+import { clamp } from "~/utilities/numbers";
+import {
+    type IResizeObserverResponse,
+    resizeObserver,
+} from "~/utilities/elements";
+
+const emit = defineEmits<{
+    (e: "reminder-click", tokenId: string): void,
+    (e: "role-click", tokenId: string): void,
+    (e: "seat-click", tokenId: string): void,
+}>();
+const rolesStore = useRolesStore();
+const tokensStore = useTokensStore();
+const idsInPlay = computed(() => Object.keys(tokensStore.inPlay));
+const grimoire = useTemplateRef("grimoire");
+const seats = useTemplateRef("seats");
+const isDragging = ref<boolean>(false);
+const pad = shallowReactive<IPad>({
+    left: 0,
+    top: 0,
+    right: 0,
+    bottom: 0,
+});
+const positioner = usePositioner(pad, seats);
+const observer = ref<IResizeObserverResponse | null>(null);
+const router = useRouter();
+
+const setPositions = () => new Promise<void>((resolve) => {
+
+    updatePadDimensions();
+
+    nextTick(() => {
+
+        seats.value?.forEach((seat, index) => {
+
+            const position = positioner.coordinates.value[index];
+
+            if (position) {
+                moveTo(seat, position);
+            }
+
+        });
+
+        resolve();
+
+    });
+
+});
+
+const getMovableItem = (target: Element) => {
+    return (target as HTMLElement).closest<HTMLElement>(".movable__item");
+};
+
+let dragHandler: (event: MouseEvent | TouchEvent) => void = noop;
+
+const moveTo = (movableItem: HTMLElement, { x, y, z }: ICoordinates) => {
+
+    const { id } = movableItem;
+
+    if (!id) {
+        return console.warn("can't move token - movable item isn't set");
+    }
+
+    const update: ICoordinates = { x, y };
+
+    if (typeof z === "number" && !Number.isNaN(z)) {
+        update.z = z;
+    }
+
+    if (!tokensStore.updateById(id, update)) {
+        console.warn("moveTo() Unable to update token with ID %o", id);
+    }
+
+};
+
+const dragObject = (moveableItem: HTMLElement, event: MouseEvent | TouchEvent) => {
+
+    event.preventDefault();
+
+    let clientX = 0;
+    let clientY = 0;
+
+    if (event instanceof MouseEvent) {
+
+        clientX = event.clientX;
+        clientY = event.clientY;
+        isDragging.value = true;
+
+    } else if (event instanceof TouchEvent) {
+
+        const touches = event.targetTouches[0];
+
+        clientX = touches?.clientX || 0;
+        clientY = touches?.clientY || 0;
+
+    }
+
+    const {
+        left,
+        top,
+        right,
+        bottom,
+    } = pad;
+
+    moveTo(moveableItem, {
+        x: clamp(0, (clientX - left) / (right - left), 1),
+        y: clamp(0, (clientY - top) / (bottom - top), 1),
+    });
+
+};
+
+const startDrag = (event: MouseEvent | TouchEvent) => {
+
+    const movableItem = getMovableItem(event.target as HTMLElement);
+    const { id } = movableItem || {};
+
+    if (!movableItem || !id) {
+        return; // clicked outside of a movable item.
+    }
+    
+    endDragging();
+    dragHandler = (event) => dragObject(movableItem, event);
+
+    if (!tokensStore.updateById(id, { z: tokensStore.nextZ })) {
+        return console.warn("startDrag() Unable to update token with ID %o", id);
+    }
+
+    window.addEventListener("mousemove", dragHandler);
+    window.addEventListener("touchmove", dragHandler, {
+        passive: false,
+    });
+
+};
+
+const endDragging = () => {
+
+    if (dragHandler === noop) {
+        return; // dragging has already ended.
+    }
+
+    window.removeEventListener("mousemove", dragHandler);
+    window.removeEventListener("touchmove", dragHandler);
+    dragHandler = noop;
+
+    // The order of events is mousedown -> mouseup -> click. This means that we
+    // need to delay the resetting of `isDragging` so that the handler attached
+    // to the click event doesn't trigger after dragging. This only seems to be
+    // an issue on desktop - mobile seems to be fine.
+    window.requestAnimationFrame(() => isDragging.value = false);
+
+};
+
+const checkClick = (event: MouseEvent) => {
+
+    const element = getMovableItem(event.target as HTMLElement);
+
+    if (!element || isDragging.value) {
+        return; // no element or still dragging - in either case, not a click
+    }
+
+    element.dispatchEvent(new CustomEvent("movable-click", {
+        bubbles: true,
+        cancelable: true,
+    }));
+
+};
+
+const updatePadDimensions = () => {
+
+    if (!grimoire.value) {
+        return console.warn("can't update dimensions - element doesn't exist");
+    }
+
+    // Destructure and then pass to Object.assign() because Vue doesn't seem to
+    // trigger watchEffect() if we pass the results of getBoundingClientRect()
+    // directly to Object.assign().
+    const {
+        top,
+        left,
+        right,
+        bottom,
+    } = grimoire.value.getBoundingClientRect();
+
+    Object.assign(pad, {
+        top,
+        left,
+        right,
+        bottom,
+    });
+
+};
+
+const updateEventually = debounce(updatePadDimensions, 150);
+
+onMounted(() => {
+
+    document.addEventListener("mousedown", startDrag);
+    document.addEventListener("touchstart", startDrag);
+    document.addEventListener("mouseup", endDragging);
+    document.addEventListener("touchend", endDragging);
+    document.addEventListener("contextmenu", endDragging);
+    document.addEventListener("click", checkClick);
+    window.addEventListener("scroll", updateEventually, { passive: true });
+    updatePadDimensions();
+
+    if (grimoire.value) {
+        observer.value = resizeObserver(grimoire.value, updateEventually);
+    }
+
+    const url = new URL(window.location.href);
+
+    if (url.searchParams.get("place") === "auto") {
+        setPositions().then(() => router.replace({ name: "grimoire" }));
+    }
+
+});
+
+onUnmounted(() => {
+
+    document.removeEventListener("mousedown", startDrag);
+    document.removeEventListener("touchstart", startDrag);
+    document.removeEventListener("mouseup", endDragging);
+    document.removeEventListener("touchend", endDragging);
+    document.removeEventListener("contextmenu", endDragging);
+    document.removeEventListener("click", checkClick);
+    window.removeEventListener("scroll", updateEventually);
+    observer.value?.unobserve();
+
+});
+</script>

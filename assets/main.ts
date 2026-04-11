@@ -1,8 +1,8 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
 import { router } from "./router";
-import Storage from "./scripts/classes/Storage";
-import GameWrapper from "./components/views/main/GameWrapper.vue";
+import Storage from "./classes/Storage";
+import GameWrapper from "./views/main/GameWrapper.vue";
 
 const game = createApp(GameWrapper);
 game.provide("storage", new Storage("pg"));

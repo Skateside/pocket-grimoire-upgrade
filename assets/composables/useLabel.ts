@@ -1,7 +1,7 @@
 import type {
     IBaseLabelAttributes,
     IBaseLabelProvide,
-} from "~/scripts/types/base";
+} from "~/types/base";
 import { computed, inject, useAttrs } from "vue";
 
 export default function useLabel(attrs: IBaseLabelAttributes = useAttrs()) {

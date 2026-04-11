@@ -19,7 +19,7 @@ import type {
     ILayoutsNode,
     ILayoutsLength,
     ILayoutsLengthPercentage,
-} from "~/scripts/types/layouts";
+} from "~/types/layouts";
 
 const props = withDefaults(defineProps<{
     node?: ILayoutsNode,

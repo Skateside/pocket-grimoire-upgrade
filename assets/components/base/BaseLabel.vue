@@ -23,13 +23,10 @@
 
 <script setup lang="ts">
 import { type SetupContext, computed, provide, useAttrs, useId } from "vue";
-import type {
-    IBaseLabelLayouts,
-    IBaseLabelProvide,
-} from "../../scripts/types/base";
-import ClusterLayout from "../layouts/ClusterLayout.vue";
-import SidebarLayout from "../layouts/SidebarLayout.vue";
-import StackLayout from "../layouts/StackLayout.vue";
+import type { IBaseLabelLayouts, IBaseLabelProvide } from "~/types/base";
+import ClusterLayout from "~/layouts/ClusterLayout.vue";
+import SidebarLayout from "~/layouts/SidebarLayout.vue";
+import StackLayout from "~/layouts/StackLayout.vue";
 
 defineOptions({
     inheritAttrs: false,

@@ -1,6 +1,6 @@
-import type { FieldElement } from "../scripts/types/lib";
+import type { FieldElement } from "../types/lib";
 import { type Ref, onUnmounted, toValue } from "vue";
-import useFieldsStore from "../scripts/stores/fields";
+import useFieldsStore from "../stores/fields";
 
 export default function useFieldSaver(
     form: Ref<HTMLFormElement | null>,

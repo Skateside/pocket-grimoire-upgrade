@@ -15,10 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ILayoutsNode } from "../../scripts/types/layouts";
+import type { ILayoutsNode } from "~/types/layouts";
 import { type Component, computed, useAttrs, useSlots } from "vue";
 import { RouterLink } from "vue-router";
-import { interpret, words } from "~/scripts/utilities/strings";
+import { interpret, words } from "~/utilities/strings";
 
 defineOptions({
     inheritAttrs: false,

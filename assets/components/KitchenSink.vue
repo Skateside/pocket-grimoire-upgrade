@@ -129,9 +129,9 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseChoice } from "~/scripts/types/base";
+import type { IBaseChoice } from "~/types/base";
 import { ref, useTemplateRef } from "vue";
-import StackLayout from "./layouts/StackLayout.vue";
+import StackLayout from "../layouts/StackLayout.vue";
 import BaseButton from "./base/BaseButton.vue";
 import BaseLabel from "./base/BaseLabel.vue";
 import BaseInput from "./base/BaseInput.vue";

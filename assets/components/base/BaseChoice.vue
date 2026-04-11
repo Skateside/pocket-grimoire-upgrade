@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseChoice } from "~/scripts/types/base";
+import type { IBaseChoice } from "~/types/base";
 import { ref, useAttrs, watch } from "vue";
 import BaseLabel from "./BaseLabel.vue";
 import BaseInput from "./BaseInput.vue";

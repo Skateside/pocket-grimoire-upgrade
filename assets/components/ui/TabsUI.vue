@@ -54,11 +54,11 @@ import {
     useTemplateRef,
     watch,
 } from "vue";
-import useUiStore from "../../scripts/stores/ui";
+import useUiStore from "../../stores/ui";
 import ClusterLayout from "../layouts/ClusterLayout.vue";
 import ReelLayout from "../layouts/ReelLayout.vue";
-import { words } from "../../scripts/utilities/strings";
-import { clamp } from "../../scripts/utilities/numbers";
+import { words } from "../../utilities/strings";
+import { clamp } from "../../utilities/numbers";
 
 const props = defineProps<ITabsUIProps>();
 const emit = defineEmits<{

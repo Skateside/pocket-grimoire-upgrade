@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IBaseInputTypes } from "../../scripts/types/base";
+import type { IBaseInputTypes } from "~/types/base";
 import { computed, useAttrs, useTemplateRef } from "vue";
 import useLabel from "~/composables/useLabel";
 
