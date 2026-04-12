@@ -1045,6 +1045,17 @@ export function getScriptMeta(
 }
 
 /**
+ * Gets the set up text from the role ability or an empty string if the setup
+ * information can't be extracted.
+ *
+ * @param ability Ability whose setup information should be returned.
+ * @returns Setup information or an empty string.
+ */
+export function getSetupText(ability: IRole["ability"]) {
+    return ability.match(/\[([^\]]+)\]/)?.[1] ?? "";
+}
+
+/**
  * Gets any specials that have the given type. Returns an empty array if no
  * matching specials can be found.
  *

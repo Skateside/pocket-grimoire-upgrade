@@ -26,6 +26,7 @@ import {
     getImage as helperGetImage,
     getReminderCount as helperGetReminderCount,
     getScriptMeta as helperGetScriptMeta,
+    getSetupText,
     getSpecial as helperGetSpecial,
     isBagDisabled,
     isBasicRole,
@@ -122,7 +123,7 @@ const rolesStore = defineStore("roles", () => {
     const scriptByType = computed(() => {
 
         return Object.groupBy(
-            script.value.filter(isBasicRole),
+            scriptRoles.value.filter(isBasicRole),
             (role) => role.team || "",
         ) as Record<ERoleTeam, IRole[]>;
 
@@ -252,6 +253,17 @@ const rolesStore = defineStore("roles", () => {
         }
 
         return undefined;
+
+    });
+
+    const getJinxImage = computed(() => () => getImageById.value("djinn"));
+    const getSetupInfo = computed(() => (role: IRole) => {
+
+        if (!role.setup) {
+            return "";
+        }
+
+        return getSetupText(role.ability);
 
     });
 
@@ -525,11 +537,6 @@ const rolesStore = defineStore("roles", () => {
         importReport,
         script,
         // Getters.
-        roles,
-        scriptRoles,
-        scripts,
-        nightOrder,
-        scriptByType,
         getImage,
         getImageById,
         getIsBagDisabled,
@@ -539,15 +546,22 @@ const rolesStore = defineStore("roles", () => {
         getIsMeta,
         getIsSpecialById,
         getIsUniversal,
+        getJinxImage,
         getNightOrderById,
         getReminderCount,
         getReminderImage,
         getRoleById,
         getScriptById,
         getScriptMeta,
+        getSetupInfo,
         getSpecial,
         interpret,
         interpretReminder,
+        nightOrder,
+        roles,
+        scriptByType,
+        scriptRoles,
+        scripts,
         // Actions.
         checkImport,
         clearImportReport,

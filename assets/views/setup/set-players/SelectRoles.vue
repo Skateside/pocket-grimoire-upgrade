@@ -26,25 +26,50 @@
                         v-if="allowDuplicates && included[role.id]"
                         v-model="counts[role.id]"
                         readonly
+                        :name="`count[${role.id}]`"
                         :aria-label="`Number of ${role.name} to add`"
                         :min="0"
                     />
-                    <StackLayout class="assign-roles__picker">
-                        <label :for="`role-${role.id}-${suffix}`">
-                            <BaseCheckbox
-                                v-model="included[role.id]"
-                                :name="`role[${role.id}]`"
-                                :id="`role-${role.id}-${suffix}`"
-                                :disabled="rolesStore.getIsBagDisabled(role)"
-                                :aria-describedby="showAbilities ? `role-ability-${role.id}-${suffix}` : undefined"
-                                @change="() => handleSelection(role)"
-                            />
-                            <StackLayout node="span">
-                                <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
-                                <strong>{{ role.name }}</strong>
-                            </StackLayout>
-                        </label>
-                        <span v-if="showAbilities" :id="`role-ability-${role.id}-${suffix}`">{{ role.ability }}</span>
+                    <StackLayout>
+                        <StackLayout class="assign-roles__picker">
+                            <label
+                                :for="`role-${role.id}-${suffix}`"
+                                class="assign-roles__label"
+                            >
+                                <BaseCheckbox
+                                    v-model="included[role.id]"
+                                    :name="`role[${role.id}]`"
+                                    :id="`role-${role.id}-${suffix}`"
+                                    :disabled="rolesStore.getIsBagDisabled(role)"
+                                    :aria-describedby="showAbilities ? `role-ability-${role.id}-${suffix}` : undefined"
+                                    @change="() => handleSelection(role)"
+                                />
+                                <StackLayout node="span">
+                                    <img :src="rolesStore.getImage(role)" alt="" width="50" height="50">
+                                    <strong>{{ role.name }}</strong>
+                                </StackLayout>
+                            </label>
+                            <span v-if="showAbilities" :id="`role-ability-${role.id}-${suffix}`">{{ role.ability }}</span>
+                        </StackLayout>
+                        <template v-for="jinx in jinxesStore.getByTargetId(role.id)" :key="jinx.id">
+                            <BaseTooltip v-if="included[jinx.trick]" :content="jinx.reason">
+                                <template #trigger>
+                                    <img :src="rolesStore.getImageById(jinx.trick)" :alt="`Jinx with ${role.name}`" width="35" height="35">
+                                </template>
+                            </BaseTooltip>
+                        </template>
+                        <template v-for="jinx in jinxesStore.getByTrickId(role.id)" :key="jinx.id">
+                            <BaseTooltip v-if="included[jinx.trick] && included[jinx.target]" :content="jinx.reason">
+                                <template #trigger>
+                                    <img :src="rolesStore.getImageById(jinx.target)" :alt="`Jinx with ${role.name}`" width="35" height="35">
+                                </template>
+                            </BaseTooltip>
+                        </template>
+                        <BaseTooltip v-if="role.setup && included[role.id]" :content="rolesStore.getSetupInfo(role)">
+                            <template #trigger>
+                                <img src="/assets/images/info.svg" alt="Setup information" width="35" height="35">
+                            </template>
+                        </BaseTooltip>
                     </StackLayout>
                 </div>
             </GridLayout>
@@ -54,14 +79,11 @@
 
 <script setup lang="ts">
 import type { IGameBreakdown, IRole, IRoleCounts } from "~/types/data";
-import {
-    ERoleSpecialType,
-    ERoleSpecialName,
-    ERoleTeam,
-} from "~/enums/data";
+import { ERoleSpecialType, ERoleSpecialName, ERoleTeam } from "~/enums/data";
 import { computed, reactive, useId, watch } from "vue";
 import { ORDER } from "~/helpers/roles";
 import useGameStore from "~/stores/game";
+import useJinxesStore from "~/stores/jinxes";
 import useRolesStore from "~/stores/roles";
 import GridLayout from "~/layouts/GridLayout.vue";
 import StackLayout from "~/layouts/StackLayout.vue";
@@ -70,6 +92,7 @@ import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import { shuffle } from "~/utilities/arrays";
+import BaseTooltip from "~/components/base/BaseTooltip.vue";
 
 const props = defineProps<{
     count: number,
@@ -81,6 +104,7 @@ const emit = defineEmits<{
 
 const suffix = useId();
 const gameStore = useGameStore();
+const jinxesStore = useJinxesStore();
 const rolesStore = useRolesStore();
 const showAbilities = defineModel<boolean>("abilities", { default: true });
 const allowDuplicates = defineModel<boolean>("duplicates", { default: false });
@@ -193,14 +217,14 @@ const selectRandom = () => {
 <style lang="scss" scoped>
 .assign-roles__picker {
     position: relative;
+}
 
-    > label::after {
-        content: "";
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        inset-inline-start: 0;
-        inset-block-start: 0;
-    }
+.assign-roles__label::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset-inline-start: 0;
+    inset-block-start: 0;
 }
 </style>

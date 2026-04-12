@@ -88,7 +88,7 @@ const routes: RouteRecordRaw[] = [
     {
         path: "/kitchensink",
         name: "kitchen-sink",
-        component: () => import("./components/KitchenSink.vue"),
+        component: () => import("./views/KitchenSink.vue"),
     },
 ];
 

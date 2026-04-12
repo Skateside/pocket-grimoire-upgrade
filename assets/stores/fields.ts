@@ -116,6 +116,9 @@ const useFieldsStore = defineStore("fields", () => {
                 input.dispatchEvent(new Event("input", {
                     bubbles: true,
                 }));
+                input.dispatchEvent(new Event("change", {
+                    bubbles: true,
+                }));
 
             });
 

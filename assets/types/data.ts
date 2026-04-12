@@ -114,6 +114,7 @@ export type IInfoTokenColours = (
 // };
 
 export type IJinx = {
+    id: `${IRole["id"]}-${IRole["id"]}`,
     target: IRole["id"],
     trick: IRole["id"],
     reason: string,

@@ -1,4 +1,4 @@
-import type { IJinx } from "~/types/data";
+import type { IJinx, IRole } from "~/types/data";
 import { EJinxState } from "~/enums/data";
 import { defineStore } from "pinia";
 import { computed } from "vue";
@@ -19,6 +19,7 @@ const useJinxesStore = defineStore("jinxes", () => {
             (role.jinxes || []).forEach((jinx) => {
 
                 jinxes.push({
+                    id: `${role.id}-${jinx.id}`,
                     target: role.id,
                     trick: jinx.id,
                     reason: jinx.reason,
@@ -58,11 +59,29 @@ const useJinxesStore = defineStore("jinxes", () => {
         return jinxes.value.filter(({ state }) => state === EJinxState.POTENTIAL);
     });
 
+    const getByTargetId = computed(() => (roleId: IRole["id"]) => {
+
+        return jinxes.value.filter(({ target, state }) => {
+            return target === roleId && state >= EJinxState.POTENTIAL;
+        });
+
+    });
+
+    const getByTrickId = computed(() => (roleId: IRole["id"]) => {
+
+        return jinxes.value.filter(({ trick, state }) => {
+            return trick === roleId && state >= EJinxState.POTENTIAL;
+        });
+
+    });
+
     return {
         // Getters.
         jinxes,
         active,
         potential,
+        getByTargetId,
+        getByTrickId,
     };
 
 });

@@ -125,22 +125,31 @@
             </BaseModal>
         </article>
 
+        <article>
+            <h2>Tooltips</h2>
+            <StackLayout>
+                <BaseTooltip content="Hello world" />
+                <BaseTooltip content="Hello world 2" />
+            </StackLayout>
+        </article>
+
     </StackLayout>
 </template>
 
 <script setup lang="ts">
 import type { IBaseChoice } from "~/types/base";
 import { ref, useTemplateRef } from "vue";
-import StackLayout from "../layouts/StackLayout.vue";
-import BaseButton from "./base/BaseButton.vue";
-import BaseLabel from "./base/BaseLabel.vue";
-import BaseInput from "./base/BaseInput.vue";
-import BaseInputSpinner from "./base/BaseInputSpinner.vue";
-import BaseCheckbox from "./base/BaseCheckbox.vue";
-import BaseChoice from "./base/BaseChoice.vue";
-import BaseOutput from "./base/BaseOutput.vue";
-import BasePopup from "./base/BasePopup.vue";
-import BaseModal from "./base/BaseModal.vue";
+import StackLayout from "~/layouts/StackLayout.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
+import BaseLabel from "~/components/base/BaseLabel.vue";
+import BaseInput from "~/components/base/BaseInput.vue";
+import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue";
+import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
+import BaseChoice from "~/components/base/BaseChoice.vue";
+import BaseOutput from "~/components/base/BaseOutput.vue";
+import BasePopup from "~/components/base/BasePopup.vue";
+import BaseModal from "~/components/base/BaseModal.vue";
+import BaseTooltip from "~/components/base/BaseTooltip.vue";
 
 const basicString = defineModel<string>("basic-string", { default: "" });
 const basicNumeric = defineModel<string>("basic-numeric", { default: "0" });
