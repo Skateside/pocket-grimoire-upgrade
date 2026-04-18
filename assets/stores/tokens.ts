@@ -14,14 +14,19 @@ import {
     getAngle,
     getCentre,
     getDistance,
+    getTokenString,
     isReminder as helperIsReminder,
     isRole as helperIsRole,
     isSeat as helperIsSeat,
     isValidToken,
 } from "~/helpers/tokens";
 import { removeAtIndex, unique } from "~/utilities/arrays";
-import { isNumber, isString } from "~/utilities/objects";
-import { UnrecognisedTokenError } from "~/errors";
+import { clone, isNumber, isString } from "~/utilities/objects";
+import {
+    TokenNotDestroyedError,
+    TokenNotSeatError,
+    UnrecognisedTokenError,
+} from "~/errors";
 import useStorage from "~/composables/useStorage";
 
 const useTokensStore = defineStore("tokens", () => {
@@ -111,23 +116,14 @@ const useTokensStore = defineStore("tokens", () => {
 
     const innerGetToken = (tokenOrId: IToken | IToken["id"]) => {
 
-        const isTokenId = isString(tokenOrId);
         const token = (
-            isTokenId
+            isString(tokenOrId)
             ? innerGetById(tokenOrId)
             : tokenOrId
         );
 
         if (!token) {
-
-            const id = (
-                isTokenId
-                ? tokenOrId
-                : `{ id: "${tokenOrId.id}" }`
-            );
-
-            throw new UnrecognisedTokenError(id);
-
+            throw new UnrecognisedTokenError(getTokenString(tokenOrId));
         }
 
         return token;
@@ -189,23 +185,23 @@ const useTokensStore = defineStore("tokens", () => {
         const index = innerGetIndex(token);
 
         if (index < 0) {
-            return false;
+            throw new UnrecognisedTokenError(getTokenString(token));
         }
 
         const updatables = filterUpdateData(settings);
 
-        if (Object.keys(updatables).length) {
+        if (!Object.keys(updatables).length) {
 
-            // Update and then re-assign to trigger Vue's reactivity updating.
-            Object.assign(token, updatables);
-            tokens.value[index] = token;
-
-            // Only return true if we actually updated something.
-            return true;
+            return console.warn(
+                "All properties passed to update() filtered out",
+                clone(settings),
+            );
 
         }
 
-        return false;
+        // Update and then re-assign to trigger Vue's reactivity updating.
+        Object.assign(token, updatables);
+        tokens.value[index] = token;
 
     };
 
@@ -217,34 +213,42 @@ const useTokensStore = defineStore("tokens", () => {
         const token = innerGetToken(tokenId);
 
         if (!token) {
-            return false;
+            throw new UnrecognisedTokenError(getTokenString(tokenId));
         }
 
-        return update(token, settings);
+        update(token, settings);
+
+    };
+
+    const innerUpdateSeat = (seat: ITokenSeat, settings: Partial<ITokenSeat>) => {
+
+        if (!helperIsSeat(seat)) {
+            throw new TokenNotSeatError(getTokenString(seat));
+        }
+
+        update(seat, settings);
 
     };
 
     const setSeatName = (seat: ITokenSeat, name?: ITokenSeat["name"]) => {
-
-        return helperIsSeat(seat) && update(seat, {
-            name,
-        });
-
+        innerUpdateSeat(seat, { name });
     };
 
     const setSeatRoleId = (seat: ITokenSeat, roleId?: IRole["id"]) => {
-
-        return helperIsSeat(seat) && update(seat, {
-            roleId,
-        });
-
+        innerUpdateSeat(seat, { roleId });
     };
 
     const destroy = (token: IToken) => {
-        return removeAtIndex(tokens.value, innerGetIndex(token));
+
+        if (!removeAtIndex(tokens.value, innerGetIndex(token))) {
+            throw new TokenNotDestroyedError(getTokenString(token));
+        }
+
     };
 
     const destroyById = (tokenId: IToken["id"]) => {
+
+        // TODO: maybe re-write this since `destroy()` no londer returns a boolean.
 
         const token = innerGetById(tokenId);
 

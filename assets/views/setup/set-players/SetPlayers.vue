@@ -37,13 +37,14 @@
             </ClusterLayout>
         </StackLayout>
     </BaseForm>
+    <DrawRolesModal ref="roles-modal" :roles="rolesSelected" />
     <BasePopup ref="popup" />
 </template>
 
 <script setup lang="ts">
 import type { IRole, IRoleCounts } from "~/types/data";
 import { EGameValues } from "~/enums/data";
-import { computed, onMounted, useId, useTemplateRef } from "vue";
+import { computed, onMounted, ref, useId, useTemplateRef } from "vue";
 import { useRouter } from "vue-router";
 import useGameStore from "~/stores/game";
 import useRolesStore from "~/stores/roles";
@@ -57,6 +58,7 @@ import SetPlayerCount from "./SetPlayerCount.vue";
 import NamePlayers from "./NamePlayers.vue";
 import SelectRoles from "./SelectRoles.vue";
 // import AssignRoles from "./AssignRoles.vue";
+import DrawRolesModal from "./DrawRolesModal.vue";
 import { shuffle } from "~/utilities/arrays";
 import { times } from "~/utilities/numbers";
 
@@ -94,6 +96,7 @@ const rolesSelected = computed(() => {
     return roles;
 
 });
+const rolesSelectedInOrder = ref<IRole[]>([]);
 
 onMounted(() => {
 
@@ -124,8 +127,8 @@ onMounted(() => {
 
 const popup = useTemplateRef("popup");
 
-const handleSubmit = async ({ submitter }: SubmitEvent) => {
-    
+const validateNumbers = async () => {
+
     if (!popup.value) {
         return console.warn("Popup hasn't been found");
     }
@@ -149,81 +152,119 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
         }
 
     }
-    
-    gameStore.setPlayerCount(players);
 
-    // NOTE: if `existingTokens` > 0 then don't reposition automatically.
-    // const existingTokens = tokensStore.tokens.length;
+    return {
+        selected,
+        players,
+    };
+
+};
+
+const clearDownGrimoire = (players: number) => {
 
     [
         ...tokensStore.reminders,
         ...tokensStore.roles,
         ...tokensStore.seats.slice(players),
-    ].forEach((token) => {
-
-        if (!tokensStore.destroy(token)) {
-            console.warn("Unable to destroy %s token %o", token.type, token);
-        }
-    
-    });
+    ].forEach((token) => tokensStore.destroy(token));
 
     times(players - tokensStore.seats.length, () => {
         tokensStore.createSeat();
     });
     tokensStore.seats.forEach((seat) => {
-
-        if (seat.roleId && !tokensStore.setSeatRoleId(seat, undefined)) {
-            console.warn("Unable to remove roleId from seat %o", seat);
-        }
-
+        tokensStore.setSeatRoleId(seat, undefined);
     });
+
+};
+
+const setPlayerNames = () => {
 
     playerNames.value.forEach((name, index) => {
 
         const seat = tokensStore.seats[index];
         const playerName = name.trim() || undefined; // Coerce `""` into `undefined`.
 
-        if (seat && !tokensStore.setSeatName(seat, playerName)) {
-
-            console.warn(
-                "Unable to set name of seat %o (index %o) to %o",
-                seat,
-                index,
-                playerName,
-            );
-
+        if (seat) {
+            tokensStore.setSeatName(seat, playerName);
         }
 
     });
 
-    shuffle(rolesSelected.value).forEach((role, index) => {
+};
+
+const assignRolesSelected = () => {
+
+    rolesSelectedInOrder.value.forEach((role, index) => {
 
         const seat = tokensStore.seats[index];
 
-        if (seat && !tokensStore.setSeatRoleId(seat, role.id)) {
-
-            console.warn(
-                "Unable to set role ID of seat %o (index %o) to %o (role %o)",
-                seat,
-                index,
-                role.id,
-                role,
-            );
-
+        if (seat) {
+            tokensStore.setSeatRoleId(seat, role.id);
         }
 
     });
 
-    router
-        .push({ name: "grimoire", query: { place: "auto" } })
-        .then((failure) => failure && console.error(failure));
+};
 
-    // TODO: use the `data-action` attribute of the submitted to work out the next step.
-    console.log({ submitter });
-    // if "draw characters" then show character selection popup
-    // -> rolesStore.chosenIds = [...]
-    // else add roles to tokens
-    // -> shuffle roleIds, assign them to the tokens.
+const rolesModal = useTemplateRef("roles-modal");
+
+const drawCharacters = () => {
+    console.log("TODO: draw characters");
+
+    rolesModal.value?.show();
+};
+
+const assignRandomRoles = () => {
+
+    rolesSelectedInOrder.value = shuffle(rolesSelected.value);
+    assignRolesSelected();
+
+};
+
+const handleSubmit = async ({ submitter }: SubmitEvent) => {
+
+    const numbers = await validateNumbers();
+
+    if (!numbers) {
+        return; // Validation fail.
+    }
+
+    const { players } = numbers;
+
+    gameStore.setPlayerCount(players);
+    // NOTE: if `existingTokens` > 0 then don't reposition automatically.
+    // const existingTokens = tokensStore.tokens.length;
+    clearDownGrimoire(players);
+    setPlayerNames();
+
+    switch (submitter?.dataset.action) {
+
+        case "draw-characters": {
+            drawCharacters();
+            break;
+        }
+
+        case "add-all": {
+
+            assignRandomRoles();
+            router
+                .push({ name: "grimoire", query: { place: "auto" } })
+                .then((failure) => failure && console.error(failure));
+
+            break;
+
+        }
+
+        default: {
+
+            console.warn(
+                "Unrecognised action or missing submitter",
+                { submitter, action: submitter?.dataset.action },
+            );
+
+        }
+
+    }
 
 };
 </script>

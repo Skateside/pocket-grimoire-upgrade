@@ -1,11 +1,11 @@
 <template>
     <div class="tooltip">
         <button type="button" :popovertarget="id" class="no-button tooltip__trigger">
-            <slot v-if="hasTriggerSlot" name="trigger"></slot>
+            <slot v-if="slots.trigger" name="trigger"></slot>
             <template v-else>{{ props.trigger }}</template>
         </button>
         <div :id="id" class="tooltip__content" popover>
-            <slot v-if="hasContentSlot" name="content"></slot>
+            <slot v-if="slots.content" name="content"></slot>
             <BoxLayout v-else class="tooltip__box">
                 {{ content }}
             </BoxLayout>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, useId, useSlots } from "vue";
+import { ref, useId, useSlots } from "vue";
 import BoxLayout from "~/layouts/BoxLayout.vue";
 
 const props = withDefaults(defineProps<{
@@ -25,11 +25,8 @@ const props = withDefaults(defineProps<{
     trigger: "More info",
 });
 
-const suffix = useId();
-const id = computed(() => `tooltip-${suffix}`);
+const id = ref(`tooltip-${useId()}`);
 const slots = useSlots();
-const hasContentSlot = computed(() => Boolean(slots.content));
-const hasTriggerSlot = computed(() => Boolean(slots.trigger));
 </script>
 
 <style lang="scss" scoped>

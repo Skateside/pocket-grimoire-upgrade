@@ -183,9 +183,13 @@ const updateDataWhitelist: Record<
     dead: isBoolean,
     ghostVote: isBoolean,
     index: isNumber,
-    name: isString,
+    name: (object: unknown) => {
+        return object === undefined || isString(object);
+    },
     reminderId: isString,
-    roleId: isString,
+    roleId: (object: unknown) => {
+        return object === undefined || isString(object);
+    },
     rotate: isBoolean,
     x: isNumber,
     y: isNumber,
@@ -253,3 +257,23 @@ export function createToken(
     }, defaultValues[type], filterUpdateData(settings)) satisfies IToken;
 
 };
+
+/**
+ * Converts the given token into a string for ease of error-throwing.
+ *
+ * @param object Object to convert.
+ * @returns String for the token.
+ */
+export function getTokenString(object: unknown): string {
+
+    if (isString(object)) {
+        return `{ id: "${object}" }`;
+    }
+
+    if (isValidToken(object)) {
+        return `{ id: "${object.id}" }`;
+    }
+
+    return "{ id: (unknown) }";
+
+}

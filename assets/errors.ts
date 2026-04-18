@@ -86,6 +86,22 @@ export class UnrecognisedReminderError extends PocketGrimoireError {
  * Token Store
  */
 
+// The token can't be destroyed for some reason.
+export class TokenNotDestroyedError extends PocketGrimoireError {
+    constructor(message: string) {
+        super(message);
+        this.name = "TokenNotDestroyedError";
+    }
+}
+
+// The token is not a seat so can't be treated as one.
+export class TokenNotSeatError extends PocketGrimoireError {
+    constructor(message: string) {
+        super(message);
+        this.name = "TokenNotSeatError";
+    }
+}
+
 // The requested token hasn't been recognised.
 export class UnrecognisedTokenError extends PocketGrimoireError {
     constructor(message: string) {
