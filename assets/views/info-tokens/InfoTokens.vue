@@ -57,7 +57,7 @@
 import type { IInfoToken } from "~/types/data";
 import { ref, useTemplateRef } from "vue";
 import useInfoTokensStore from "~/stores/infoTokens";
-import GridLayout from "~/layouts/GridLayout.vue";
+import GridLayout from "~/components/layouts/GridLayout.vue";
 import InfoTokenForm from "./InfoTokenForm.vue";
 import InfoTokenModal from "./InfoTokenModal.vue";
 import BasePopup from "~/components/base/BasePopup.vue";

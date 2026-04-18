@@ -53,7 +53,7 @@ import useTokensStore from "~/stores/tokens";
 import BaseModal from "~/components/base/BaseModal.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
-import GridLayout from "~/layouts/GridLayout.vue";
+import GridLayout from "~/components/layouts/GridLayout.vue";
 import { isNumber } from "~/utilities/objects";
 
 const emit = defineEmits<{

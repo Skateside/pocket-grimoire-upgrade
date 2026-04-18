@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import type { ISelectEditionEvents } from "~/types/components";
 import { computed, ref } from "vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseButton from "~/components/base/BaseButton.vue";

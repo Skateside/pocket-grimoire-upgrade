@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { onErrorCaptured } from "vue";
 import { RouterView, RouterLink } from "vue-router";
-import ReelLayout from "~/layouts/ReelLayout.vue";
+import ReelLayout from "~/components/layouts/ReelLayout.vue";
 
 onErrorCaptured((error, instance, info) => {
     // TODO: Log the error in a more useful way.

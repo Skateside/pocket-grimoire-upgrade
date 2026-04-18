@@ -11,5 +11,5 @@
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import ReelLayout from "~/layouts/ReelLayout.vue";
+import ReelLayout from "~/components/layouts/ReelLayout.vue";
 </script>

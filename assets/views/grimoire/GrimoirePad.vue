@@ -81,7 +81,7 @@ import { useRouter } from "vue-router";
 import usePositioner from "~/composables/usePositioner";
 import useRolesStore from "~/stores/roles";
 import useTokensStore from "~/stores/tokens";
-import CentreLayout from "~/layouts/CentreLayout.vue";
+import CentreLayout from "~/components/layouts/CentreLayout.vue";
 import ReminderToken from "./ReminderToken.vue";
 import RoleToken from "./RoleToken.vue";
 import { debounce, noop } from "~/utilities/functions";

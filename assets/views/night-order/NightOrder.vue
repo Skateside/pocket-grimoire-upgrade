@@ -39,7 +39,7 @@
 
 <script setup lang="ts">
 import type { IRole } from "~/types/data";
-import ReelLayout from "~/layouts/ReelLayout.vue";
+import ReelLayout from "~/components/layouts/ReelLayout.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import useRolesStore from "~/stores/roles";

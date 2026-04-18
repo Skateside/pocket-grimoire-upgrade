@@ -139,7 +139,7 @@
 <script setup lang="ts">
 import type { IBaseChoice } from "~/types/base";
 import { ref, useTemplateRef } from "vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";

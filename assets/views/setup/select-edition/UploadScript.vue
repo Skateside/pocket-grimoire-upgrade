@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import type { ISelectEditionEvents } from "~/types/components";
 import { ref, useTemplateRef } from "vue";
-import StackLayout from "~/layouts/StackLayout.vue";
-import SidebarLayout from "~/layouts/SidebarLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
+import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";

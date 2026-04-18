@@ -25,8 +25,8 @@ import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
-import ClusterLayout from "~/layouts/ClusterLayout.vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 
 const emit = defineEmits<{
     (e: "cancel"): void,

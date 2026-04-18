@@ -35,10 +35,10 @@ import { computed } from "vue";
 import type { IBaseChoice } from "~/types/base";
 import { times } from "~/utilities/numbers";
 import BaseChoice from "~/components/base/BaseChoice.vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
-import ClusterLayout from "~/layouts/ClusterLayout.vue";
+import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
 import { shuffle } from "~/utilities/arrays";
 
 const props = defineProps<{

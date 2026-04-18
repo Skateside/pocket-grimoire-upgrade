@@ -17,7 +17,7 @@
 import type { IRole } from "~/types/data";
 import { useTemplateRef } from "vue";
 import BaseModal from "~/components/base/BaseModal.vue";
-import GridLayout from "~/layouts/GridLayout.vue";
+import GridLayout from "~/components/layouts/GridLayout.vue";
 
 const props = defineProps<{
     roles: IRole[],

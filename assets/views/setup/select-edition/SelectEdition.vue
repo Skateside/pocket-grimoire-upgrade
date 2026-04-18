@@ -54,8 +54,8 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from "vue";
 import { RouterLink, RouterView } from "vue-router";
-import ReelLayout from "~/layouts/ReelLayout.vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import ReelLayout from "~/components/layouts/ReelLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
 import useRolesStore from "~/stores/roles";
 

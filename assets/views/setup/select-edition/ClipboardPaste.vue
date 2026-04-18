@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import type { ISelectEditionEvents } from "~/types/components";
-import StackLayout from "~/layouts/StackLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseForm from "~/components/base/BaseForm.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseInput from "~/components/base/BaseInput.vue";

@@ -59,8 +59,8 @@
 import type { IInfoToken } from "~/types/data";
 import { ref, useTemplateRef } from "vue";
 import BaseModal from "~/components/base/BaseModal.vue";
-import ClusterLayout from "~/layouts/ClusterLayout.vue";
-import SidebarLayout from "~/layouts/SidebarLayout.vue";
+import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
+import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 import InfoTokenForm from "./InfoTokenForm.vue";
 import RoleToken from "../grimoire/RoleToken.vue";
 

@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { EGameValues } from "~/enums/data";
 import { computed, ref } from "vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseInput from "~/components/base/BaseInput.vue";
 import BaseLabel from "~/components/base/BaseLabel.vue";
 import BaseOutput from "~/components/base/BaseOutput.vue";

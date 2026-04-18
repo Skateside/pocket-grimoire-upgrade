@@ -85,8 +85,8 @@ import { ORDER } from "~/helpers/roles";
 import useGameStore from "~/stores/game";
 import useJinxesStore from "~/stores/jinxes";
 import useRolesStore from "~/stores/roles";
-import GridLayout from "~/layouts/GridLayout.vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import GridLayout from "~/components/layouts/GridLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import BaseInputSpinner from "~/components/base/BaseInputSpinner.vue"
