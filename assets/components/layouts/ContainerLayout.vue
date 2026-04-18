@@ -19,7 +19,7 @@ https://every-layout.dev/layouts/container/
 <script setup lang="ts">
 import type {
     ILayoutsNode,
-} from "../types/layouts";
+} from "~/types/layouts";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,

@@ -20,7 +20,7 @@ https://every-layout.dev/layouts/frame/
 <script setup lang="ts">
 import type {
     ILayoutsNode,
-} from "../types/layouts";
+} from "~/types/layouts";
 import { computed } from "vue";
 
 const props = withDefaults(defineProps<Partial<{

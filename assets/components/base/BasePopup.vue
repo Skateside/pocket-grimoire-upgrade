@@ -31,9 +31,9 @@
 
 <script setup lang="ts">
 import { ref, useSlots, useTemplateRef } from "vue";
-import BoxLayout from "~/layouts/BoxLayout.vue";
-import ClusterLayout from "~/layouts/ClusterLayout.vue";
-import StackLayout from "~/layouts/StackLayout.vue";
+import BoxLayout from "~/components/layouts/BoxLayout.vue";
+import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
+import StackLayout from "~/components/layouts/StackLayout.vue";
 import BaseButton from "./BaseButton.vue";
 
 const props = withDefaults(defineProps<{

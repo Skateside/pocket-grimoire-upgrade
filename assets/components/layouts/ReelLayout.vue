@@ -29,7 +29,7 @@ https://every-layout.dev/layouts/reel/
 import type {
     ILayoutsNode,
     ILayoutsLength,
-} from "../types/layouts";
+} from "~/types/layouts";
 import {
     onMounted,
     onUnmounted,
@@ -41,7 +41,7 @@ import {
     type IResizeObserverResponse,
     mutationObserver,
     resizeObserver,
-} from "../utilities/elements";
+} from "~/utilities/elements";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,

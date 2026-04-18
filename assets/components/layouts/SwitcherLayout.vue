@@ -23,9 +23,9 @@ https://every-layout.dev/layouts/switcher/
 import type {
     ILayoutsNode,
     ILayoutsLength,
-} from "../types/layouts";
+} from "~/types/layouts";
 import { computed, onMounted } from "vue";
-import { toPosInt } from "../utilities/numbers";
+import { toPosInt } from "~/utilities/numbers";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,

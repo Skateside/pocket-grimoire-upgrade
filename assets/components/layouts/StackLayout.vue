@@ -21,7 +21,7 @@ https://every-layout.dev/layouts/stack/
 import type {
     ILayoutsNode,
     ILayoutsLength,
-} from "../types/layouts";
+} from "~/types/layouts";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,

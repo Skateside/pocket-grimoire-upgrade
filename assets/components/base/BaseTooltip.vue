@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import { ref, useId, useSlots } from "vue";
-import BoxLayout from "~/layouts/BoxLayout.vue";
+import BoxLayout from "~/components/layouts/BoxLayout.vue";
 
 const props = withDefaults(defineProps<{
     content?: string,

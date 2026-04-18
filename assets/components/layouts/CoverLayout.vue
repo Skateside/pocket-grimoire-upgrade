@@ -28,7 +28,7 @@ https://every-layout.dev/layouts/cover/
 import type {
     ILayoutsNode,
     ILayoutsLength,
-} from "../types/layouts";
+} from "~/types/layouts";
 import {
     computed,
     onMounted,
@@ -39,7 +39,7 @@ import {
 import {
     type IIntersectionObserverResponse,
     intersectionObserver,
-} from "../utilities/elements";
+} from "~/utilities/elements";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,

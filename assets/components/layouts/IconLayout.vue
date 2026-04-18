@@ -23,7 +23,7 @@ https://every-layout.dev/layouts/icon/
 import type {
     ILayoutsNode,
     ILayoutsLength,
-} from "../types/layouts";
+} from "~/types/layouts";
 import { computed, onMounted } from "vue";
 
 const props = withDefaults(defineProps<Partial<{

@@ -24,7 +24,7 @@ https://every-layout.dev/layouts/imposter/
 import type {
     ILayoutsNode,
     ILayoutsLengthPercentage,
-} from "../types/layouts";
+} from "~/types/layouts";
 
 const props = withDefaults(defineProps<Partial<{
     node: ILayoutsNode,

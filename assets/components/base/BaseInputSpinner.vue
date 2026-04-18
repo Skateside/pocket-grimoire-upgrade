@@ -40,7 +40,7 @@
 import type { IBaseLabelProvide } from "~/types/base";
 import { computed, inject, useAttrs, useTemplateRef } from "vue";
 import { clamp } from "~/utilities/numbers";
-import SidebarLayout from "~/layouts/SidebarLayout.vue";
+import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 
 defineOptions({
     inheritAttrs: false,
