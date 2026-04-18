@@ -37,7 +37,9 @@
             </ClusterLayout>
         </StackLayout>
     </BaseForm>
-    <DrawRolesModal ref="roles-modal" :roles="rolesSelected" />
+    <DrawRolesModal ref="draw-roles-modal" :roles="rolesSelected" />
+    <RoleModal ref="role-modal" :role="roleToShow" @hide="roleToShow = null">
+    </RoleModal>
     <BasePopup ref="popup" />
 </template>
 
@@ -59,6 +61,7 @@ import NamePlayers from "./NamePlayers.vue";
 import SelectRoles from "./SelectRoles.vue";
 // import AssignRoles from "./AssignRoles.vue";
 import DrawRolesModal from "./DrawRolesModal.vue";
+import RoleModal from "~/components/modal/RoleModal.vue";
 import { shuffle } from "~/utilities/arrays";
 import { times } from "~/utilities/numbers";
 
@@ -206,12 +209,14 @@ const assignRolesSelected = () => {
 
 };
 
-const rolesModal = useTemplateRef("roles-modal");
+const drawRolesModal = useTemplateRef("draw-roles-modal");
+const roleModal = useTemplateRef("role-modal");
+const roleToShow = ref<IRole | null>(null);
 
 const drawCharacters = () => {
     console.log("TODO: draw characters");
 
-    rolesModal.value?.show();
+    drawRolesModal.value?.show();
 };
 
 const assignRandomRoles = () => {

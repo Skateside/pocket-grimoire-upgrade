@@ -148,7 +148,7 @@ import BaseCheckbox from "~/components/base/BaseCheckbox.vue";
 import BaseChoice from "~/components/base/BaseChoice.vue";
 import BaseOutput from "~/components/base/BaseOutput.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
-import BaseModal from "~/components/base/BaseModal.vue";
+import BaseModal from "~/components/modal/BaseModal.vue";
 import BaseTooltip from "~/components/base/BaseTooltip.vue";
 
 const basicString = defineModel<string>("basic-string", { default: "" });

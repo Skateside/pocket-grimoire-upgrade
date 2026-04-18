@@ -58,7 +58,7 @@
 <script setup lang="ts">
 import type { IInfoToken } from "~/types/data";
 import { ref, useTemplateRef } from "vue";
-import BaseModal from "~/components/base/BaseModal.vue";
+import BaseModal from "~/components/modal/BaseModal.vue";
 import ClusterLayout from "~/components/layouts/ClusterLayout.vue";
 import SidebarLayout from "~/components/layouts/SidebarLayout.vue";
 import InfoTokenForm from "./InfoTokenForm.vue";

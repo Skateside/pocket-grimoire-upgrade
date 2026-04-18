@@ -50,7 +50,7 @@ import type { ITokenSeat } from "~/types/data";
 import { computed, useTemplateRef } from "vue";
 import useRolesStore from "~/stores/roles";
 import useTokensStore from "~/stores/tokens";
-import BaseModal from "~/components/base/BaseModal.vue";
+import BaseModal from "~/components/modal/BaseModal.vue";
 import BaseButton from "~/components/base/BaseButton.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
 import GridLayout from "~/components/layouts/GridLayout.vue";
@@ -92,14 +92,7 @@ const toggleProperty = (
         updates.ghostVote = !seat.dead;
     }
 
-    if (!tokensStore.update(seat, updates)) {
-
-        return confirmPopup.value?.showAlert(
-            `Unable to update the "${property}" property. Please try again.`, // TODO: i18n
-        );
-
-    }
-
+    tokensStore.update(seat, updates);
     seatModal.value?.hide();
 
 };
@@ -121,15 +114,7 @@ const removeSeat = async () => {
             "Are you sure you want to remove this seat?", // TODO: i18n
         )
     ) {
-
-        if (!tokensStore.destroyById(props.tokenId)) {
-
-            confirmPopup.value!.showAlert(
-                "Unable to remove seat. Please refresh and try again.", // TODO: i18n
-            );
-
-        }
-
+        tokensStore.destroyById(props.tokenId);
     } else {
         seatModal.value?.show();
     }

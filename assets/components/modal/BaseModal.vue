@@ -15,7 +15,7 @@
                         <button
                             class="modal__close no-button"
                             type="button"
-                            aria-label="close"
+                            aria-label="Close"
                             @click="hide"
                         >
                             &times;

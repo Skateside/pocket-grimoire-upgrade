@@ -248,15 +248,13 @@ const useTokensStore = defineStore("tokens", () => {
 
     const destroyById = (tokenId: IToken["id"]) => {
 
-        // TODO: maybe re-write this since `destroy()` no londer returns a boolean.
-
         const token = innerGetById(tokenId);
 
-        return (
-            token
-            ? destroy(token)
-            : false
-        );
+        if (!token) {
+            throw new UnrecognisedTokenError(getTokenString(tokenId));
+        }
+
+        destroy(token);
 
     };
 

@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import type { IRole } from "~/types/data";
 import { useTemplateRef } from "vue";
-import BaseModal from "~/components/base/BaseModal.vue";
+import BaseModal from "~/components/modal/BaseModal.vue";
 import RoleToken from "./RoleToken.vue";
 import GridLayout from "~/components/layouts/GridLayout.vue";
 import useRolesStore from "~/stores/roles";
