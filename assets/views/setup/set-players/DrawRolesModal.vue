@@ -4,7 +4,7 @@
             <div v-for="(role, index) in props.roles" :key="role.id">
                 <button
                     type="button"
-                    @click="() => emit('role-chosen', role.id)"
+                    @click="() => emit('role-click', role.id)"
                 >
                     {{ index + 1 }}
                 </button>
@@ -23,7 +23,7 @@ const props = defineProps<{
     roles: IRole[],
 }>();
 const emit = defineEmits<{
-    (e: "role-chosen", roleId: IRole["id"]): void,
+    (e: "role-click", roleId: IRole["id"]): void,
 }>();
 
 const modal = useTemplateRef("modal");
