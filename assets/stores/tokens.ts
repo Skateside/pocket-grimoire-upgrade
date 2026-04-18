@@ -5,10 +5,9 @@ import type {
     ITokenRole,
     ITokenSeat,
 } from "~/types/data";
-import type { IStorage } from "~/classes/Storage";
 import { ETokenType } from "~/enums/data";
 import { defineStore } from "pinia";
-import { computed, inject, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import {
     createToken,
     filterUpdateData,
@@ -22,29 +21,26 @@ import {
 } from "~/helpers/tokens";
 import { removeAtIndex, unique } from "~/utilities/arrays";
 import { isNumber, isString } from "~/utilities/objects";
-import { StorageNotFoundError, UnrecognisedTokenError } from "~/errors";
+import { UnrecognisedTokenError } from "~/errors";
+import useStorage from "~/composables/useStorage";
 
 const useTokensStore = defineStore("tokens", () => {
 
-    const storage = inject<IStorage>("storage");
+    const storage = useStorage<IToken[]>("tokens", []);
 
-    if (!storage) {
-        throw new StorageNotFoundError("tokens store");
-    }
-
-    const STORAGE_KEY = "tokens";
     const tokens = ref<IToken[]>([
         ...storage
-            .get<IToken[]>(STORAGE_KEY, Array.isArray, [])
+            .getIfValid(Array.isArray)
             .filter(isValidToken)
     ]);
 
     watch(tokens, (value) => {
-        storage.set(STORAGE_KEY, value);
+        storage.set(value);
     }, { deep: true });
 
     const clear = () => {
         tokens.value.length = 0;
+        storage.reset();
     };
 
     const byType = computed(() => {

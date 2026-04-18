@@ -1,7 +1,6 @@
-import type { IStorage } from "~/classes/Storage";
 import { EGameValues } from "~/enums/data";
 import { defineStore } from "pinia";
-import { computed, inject, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import {
     clampPlayerCount,
     getBreakdown as helperGetBreakdown,
@@ -9,24 +8,16 @@ import {
     getTeamCount as helperGetTeamCount,
 } from "~/helpers/game";
 import { isNumber } from "~/utilities/objects";
-import { StorageNotFoundError } from "~/errors";
+import useStorage from "~/composables/useStorage";
 
 const useGameStore = defineStore("game", () => {
 
-    const storage = inject<IStorage>("storage");
-
-    if (!storage) {
-        throw new StorageNotFoundError("game store");
-    }
-
-    const STORAGE_KEY = "game";
-    const playerCount = ref<number>(
-        storage.get(STORAGE_KEY, isNumber, EGameValues.DEFAULT_NEW_GAME)
-    );
+    const storage = useStorage<number>("game", EGameValues.DEFAULT_NEW_GAME);
+    const playerCount = ref(storage.getIfValid(isNumber));
     const breakdown = computed(() => helperGetBreakdown(playerCount.value));
 
     watch(playerCount, (value) => {
-        storage.set(STORAGE_KEY, value);
+        storage.set(value);
     });
 
     const clear = () => {

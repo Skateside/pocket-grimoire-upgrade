@@ -4,6 +4,34 @@ import type { AnyObject, DeepWritable } from "../types/lib";
 const { toString } = Object.prototype;
 
 /**
+ * Checks to see if the given object is array-like. This might mean an array but
+ * it might also mean a NodeList or a string.
+ *
+ * @param object Object to check.
+ * @returns `true` if the given object is array-like, `false` otherwise.
+ */
+export function isArrayLike(object: unknown): object is ArrayLike<any> {
+
+    if (object === null || object === undefined) {
+        return false;
+    }
+
+    if (Array.isArray(object)) {
+        return true;
+    }
+
+    const { length } = (object as ArrayLike<any>);
+
+    return (
+        isNumber(length)
+        && Number.isInteger(length)
+        && length >= 0
+        && length < ((2 ** 32) - 1)
+    );
+
+}
+
+/**
  * Checks to see if the given object is a boolean.
  *
  * @param object Object to check.
@@ -11,6 +39,27 @@ const { toString } = Object.prototype;
  */
 export function isBoolean(object: unknown): object is boolean {
     return typeof object === "boolean";
+}
+
+/**
+ * Checks to see if the given object is a parsable JSON string.
+ *
+ * @param object Object to check.
+ * @returns `true` if the given object can be parsed as JSON, `false` otherwise.
+ */
+export function isJsonString(object: unknown): object is string {
+    
+    if (!isString(object)) {
+        return false;
+    }
+
+    try {
+        JSON.parse(object);
+        return true;
+    } catch (ignore) {
+        return false;
+    }
+
 }
 
 /**

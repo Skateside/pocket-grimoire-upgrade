@@ -1,26 +1,19 @@
 import type { FieldElement } from "~/types/lib";
 import type { IFields } from "~/types/data";
-import type { IStorage } from "~/classes/Storage";
 import { defineStore } from "pinia";
-import { inject, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { isValidFields } from "~/helpers/fields";
-import { StorageNotFoundError } from "~/errors";
+import useStorage from "~/composables/useStorage";
 
 const useFieldsStore = defineStore("fields", () => {
 
-    const storage = inject<IStorage>("storage");
-
-    if (!storage) {
-        throw new StorageNotFoundError("fields store");
-    }
-
-    const STORAGE_KEY = "inputs";
+    const storage = useStorage<IFields>("inputs", Object.create(null));
     const inputs = ref<IFields>({
-        ...storage.get<IFields>(STORAGE_KEY, isValidFields, Object.create(null)),
+        ...storage.getIfValid(isValidFields),
     });
 
     watch(inputs, (value) => {
-        storage.set(STORAGE_KEY, value);
+        storage.set(value);
     }, { deep: true });
 
     const clear = () => {

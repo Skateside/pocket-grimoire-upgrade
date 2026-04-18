@@ -9,7 +9,6 @@ import type {
     IScriptFull,
     IScriptImport,
 } from "~/types/data";
-import type { IStorage } from "~/classes/Storage";
 import {
     ERoleEdition,
     ERoleId,
@@ -17,7 +16,7 @@ import {
     ETokenAlignment,
 } from "~/enums/data";
 import { defineStore } from "pinia";
-import { type DeepReadonly, computed, inject, reactive, ref, toRaw } from "vue";
+import { type DeepReadonly, computed, reactive, ref, toRaw } from "vue";
 import {
     addNightOrders,
     checkScriptImportValidity,
@@ -49,17 +48,12 @@ import {
     isObject,
     isString,
 } from "~/utilities/objects";
-import { StorageNotFoundError } from "~/errors";
+import useStorage from "~/composables/useStorage";
 
 const rolesStore = defineStore("roles", () => {
 
-    const storage = inject<IStorage>("storage");
+    const storage = useStorage<IScriptImport>("script", []);
 
-    if (!storage) {
-        throw new StorageNotFoundError("roles store");
-    }
-
-    const STORAGE_KEY = "script";
     const roles = computed(() => {
 
         const roles: IRole[] = [];
@@ -509,7 +503,7 @@ const rolesStore = defineStore("roles", () => {
 
     const setScriptFromImport = () => {
 
-        storage.set(STORAGE_KEY, importReport.valid);
+        storage.set(importReport.valid);
 
         const entries: IScriptFull = [...clone(toRaw(importReport.valid))];
         const roleIds = entries.map(({ id }) => id);
@@ -528,7 +522,7 @@ const rolesStore = defineStore("roles", () => {
 
     };
 
-    checkImport(storage.get<IScriptImport>(STORAGE_KEY, Array.isArray, []));
+    checkImport(storage.getIfValid(Array.isArray));
     setScriptFromImport();
 
     return {

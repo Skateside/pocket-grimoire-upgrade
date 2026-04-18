@@ -3,36 +3,24 @@ import type {
     IDemonBluffGroup,
     IDemonBluffs,
 } from "~/types/data";
-import type { IStorage } from "~/classes/Storage";
 import { defineStore } from "pinia";
-import { computed, inject, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { isValidBluffGroup, makeNewGroup } from "~/helpers/bluffs";
 import { removeAtIndex } from "~/utilities/arrays";
-import {
-    StorageNotFoundError,
-    UnrecognisedBluffGroupError,
-} from "~/errors";
+import { UnrecognisedBluffGroupError } from "~/errors";
+import useStorage from "~/composables/useStorage";
 
 const useBluffsStore = defineStore("bluffs", () => {
 
-    const storage = inject<IStorage>("storage");
-
-    if (!storage) {
-        throw new StorageNotFoundError("bluffs store");
-    }
-
-    const STORAGE_KEY = "bluffs";
-
+    const storage = useStorage<IDemonBluffs>("bluffs", [makeNewGroup()]);
     const bluffs = ref<IDemonBluffs>([
-        ...storage.get<IDemonBluffs>(
-            STORAGE_KEY,
-            (raw) => Array.isArray(raw) && raw.every(isValidBluffGroup),
-            [makeNewGroup()]
-        ),
+        ...storage.getIfValid((raw) => {
+            return Array.isArray(raw) && raw.every(isValidBluffGroup)
+        }),
     ]);
 
     watch(bluffs, (value) => {
-        storage.set(STORAGE_KEY, value);
+        storage.set(value);
     }, { deep: true });
 
     const clear = () => {

@@ -1,5 +1,4 @@
 import type { IInfoToken, IInfoTokenRaw } from "~/types/data";
-import type { IStorage } from "~/classes/Storage";
 import {
     convertFromRaw,
     create as helperCreate,
@@ -9,19 +8,13 @@ import {
     setAsCustom,
 } from "~/helpers/infoTokens";
 import { defineStore } from "pinia";
-import { computed, inject, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { removeItem } from "~/utilities/arrays";
-import { StorageNotFoundError } from "~/errors";
+import useStorage from "~/composables/useStorage";
 
 const useInfoTokensStore = defineStore("info-tokens", () => {
 
-    const storage = inject<IStorage>("storage");
-
-    if (!storage) {
-        throw new StorageNotFoundError("info-tokens store");
-    }
-
-    const STORAGE_KEY = "info-tokens";
+    const storage = useStorage<IInfoTokenRaw[]>("info-tokens", []);
 
     const infoTokens = ref<IInfoToken[]>([]);
 
@@ -35,7 +28,7 @@ const useInfoTokensStore = defineStore("info-tokens", () => {
     }
 
     storage
-        .get<IInfoToken[]>(STORAGE_KEY, Array.isArray, [])
+        .getIfValid(Array.isArray)
         .map(convertFromRaw)
         .filter((result) => result !== null)
         .map(setAsCustom)
@@ -47,7 +40,7 @@ const useInfoTokensStore = defineStore("info-tokens", () => {
             .filter(({ isCustom }) => isCustom)
             .map(reduceToRaw);
 
-        storage.set(STORAGE_KEY, raw);
+        storage.set(raw);
 
     }, { deep: true });
 
