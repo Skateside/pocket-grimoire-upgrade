@@ -1,6 +1,7 @@
 <template>
     <BaseModal
-        :title="role.name"
+        ref="modal"
+        title="Remember Your Character"
         :cover="true"
         @show="() => emit('show')"
         @hide="() => emit('hide')"
@@ -10,6 +11,7 @@
             <div>
                 <RoleToken :role="role" />
             </div>
+            <p>{{ role.ability }}</p>
             <div v-if="slots.default">
                 <slot />
             </div>
@@ -19,7 +21,7 @@
 
 <script setup lang="ts">
 import type { IRole } from "~/types/data";
-import { ref, useSlots } from "vue";
+import { computed, useSlots, useTemplateRef } from "vue";
 import useRolesStore from "~/stores/roles";
 import BaseModal from './BaseModal.vue';
 import RoleToken from "~/views/grimoire/RoleToken.vue";
@@ -33,7 +35,17 @@ const emit = defineEmits<{
     (e: "show"): void,
     (e: "toggle", state: string): void,
 }>();
+const modal = useTemplateRef("modal");
 const slots = useSlots();
 const rolesStore = useRolesStore();
-const role = ref(rolesStore.interpret(props.role));
+const role = computed(() => rolesStore.interpret(props.role));
+
+defineExpose({
+    show() {
+        modal.value?.show();
+    },
+    hide() {
+        modal.value?.hide();
+    },
+});
 </script>

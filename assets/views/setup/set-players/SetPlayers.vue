@@ -37,9 +37,17 @@
             </ClusterLayout>
         </StackLayout>
     </BaseForm>
-    <DrawRolesModal ref="draw-roles-modal" :roles="rolesSelected" />
-    <RoleModal ref="role-modal" :role="roleToShow" @hide="roleToShow = null">
+
+    <DrawRolesModal
+        ref="draw-roles-modal"
+        :roles="rolesSelectedShuffled"
+        @role-click="handleRoleClick"
+    />
+
+    <RoleModal ref="role-modal" :role="roleToShow" @hide="handleRoleModalHide">
+        <BaseButton @click="handleReturnClick">Return to character select</BaseButton>
     </RoleModal>
+
     <BasePopup ref="popup" />
 </template>
 
@@ -47,7 +55,7 @@
 import type { IRole, IRoleCounts } from "~/types/data";
 import { EGameValues } from "~/enums/data";
 import { computed, onMounted, ref, useId, useTemplateRef } from "vue";
-import { useRouter } from "vue-router";
+import { type RouteLocationRaw, useRouter } from "vue-router";
 import useGameStore from "~/stores/game";
 import useRolesStore from "~/stores/roles";
 import useTokensStore from "~/stores/tokens";
@@ -99,6 +107,7 @@ const rolesSelected = computed(() => {
     return roles;
 
 });
+const rolesSelectedShuffled = computed(() => shuffle(rolesSelected.value));
 const rolesSelectedInOrder = ref<IRole[]>([]);
 
 onMounted(() => {
@@ -212,17 +221,39 @@ const assignRolesSelected = () => {
 const drawRolesModal = useTemplateRef("draw-roles-modal");
 const roleModal = useTemplateRef("role-modal");
 const roleToShow = ref<IRole | null>(null);
+const shouldAutoPlace = ref(false);
 
 const drawCharacters = () => {
-    console.log("TODO: draw characters");
-
     drawRolesModal.value?.show();
 };
 
 const assignRandomRoles = () => {
 
-    rolesSelectedInOrder.value = shuffle(rolesSelected.value);
+    rolesSelectedInOrder.value = rolesSelectedShuffled.value;
     assignRolesSelected();
+
+};
+
+const handleRoleClick = (role: IRole) => {
+
+    rolesSelectedInOrder.value.push(role);
+    roleToShow.value = role;
+    roleModal.value?.show();
+
+};
+
+const handleReturnClick = () => {
+    roleModal.value?.hide();
+};
+
+const handleRoleModalHide = () => {
+
+    roleToShow.value = null;
+
+    if (rolesSelectedInOrder.value.length === rolesSelected.value.length) {
+        assignRolesSelected();
+        redirect();
+    }
 
 };
 
@@ -237,8 +268,7 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
     const { players } = numbers;
 
     gameStore.setPlayerCount(players);
-    // NOTE: if `existingTokens` > 0 then don't reposition automatically.
-    // const existingTokens = tokensStore.tokens.length;
+    shouldAutoPlace.value = tokensStore.tokens.length === 0;
     clearDownGrimoire(players);
     setPlayerNames();
 
@@ -252,10 +282,7 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
         case "add-all": {
 
             assignRandomRoles();
-            router
-                .push({ name: "grimoire", query: { place: "auto" } })
-                .then((failure) => failure && console.error(failure));
-
+            redirect();
             break;
 
         }
@@ -270,6 +297,23 @@ const handleSubmit = async ({ submitter }: SubmitEvent) => {
         }
 
     }
+
+};
+
+const redirect = (autoPlace?: boolean) => {
+
+    const destination: RouteLocationRaw = { name: "grimoire" };
+
+    if (
+        (typeof autoPlace === "boolean" && autoPlace === true)
+        || (autoPlace === undefined && shouldAutoPlace.value)
+    ) {
+        destination.query = { place: "auto" };
+    }
+
+    router
+        .push(destination)
+        .then((failure) => failure && console.error(failure));
 
 };
 </script>
