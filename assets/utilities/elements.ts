@@ -1,3 +1,5 @@
+import { isValidCSSSelector } from "./strings";
+
 /**
  * Inspects the given parameter and gets the options and callback from it.
  * 
@@ -240,3 +242,46 @@ export function resizeObserver(
     }
 
 }
+
+/**
+ * Creates an element from a CSS selector.
+ *
+ * @param selector CSS selector that describes the element to create.
+ * @param defaultNodeName If the tag is ommitted, this tag is used instead.
+ * @returns Either the created element or `null` if the selector isn't valid.
+ */
+export function createFromSelector(selector: string, defaultNodeName = "div") {
+
+    if (!isValidCSSSelector(selector)) {
+        return null;
+    }
+
+    const nodeName = (
+        selector.trim().match(/^([a-z][a-z0-9\-]*)/i)?.[1]
+        || defaultNodeName
+    );
+    const element = document.createElement(nodeName);
+    const idMatch = selector.match(/#([\w\-]+)/);
+
+    if (idMatch) {
+        element.id = idMatch[1];
+    }
+
+    [...selector.matchAll(/\.([\w\-]+)/g)].forEach((match) => {
+        element.classList.add(match[1]);
+    });
+
+    [
+        ...selector.matchAll(/\[([^\]=~|^$*\s]+)(?:=(["'])(.*?)\2|=(^\]]+))?\]/g)
+    ].forEach((match) => {
+        element.setAttribute(match[1], match[3] ?? "");
+    });
+
+    [...selector.matchAll(/:([\w\-]+)/g)].forEach((match) => {
+        (element as any)[match[1]] = true;
+    });
+
+    return element;
+
+}
+

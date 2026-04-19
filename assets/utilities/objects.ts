@@ -1,8 +1,6 @@
 import type { DeepReadonly } from "vue";
 import type { AnyObject, DeepWritable } from "../types/lib";
 
-const { toString } = Object.prototype;
-
 /**
  * Checks to see if the given object is array-like. This might mean an array but
  * it might also mean a NodeList or a string.
@@ -16,7 +14,10 @@ export function isArrayLike(object: unknown): object is ArrayLike<any> {
         return false;
     }
 
-    if (Array.isArray(object)) {
+    if (
+        Array.isArray(object)
+        || typeof (object as any[])[Symbol.iterator] === "function"
+    ) {
         return true;
     }
 
@@ -90,7 +91,7 @@ export function isObject(object: unknown): object is AnyObject {
     return (
         typeof object === "object"
         && object !== null
-        && toString.call(object) === "[object Object]"
+        && Object.prototype.toString.call(object) === "[object Object]"
     );
 
 }

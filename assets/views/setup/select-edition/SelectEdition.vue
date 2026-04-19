@@ -57,8 +57,10 @@ import { RouterLink, RouterView } from "vue-router";
 import ReelLayout from "~/components/layouts/ReelLayout.vue";
 import StackLayout from "~/components/layouts/StackLayout.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
+import useFieldsStore from "~/stores/fields";
 import useRolesStore from "~/stores/roles";
 
+const fieldsStore = useFieldsStore();
 const rolesStore = useRolesStore();
 const isSuccess = ref(false);
 const invalidPopup = useTemplateRef("invalid-popup");
@@ -66,6 +68,8 @@ const errorPopup = useTemplateRef("error-popup");
 
 const handleSuccess = () => {
     rolesStore.setScriptFromImport();
+    fieldsStore.removeFields("set-players", "input[name^=\"role\"]");
+    // TODO: create a better popup.
     isSuccess.value = true;
     window.setTimeout(() => isSuccess.value = false, 3500);
 };

@@ -7,10 +7,8 @@
     },
     "type": "module",
     "scripts": {
-        "data": "node tools/process-data.js",
         "dev": "vite",
         "build": "vue-tsc -b && vite build",
-        "build__full": "vue-tsc -b && vite build && yarn run data",
         "preview": "vite preview"
     },
     "dependencies": {

@@ -6,14 +6,14 @@ import {
     getBreakdown as helperGetBreakdown,
     getTableData,
     getTeamCount as helperGetTeamCount,
+    isValidPlayerCount,
 } from "~/helpers/game";
-import { isNumber } from "~/utilities/objects";
 import useStorage from "~/composables/useStorage";
 
 const useGameStore = defineStore("game", () => {
 
     const storage = useStorage<number>("game", EGameValues.DEFAULT_NEW_GAME);
-    const playerCount = ref(storage.getIfValid(isNumber));
+    const playerCount = ref(storage.getIfValid(isValidPlayerCount));
     const breakdown = computed(() => helperGetBreakdown(playerCount.value));
 
     watch(playerCount, (value) => {
@@ -22,6 +22,7 @@ const useGameStore = defineStore("game", () => {
 
     const clear = () => {
         playerCount.value = EGameValues.DEFAULT_NEW_GAME;
+        storage.reset();
     };
 
     const getIsPlayerCount = computed(() => (number: number) => {

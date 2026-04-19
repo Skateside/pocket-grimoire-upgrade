@@ -9,17 +9,21 @@ export type IStorageValidator<TStructure = any> = (
     object: unknown,
 ) => object is TStructure;
 
+const copy = <TObject = any>(object: TObject): TObject => {
+    return (
+        (isObject(object) || isArrayLike(object))
+        ? clone(object)
+        : object
+    );
+};
+
 export default function useStorage<TStructure = any>(
     key: string,
     defaultData: TStructure,
 ) {
 
     const storage = useGlobalStorage();
-    const defaultClone = (
-        (isObject(defaultData) || isArrayLike(defaultData))
-        ? clone(defaultData)
-        : defaultData
-    );
+    const defaultClone = copy(defaultData);
 
     const set = (value: TStructure) => {
         storage.set(key, value);
@@ -34,22 +38,12 @@ export default function useStorage<TStructure = any>(
             : defaultClone
         );
 
-        return (
-            (isObject(value) || isArrayLike(value))
-            ? clone(value)
-            : value
-        );
+        return copy(value);
 
     };
 
     const reset = () => {
-
-        storage.set(key, (
-            (isObject(defaultClone) || isArrayLike(defaultClone))
-            ? clone(defaultClone)
-            : defaultClone
-        ));
-
+        storage.set(key, copy(defaultClone));
     };
 
     return {

@@ -2,7 +2,7 @@ import type { IGameBreakdown, IGameCounts } from "~/types/data";
 import { EGameValues, ERoleTeam } from "~/enums/data";
 import { ORDER } from "./roles";
 import { clamp } from "~/utilities/numbers";
-import { deepFreeze } from "~/utilities/objects";
+import { deepFreeze, isNumber } from "~/utilities/objects";
 
 /**
  * The breakdown of the team numbers for each player count.
@@ -141,6 +141,23 @@ export function isLimitedTeam(
         ERoleTeam.MINION,
         ERoleTeam.DEMON,
     ].includes(team);
+};
+
+/**
+ * Checks whether or not the given object is a valid number that could be used
+ * as a valid number of players.
+ *
+ * @param object Object to test.
+ * @returns `true` if the object could be used as a valid number of players,
+ * `false` otherwise.
+ */
+export function isValidPlayerCount(object: unknown): object is number {
+    return (
+        isNumber(object)
+        && Number.isInteger(object)
+        && object >= EGameValues.MIN_PLAYERS
+        && object <= EGameValues.MAX_PLAYERS
+    );
 };
 
 /**

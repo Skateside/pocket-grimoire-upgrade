@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 import { isValidFields } from "~/helpers/fields";
 import useStorage from "~/composables/useStorage";
+import { createFromSelector } from "~/utilities/elements";
 
 const useFieldsStore = defineStore("fields", () => {
 
@@ -21,6 +22,7 @@ const useFieldsStore = defineStore("fields", () => {
         Object.keys(inputs.value).forEach((key) => {
             delete inputs.value[key];
         });
+        storage.reset();
 
     };
 
@@ -117,6 +119,34 @@ const useFieldsStore = defineStore("fields", () => {
 
     };
 
+    const removeFields = (memory: string, matches?: string) => {
+
+        if (!innerHasForm(memory)) {
+            return console.warn("Unrecognised form %o", memory);
+        }
+
+        if (!matches) {
+
+            delete inputs.value[memory];
+            return;
+
+        }
+
+        const savedValues = inputs.value[memory];
+
+        Object.keys(savedValues).forEach((selector) => {
+
+            if (
+                matches === selector
+                || createFromSelector(selector)?.matches(matches)
+            ) {
+                delete savedValues[selector];
+            }
+
+        });
+
+    };
+
     return {
         // State.
         inputs,
@@ -125,6 +155,7 @@ const useFieldsStore = defineStore("fields", () => {
         clear,
         saveField,
         populateFields,
+        removeFields,
     };
 
 });
