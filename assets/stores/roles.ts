@@ -133,13 +133,24 @@ const rolesStore = defineStore("roles", () => {
         if (!metaEntry) {
             return nightOrder;
         }
+
+        const filterRole = (
+            role: IRole | undefined,
+            property: "firstNight" | "otherNight",
+        ) => {
+            return (
+                role !== undefined
+                && typeof role[property] === "number"
+                && role[property] > 0
+            );
+        };
         
         nightOrder.first = (metaEntry.firstNight ?? [])
             .map(innerGetRoleById)
-            .filter(Boolean) as IRole[];
+            .filter((role) => filterRole(role, "firstNight")) as IRole[];
         nightOrder.other = (metaEntry.otherNight ?? [])
             .map(innerGetRoleById)
-            .filter(Boolean) as IRole[];
+            .filter((role) => filterRole(role, "otherNight")) as IRole[];
 
         return nightOrder;
 
