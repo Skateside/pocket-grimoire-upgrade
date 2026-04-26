@@ -230,17 +230,45 @@ const rolesStore = defineStore("roles", () => {
 
     };
 
-    const getImage = computed(() => helperGetImage);
+    const innerGetImage = (role: IRole) => {
+
+        const image = helperGetImage(role);
+
+        if (image) {
+            return image;
+        }
+
+        const { team } = role;
+
+        if (team) {
+
+            const url = new URL(
+                `/assets/images/roles/${role.team}.svg`,
+                import.meta.url,
+            );
+
+            return url.href;
+
+        }
+
+        return "";
+
+    };
+
+    const getImage = computed(() => innerGetImage);
 
     const getImageById = computed(() => (roleId: IRole["id"]) => {
 
-        const role = innerGetRoleById(roleId);
+        const role = (
+            innerGetRoleById(roleId)
+            || innerGetRoleById(ERoleId.UNRECOGNISED)
+        );
 
         if (role) {
-            return helperGetImage(role);
+            return innerGetImage(role);
         }
 
-        return undefined;
+        return "";
 
     });
 
@@ -263,7 +291,6 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
-    const getJinxImage = computed(() => () => getImageById.value("djinn"));
     const getSetupInfo = computed(() => (role: IRole) => {
 
         if (!role.setup) {
@@ -584,7 +611,6 @@ const rolesStore = defineStore("roles", () => {
         getIsMeta,
         getIsSpecialById,
         getIsUniversal,
-        getJinxImage,
         getNightOrderById,
         getReminderCount,
         getReminderImage,
