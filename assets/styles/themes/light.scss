@@ -2,31 +2,16 @@
 
 $theme: (
     "colour": (
-        // "primary": #4863f0,
-        // "secondary": #dbb561,
-        // "tertiary": #7e6b4f,
-        // "info": var(--colour-blue),
-        // "success": var(--colour-green),
-        // "warning": var(--colour-orange),
-        // "danger": var(--colour-red),
-        // "white": #f0f0f0,
-        // "grey": #8e8e8e,
-        // "black": #141414,
-        // "pink": #e83e8c,
-        // "red": #b52c2c,
-        // "orange": #ff7c00,
-        // "yellow": #ffc107,
-        // "green": #03782d,
-        // "teal": #20c997,
-        // "cyan": #63c2de,
-        // "blue": #0a6e80,
-        // "indigo": #6610f2,
-        // "purple": #6f42c1,
-
         // Colours
         "white": #f0f0f0,
         "black": #141414,
         "primary": #4863f0,
+        "secondary": #dbb561,
+        "info": var(--colour-blue),
+        "success": var(--colour-green),
+        "warning": var(--colour-orange),
+        "danger": var(--colour-red),
+        // Info Token Colours
         "blue": #679fd0,
         "orange": #d09f67,
         "red": #d06767,
@@ -35,9 +20,11 @@ $theme: (
         "dark-purple": #9f679f,
         "purple": #d067d0,
         "grey": #999,
-        // Group Colours
-        "good-team": #00f,
-        "evil-team": #f00,
+        // Team Colours
+        "team-good": #00f,
+        "team-evil": #f00,
+        "team-fabled": #ff0,
+        "team-loric": #0f0,
     ),
 );
 
@@ -162,20 +149,4 @@ $layout: (
         "syntax": "<number>",
         "initial-value": 1.1,
     ),
-    // Specific elements.
-    // "header-height": (
-    // 	"value": calc(var(--sizing-md) * 2),
-    // 	"syntax": "<length>",
-    // 	"initial-value": #{func.get-pixels-unit(func.get-sizing-value("md") * 2)},
-    // ),
-    // "sidebar-width": (
-    // 	"value": calc(var(--sizing-md) * 10),
-    // 	"syntax": "<length>",
-    // 	"initial-value": #{func.get-pixels-unit(func.get-sizing-value("md") * 10)},
-    // ),
-    // "sidebar-width-closed": (
-    // 	"value": calc(var(--sizing-md) * 2),
-    // 	"syntax": "<length>",
-    // 	"initial-value": #{func.get-pixels-unit(func.get-sizing-value("md") * 2)},
-    // ),
 );

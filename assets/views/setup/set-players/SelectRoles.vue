@@ -52,16 +52,16 @@
                             <span v-if="showAbilities" :id="`role-ability-${role.id}-${suffix}`">{{ role.ability }}</span>
                         </StackLayout>
                         <template v-for="jinx in jinxesStore.getByTargetId(role.id)" :key="jinx.id">
-                            <BaseTooltip v-if="included[jinx.trick]" :content="jinx.reason">
+                            <BaseTooltip v-if="included[jinx.target] && included[jinx.trick]" :content="jinx.reason">
                                 <template #trigger>
                                     <img :src="rolesStore.getImageById(jinx.trick)" :alt="`Jinx with ${role.name}`" width="35" height="35">
                                 </template>
                             </BaseTooltip>
                         </template>
                         <template v-for="jinx in jinxesStore.getByTrickId(role.id)" :key="jinx.id">
-                            <BaseTooltip v-if="included[jinx.trick] && included[jinx.target]" :content="jinx.reason">
+                            <BaseTooltip v-if="included[jinx.target] && included[jinx.trick]" :content="jinx.reason">
                                 <template #trigger>
-                                    <img :src="rolesStore.getImageById(jinx.target)" :alt="`Jinx with ${role.name}`" width="35" height="35">
+                                    <img :src="rolesStore.getImageById(jinx.target)" :alt="`Jinx with ${rolesStore.getRoleById(jinx.target)?.name}`" width="35" height="35">
                                 </template>
                             </BaseTooltip>
                         </template>

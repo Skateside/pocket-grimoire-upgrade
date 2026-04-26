@@ -27,16 +27,10 @@
         --sizing-ratio: #{map.get($map, "ratio")};
 
         $sizes: map.get($map, "sizes");
+        $index-md: list.index($sizes, "md");
         @each $size in $sizes {
             $index: list.index($sizes, $size);
-            $index-md: list.index($sizes, "md");
-            @if $index == $index-md {
-                --sizing-#{$size}: var(--sizing-unit);
-            } @else if $index < $index-md {
-                --sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index + 1)}) / var(--sizing-ratio));
-            } @else if $index > $index-md {
-                --sizing-#{$size}: calc(var(--sizing-#{list.nth($sizes, $index - 1)}) * var(--sizing-ratio));
-            }
+            --sizing-#{$size}: calc(var(--sizing-unit) * pow(var(--sizing-ratio), #{$index - $index-md}));
         }
     }
 }

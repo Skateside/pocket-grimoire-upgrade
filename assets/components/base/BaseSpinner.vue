@@ -93,11 +93,11 @@ const props = withDefaults(defineProps<{
 
 .spinner--colour {
     &::before {
-        border-block-start-color: var(--colour-good-team);
+        border-block-start-color: var(--colour-team-good);
     }
 
     &::after {
-        border-block-start-color: var(--colour-evil-team);
+        border-block-start-color: var(--colour-team-evil);
     }
 }
 </style>

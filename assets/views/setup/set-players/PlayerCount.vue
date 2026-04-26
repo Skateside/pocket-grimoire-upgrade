@@ -76,11 +76,11 @@ const get = <TKey extends PropertyKey = string>(
 
 <style lang="scss" scoped>
 .count-row--good {
-    color: var(--colour-good-team);
+    color: var(--colour-team-good);
 }
 
 .count-row--evil {
-    color: var(--colour-evil-team);
+    color: var(--colour-team-evil);
 }
 
 .is-count {

@@ -59,8 +59,8 @@
 
 @function strip-unit($number) {
     @if meta.type-of($number) == "number" and not math.is-unitless($number) {
-        // @return math.div($number, $number * 0 + 1);
-        @return math.div($number, 1);
+        // `$number * 0` removes the value but keeps the unit.
+        @return math.div($number, $number * 0 + 1);
     }
 
     @return $number;

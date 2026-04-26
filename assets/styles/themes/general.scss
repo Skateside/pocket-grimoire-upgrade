@@ -2,6 +2,12 @@ $colour: (
     "white",
     "black",
     "primary",
+    "secondary",
+    "info",
+    "success",
+    "warning",
+    "danger",
+    // Info Token Colours
     "blue",
     "orange",
     "red",
@@ -10,9 +16,11 @@ $colour: (
     "dark-purple",
     "purple",
     "grey",
-    // Group Colours
-    "good-team",
-    "evil-team",
+    // Team Colours
+    "team-good",
+    "team-evil",
+    "team-fabled",
+    "team-loric",
 );
 $sizing: (
     "unit": 1rem,
