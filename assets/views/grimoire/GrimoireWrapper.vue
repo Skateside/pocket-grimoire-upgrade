@@ -1,6 +1,23 @@
 <template>
     <GrimoirePad @seat-click="showSeatMenu" />
 
+    <GridLayout>
+        <div>
+            <BaseButton @click="showRoles">Add token</BaseButton>
+            <!-- should be able to add traveller/fabled/loric -->
+        </div>
+        <div>
+            <BaseButton>Add reminders</BaseButton>
+        </div>
+        <div>
+            <BaseButton>Show token</BaseButton>
+        </div>
+        <div>
+            <BaseButton variant="danger">Clear Grimoire</BaseButton>
+        </div>
+        <!-- Auto position tokens - should keep related reminders with their seat -->
+    </GridLayout>
+
     <SeatMenuModal
         ref="seat-menu-modal"
         :token-id="theTokenId"
@@ -18,8 +35,10 @@ import { ref, useTemplateRef } from "vue";
 import useTokensStore from "~/stores/tokens";
 import GrimoirePad from "./GrimoirePad.vue";
 import BasePopup from "~/components/base/BasePopup.vue";
+import BaseButton from "~/components/base/BaseButton.vue";
 import RoleSelectModal from "./RoleSelectModal.vue";
 import SeatMenuModal from "./SeatMenuModal.vue";
+import GridLayout from "~/components/layouts/GridLayout.vue";
 
 const tokensStore = useTokensStore();
 const seatMenuModal = useTemplateRef("seat-menu-modal");
@@ -60,5 +79,9 @@ const setSeatRole = (roleId: IRole["id"]) => {
     roleSelectModal.value?.hide();
     seatMenuModal.value?.hide();
 
+};
+
+const showRoles = () => {
+    roleSelectModal.value?.show();
 };
 </script>

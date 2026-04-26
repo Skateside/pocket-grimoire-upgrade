@@ -2,6 +2,7 @@ import type {
     IReminder,
     IRole,
     IRoleCheckResults,
+    IRoleFilter,
     IRoleImport,
     IRoleNightOrder,
     IScriptData,
@@ -22,6 +23,7 @@ import {
     checkScriptImportValidity,
     convertRole,
     convertScriptToData,
+    filter,
     getImage as helperGetImage,
     getReminderCount as helperGetReminderCount,
     getScriptMeta as helperGetScriptMeta,
@@ -365,6 +367,36 @@ const rolesStore = defineStore("roles", () => {
 
     });
 
+    const getFiltered = computed(() => (
+        filters: { include: IRoleFilter, exclude: IRoleFilter },
+    ) => {
+
+        const allRoles: IRole[] = [
+            ...deepThaw(roles.value),
+        ];
+
+        script.value.forEach((role) => {
+
+            if (isMetaEntry(role)) {
+                return;
+            }
+
+            let index = allRoles.findIndex(({ id }) => id === role.id);
+
+            if (index < 0) {
+                index = allRoles.length;
+            }
+
+            allRoles[index] = role;
+
+        });
+
+        return sortByTeam(
+            filter(allRoles, filters).filter((role) => !isSpecial(role))
+        ) as IRole[];
+
+    });
+
     const innerGetUnrecognisedReminder = () => {
         const role = innerGetRoleById(ERoleId.UNRECOGNISED)!;
         return role.reminders![0];
@@ -542,6 +574,7 @@ const rolesStore = defineStore("roles", () => {
         importReport,
         script,
         // Getters.
+        getFiltered,
         getImage,
         getImageById,
         getIsBagDisabled,

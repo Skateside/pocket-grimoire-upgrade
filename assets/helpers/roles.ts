@@ -6,6 +6,7 @@ import type {
     IRole,
     IRoleCheck,
     IRoleCheckResults,
+    IRoleFilter,
     IRoleImport,
     IRoleSpecial,
     IRoleSpecialAbility,
@@ -946,6 +947,61 @@ export function convertSpecialEntry(special: IRoleSpecialImport) {
     }
 
     return entry;
+
+}
+
+/**
+ * Filters the given collection of roles.
+ *
+ * @param roles Roles to filter.
+ * @param filter Filters to apply.
+ * @param filter.include Anything that the filtered roles should include.
+ * @param filter.exclude Anything that the filtered roles should exclude.
+ * @returns Filtered roles.
+ */
+export function filter(
+    roles: IRole[],
+    {
+        include = {},
+        exclude = {},
+    }: {
+        include: IRoleFilter,
+        exclude: IRoleFilter,
+    },
+) {
+
+    return roles.filter((role) => {
+
+        return (
+            Object.entries(include).every(([key, value]) => {
+
+                if (Array.isArray(value)) {
+
+                    return (
+                        value as IRole[keyof IRole][]
+                    ).includes(role[key as keyof IRole]);
+
+                }
+
+                return role[key as keyof IRole] === value;
+
+            })
+            && Object.entries(exclude).every(([key, value]) => {
+
+                if (Array.isArray(value)) {
+
+                    return !(
+                        value as IRole[keyof IRole][]
+                    ).includes(role[key as keyof IRole]);
+
+                }
+
+                return role[key as keyof IRole] !== value;
+
+            })
+        );
+
+    });
 
 }
 

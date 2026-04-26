@@ -10,7 +10,7 @@
         <BoxLayout class="modal__contents">
             <slot v-if="!props.noHeading" name="header">
                 <SidebarLayout side="end">
-                    <h3>{{ props.title }}</h3>
+                    <h1>{{ props.title }}</h1>
                     <div>
                         <button
                             class="modal__close no-button"
