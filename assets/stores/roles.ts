@@ -243,7 +243,7 @@ const rolesStore = defineStore("roles", () => {
         if (team) {
 
             const url = new URL(
-                `/assets/images/roles/${role.team}.svg`,
+                `/assets/images/roles/${team}.svg`,
                 import.meta.url,
             );
 
