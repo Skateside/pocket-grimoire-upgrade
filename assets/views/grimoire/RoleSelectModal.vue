@@ -5,6 +5,7 @@
             <StackLayout>
                 <h3>Teams</h3>
                 <ClusterLayout>
+                    <!-- TODO: i18n -->
                     <BaseLabel
                         v-for="team in ORDER"
                         :key="team"
