@@ -1,4 +1,3 @@
-
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -23,3 +22,7 @@
 /assets/data/raw/fetched-roles.json
 /ideas/
 /public/roles/
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

@@ -1,0 +1,7 @@
+public: public
+role-icons-destination: public/roles
+role-icons-alternative: public/roles/alternative
+special-role-icons: assets/images/roles
+var: var
+tmp: var/tmp
+

@@ -140,7 +140,7 @@ class TPIResourcesModel
     /**
      * Filter the roles so that only valid roles are included.
      *
-     * @param array $specials Roles to filter.
+     * @param array $roles Roles to filter.
      * @return array Filtered roles.
      */
     public function filterRoles(array $roles): array
@@ -187,7 +187,7 @@ class TPIResourcesModel
     /**
      * Filter the jinxes so that only valid jinxes are included.
      *
-     * @param array $specials Jinxes to filter.
+     * @param array $jinxes Jinxes to filter.
      * @return array Filtered jinxes.
      */
     public function filterJinxes(array $jinxes): array
@@ -210,7 +210,7 @@ class TPIResourcesModel
     /**
      * Filter the night sheet so that only valid entries are included.
      *
-     * @param array $specials Night sheet to filter.
+     * @param array $nightsheet Night sheet to filter.
      * @return array Filtered sheet.
      */
     public function filterNightsheet(array $nightsheet): array
@@ -430,7 +430,7 @@ class TPIResourcesModel
         $unorred = preg_replace('/\.\s+[a-z]\s+$/i', '', $unspaced);
         $despaced = preg_replace('/\s+/', ' ', $unorred);
 
-        return $despaced;
+        return (string) $despaced;
     }
 
     /**

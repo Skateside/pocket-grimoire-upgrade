@@ -17,12 +17,9 @@ use App\Enums\RoleIdEnums;
 )]
 class FetchIconsCommand
 {
-    private $iconsModel;
-    private $resourcesModel;
-
     public function __construct(
-        IconsModel $iconsModel,
-        TPIResourcesModel $resourcesModel,
+        private IconsModel $iconsModel,
+        private TPIResourcesModel $resourcesModel,
     ) {
         $this->iconsModel = $iconsModel;
         $this->resourcesModel = $resourcesModel;
