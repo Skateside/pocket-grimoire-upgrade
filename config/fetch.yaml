@@ -1,0 +1,4 @@
+roles: https://release.botc.app/resources/data/roles.json
+jinxes: https://release.botc.app/resources/data/jinxes.json
+nightsheet: https://release.botc.app/resources/data/nightsheet.json
+translations: https://raw.githubusercontent.com/ThePandemoniumInstitute/botc-translations/refs/heads/main/%1$s/%2$s.json

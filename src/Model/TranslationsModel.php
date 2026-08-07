@@ -34,7 +34,7 @@ class TranslationsModel
     /**
      * @var string Filename of the "roles" data.
      */
-    const FILENAME_ROLES = TPIResourcesModel::FILENAME_DESTINATION;
+    const FILENAME_ROLES = '';//TPIResourcesModel::FILENAME_DESTINATION;
 
     /**
      * @var string Filename of the "scripts" data.
@@ -63,7 +63,7 @@ class TranslationsModel
     const SCRIPT_AUTHOR = 'The Pandemonium Institute';
 
     /**
-     * @var array Cache for the remote information per locale.
+     * @var array<string, mixed> Cache for the remote information per locale.
      */
     private array $remotes;
 
@@ -77,6 +77,25 @@ class TranslationsModel
     )
     {
         $this->remotes = [];
+    }
+
+    /**
+     * Sets the data for the given remote.
+     *
+     * @param string $locale The Locale of the "i18n" data to set.
+     * @param array<string, mixed> $app The App translations to set.
+     * @param array<string, mixed> $game The Game translations to set.
+     */
+    public function setRemote(string $locale, array $app, array $game): void
+    {
+        if (array_key_exists($locale, $this->remotes)) {
+            throw new \Exception("'{$locale}' remote already set", E_USER_ERROR);
+        }
+
+        $this->remotes[$locale] = [
+            static::TYPE_APP => $app,
+            static::TYPE_GAME => $game,
+        ];
     }
 
     /**

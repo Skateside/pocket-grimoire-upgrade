@@ -1,7 +1,8 @@
+config: config
 public: public
 role-icons-destination: public/roles
 role-icons-alternative: public/roles/alternative
 special-role-icons: assets/images/roles
+raw: assets/data/raw
 var: var
 tmp: var/tmp
-

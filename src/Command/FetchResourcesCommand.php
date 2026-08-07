@@ -6,6 +6,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Model\TPIResourcesModel;
+use App\Service\Fetch;
+use App\Service\Storage;
 
 #[AsCommand(
     name: 'pocket-grimoire:fetch-resources',
@@ -13,12 +15,14 @@ use App\Model\TPIResourcesModel;
 )]
 class FetchResourcesCommand
 {
-    private $resourcesModel;
-
     public function __construct(
-        TPIResourcesModel $resourcesModel,
+        private TPIResourcesModel $resourcesModel,
+        private Fetch $fetch,
+        private Storage $storage,
     ) {
         $this->resourcesModel = $resourcesModel;
+        $this->fetch = $fetch;
+        $this->storage = $storage;
     }
 
     public function __invoke(
@@ -34,39 +38,40 @@ class FetchResourcesCommand
             $io->progressStart(5);
         }
 
-        $rawSpecials = $this->resourcesModel->getLocal(TPIResourcesModel::FILENAME_SPECIAL_ROLES);
+        $rawSpecials = $this->storage->readJson('raw', 'special-roles.json');
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
-        $rawImages = $this->resourcesModel->getLocal(TPIResourcesModel::FILENAME_IMAGES);
+        $rawImages = $this->storage->readJson('raw', 'images.json');
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
-        $rawRoles = $this->resourcesModel->getRemote(TPIResourcesModel::URL_ROLES);
+        $config = $this->storage->readYaml('config', 'fetch.yaml');
+        $rawRoles = $this->fetch->getJson($config['roles']);
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
-        $rawJinxes = $this->resourcesModel->getRemote(TPIResourcesModel::URL_JINXES);
+        $rawJinxes = $this->fetch->getJson($config['jinxes']);
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
-        $rawNightsheet = $this->resourcesModel->getRemote(TPIResourcesModel::URL_NIGHTSHEET);
+        $rawNightsheet = $this->fetch->getJson($config['nightsheet']);
 
         if ($io->isVerbose()) {
             $io->progressFinish();
         }
 
         if (
-            !$rawSpecials['success']
-            || !$rawImages['success']
+            $rawSpecials === null
+            || $rawImages === null
             || !$rawRoles['success']
             || !$rawJinxes['success']
             || !$rawNightsheet['success']
@@ -75,8 +80,8 @@ class FetchResourcesCommand
             return Command::FAILURE;
         }
 
-        $specials = $this->resourcesModel->filterSpecials($rawSpecials['body']);
-        $images = $this->resourcesModel->filterImages($rawImages['body']);
+        $specials = $this->resourcesModel->filterSpecials($rawSpecials);
+        $images = $this->resourcesModel->filterImages($rawImages);
         $roles = $this->resourcesModel->filterRoles($rawRoles['body']);
         $jinxes = $this->resourcesModel->filterJinxes($rawJinxes['body']);
         $nightsheet = $this->resourcesModel->filterNightsheet($rawNightsheet['body']);
@@ -87,8 +92,8 @@ class FetchResourcesCommand
             $io->table(
                 ['Type', 'Raw entries', 'Filtered entries'],
                 [
-                    ['Special', count($rawSpecials['body']), count($specials)],
-                    ['Images', count($rawImages['body']), count($images)],
+                    ['Special', count($rawSpecials), count($specials)],
+                    ['Images', count($rawImages), count($images)],
                     ['Roles', count($rawRoles['body']), count($roles)],
                     ['Jinxes', count($rawJinxes['body']), count($jinxes)],
                     ['Nightsheet', count($rawNightsheet['body']), count($nightsheet)],
@@ -98,8 +103,8 @@ class FetchResourcesCommand
         }
 
         if (
-            count($rawSpecials['body']) !== count($specials)
-            || count($rawImages['body']) !== count($images)
+            count($rawSpecials) !== count($specials)
+            || count($rawImages) !== count($images)
             || count($rawRoles['body']) !== count($roles)
             || count($rawJinxes['body']) !== count($jinxes)
             || count($rawNightsheet['body']) !== count($nightsheet)
@@ -115,7 +120,13 @@ class FetchResourcesCommand
             $images,
         );
 
-        if (!$this->resourcesModel->writeData($combined, $io->isVerbose())) {
+        // if (!$this->resourcesModel->writeData($combined, $io->isVerbose())) {
+        if (!$this->storage->writeJson(
+            'raw',
+            'fetched-roles.json',
+            $combined,
+            $io->isVerbose() ? JSON_PRETTY_PRINT : 0,
+        )) {
             $io->getErrorStyle()->error('Failed to write data');
             return Command::FAILURE;
         }

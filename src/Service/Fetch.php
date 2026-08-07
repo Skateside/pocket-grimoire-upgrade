@@ -9,9 +9,10 @@ class Fetch
      * returning an array with a "success" key and a "body" key.
      *
      * @param string $source Source of the contents to get and parse.
-     * @param bool isAssoc Whether to parse the JSON as an associative array or
+     * @param bool $isAssoc Whether to parse the JSON as an associative array or
      * an object. Defaults to array.
-     * @return array Results of parsing the contents (if possible).
+     * @return array{success: bool, body: mixed} Results of parsing the contents
+     * (if possible).
      */
     public function getJson(string $source, bool $isAssoc = true): array
     {
@@ -50,7 +51,7 @@ class Fetch
      * Returns a success.
      *
      * @param mixed $data Body for the success response.
-     * @return array Success response.
+     * @return array{success: bool, body: mixed} Success response.
      */
     protected function success(mixed $data): array
     {
@@ -61,7 +62,7 @@ class Fetch
      * Returns a failure.
      *
      * @param mixed $data Body for the failure response.
-     * @return array Failure response.
+     * @return array{success: bool, body: mixed} Failure response.
      */
     protected function failure(mixed $data): array
     {

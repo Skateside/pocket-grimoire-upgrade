@@ -13,10 +13,8 @@ use App\Model\TranslationsModel;
 )]
 class FetchTranslationsCommand
 {
-    private $translationsModel;
-
     public function __construct(
-        TranslationsModel $translationsModel,
+        private TranslationsModel $translationsModel,
     ) {
         $this->translationsModel = $translationsModel;
     }

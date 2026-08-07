@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use App\Enums\{
     ReminderFlagEnums,
     RoleIdEnums,
@@ -14,21 +13,6 @@ use App\Enums\{
 class TPIResourcesModel
 {
     /**
-     * @var string File name of the special roles.
-     */
-    const FILENAME_SPECIAL_ROLES = 'special-roles.json';
-
-    /**
-     * @var string File name of the images file.
-     */
-    const FILENAME_IMAGES = 'images.json';
-
-    /**
-     * @var string File name where the data will be saved.
-     */
-    const FILENAME_DESTINATION = 'fetched-roles.json';
-
-    /**
      * @var string Format of the default image location.
      */
     const LOCATION_DEFAULT = '/roles/%s.svg';
@@ -39,32 +23,9 @@ class TPIResourcesModel
     const LOCATION_ALTERNATIVE = '/roles/alternative/%s.svg';
 
     /**
-     * @var string Location of the roles data.
-     */
-    const URL_ROLES = 'https://release.botc.app/resources/data/roles.json';
-
-    /**
-     * @var string Location of the jinxes data.
-     */
-    const URL_JINXES = 'https://release.botc.app/resources/data/jinxes.json';
-
-    /**
-     * @var string Location of the nightsheet data.
-     */
-    const URL_NIGHTSHEET = 'https://release.botc.app/resources/data/nightsheet.json';
-
-    /**
      * An error message generated when validating a role.
      */
     private string $message = '';
-
-    public function __construct(
-
-        #[Autowire('%kernel.project_dir%/assets/data/raw')]
-        private string $dataDirectory,
-
-    )
-    {}
 
     /**
      * Gets the latest role validation error message.
@@ -77,37 +38,10 @@ class TPIResourcesModel
     }
 
     /**
-     * Gets the special roles from the JSON file.
-     *
-     * @return array Success status and the body of the results.
-     */
-    public function getLocal(string $filename): array
-    {
-        $file = $this->dataDirectory . DIRECTORY_SEPARATOR . $filename;
-
-        if (!file_exists($file)) {
-            return ['success' => false, 'body' => "'{$file}' not found"];
-        }
-
-        return $this->getContentsAsJson($file);
-    }
-
-    /**
-     * Gets the JSON from the given URL.
-     *
-     * @param string $url URL to find the JSON.
-     * @return array The success status body of the results.
-     */
-    public function getRemote(string $url): array
-    {
-        return $this->getContentsAsJson($url);
-    }
-
-    /**
      * Filter the special roles so that only valid roles are included.
      *
-     * @param array $specials Special roles to filter.
-     * @return array Filtered special roles.
+     * @param array<mixed> $specials Special roles to filter.
+     * @return array<string, mixed> Filtered special roles.
      */
     public function filterSpecials(array $specials): array
     {
@@ -129,8 +63,8 @@ class TPIResourcesModel
     /**
      * Filter the images so that only valid image entries are included.
      *
-     * @param array $images Images to filter.
-     * @return array Filtered images.
+     * @param array<mixed> $images Images to filter.
+     * @return array<string, mixed> Filtered images.
      */
     public function filterImages(array $images): array
     {
@@ -140,8 +74,8 @@ class TPIResourcesModel
     /**
      * Filter the roles so that only valid roles are included.
      *
-     * @param array $roles Roles to filter.
-     * @return array Filtered roles.
+     * @param array<mixed> $roles Roles to filter.
+     * @return array<string, mixed> Filtered roles.
      */
     public function filterRoles(array $roles): array
     {
@@ -187,8 +121,8 @@ class TPIResourcesModel
     /**
      * Filter the jinxes so that only valid jinxes are included.
      *
-     * @param array $jinxes Jinxes to filter.
-     * @return array Filtered jinxes.
+     * @param array<mixed> $jinxes Jinxes to filter.
+     * @return array<string, mixed> Filtered jinxes.
      */
     public function filterJinxes(array $jinxes): array
     {
@@ -210,8 +144,8 @@ class TPIResourcesModel
     /**
      * Filter the night sheet so that only valid entries are included.
      *
-     * @param array $nightsheet Night sheet to filter.
-     * @return array Filtered sheet.
+     * @param array<mixed> $nightsheet Night sheet to filter.
+     * @return array<string, mixed> Filtered sheet.
      */
     public function filterNightsheet(array $nightsheet): array
     {
@@ -231,12 +165,12 @@ class TPIResourcesModel
     /**
      * Combines all the given arrays into a single array.
      *
-     * @param array $specials Special roles ("_meta", "dawn", "demoninfo" etc.).
-     * @param array $roles Main roles.
-     * @param array $jinxes Jinxes.
-     * @param array $nightsheet Night order.
-     * @param array $images Image data.
-     * @return array Combined data.
+     * @param array<string, mixed> $specials Special roles ("_meta", "dawn", "demoninfo" etc.).
+     * @param array<string, mixed>[] $roles Main roles.
+     * @param array<string, mixed> $jinxes Jinxes.
+     * @param array<string, mixed> $nightsheet Night order.
+     * @param array<string, mixed> $images Image data.
+     * @return array<string, mixed>[] Combined data.
      */
     public function combineData(
         array $specials,
@@ -364,57 +298,6 @@ class TPIResourcesModel
     }
 
     /**
-     * Writes the JSON data to the destination.
-     *
-     * @param array $data JSON data to write.
-     * @param bool $pretty If `true`, the written file will be formatted and
-     * easier to read, if `false` (default) then the file will be minified.
-     * @return bool `true` if the data was sucessfully written, `false`
-     * otherwise.
-     */
-    public function writeData(array $data, bool $pretty = false): bool
-    {
-        $destination = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::FILENAME_DESTINATION
-        );
-        $json = json_encode($data, $pretty ? JSON_PRETTY_PRINT : 0);
-
-        if ($json === false || file_put_contents($destination, $json) === false) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Gets the data from the saved file, returning `null` if the data couldn't
-     * be retrieved or parsed.
-     *
-     * @return ?array Parsed data or `null` if the data can't be read or parsed.
-     */
-    public function getData(): ?array
-    {
-        $destination = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::FILENAME_DESTINATION
-        );
-
-        if (
-            !file_exists($destination)
-            || (($contents = file_get_contents($destination)) === false)
-            || (($data = json_decode($contents, true)) === null)
-            || !is_array($data)
-        ) {
-            return null;
-        }
-
-        return $data;
-    }
-
-    /**
      * Cleans the given text to remove any instance of ":reminder:" (and any
      * extra spaces generated by that removal).
      *
@@ -434,39 +317,11 @@ class TPIResourcesModel
     }
 
     /**
-     * Gets the contents of the given source and attempts to parse it as JSON,
-     * returning an array with a "success" key and a "body" key.
-     *
-     * @param string $source Source of the contents to get and parse.
-     * @return array Results of parsing the contents (if possible).
-     */
-    protected function getContentsAsJson(string $source): array
-    {
-        $contents = file_get_contents($source);
-
-        if ($contents === false) {
-            return ['success' => false, 'body' => "'{$source}' not found"];
-        }
-
-        if (!json_validate($contents)) {
-            return ['success' => false, 'body' => "'{$source}' not valid JSON"];
-        }
-
-        $decoded = json_decode($contents, true);
-
-        if (!is_array($decoded)) {
-            return ['success' => false, 'body' => 'JSON not an array'];
-        }
-
-        return ['success' => true, 'body' => $decoded];
-    }
-
-    /**
      * Applies the images to the given roles.
      *
-     * @param array $roles Roles that should gain images.
-     * @param array $images Images to apply to the roles.
-     * @return array Roles with images applied.
+     * @param array<string, mixed> $roles Roles that should gain images.
+     * @param array<string, mixed> $images Images to apply to the roles.
+     * @return array<string, mixed> Roles with images applied.
      */
     protected function applyImages(array $roles, array $images): array
     {
@@ -497,8 +352,8 @@ class TPIResourcesModel
     /**
      * Generates the image(s) for the given role.
      *
-     * @param array $role Role whose images should be generated.
-     * @return array Role with generated images.
+     * @param array<string, mixed> $role Role whose images should be generated.
+     * @return array<string, mixed> Role with generated images.
      */
     protected function generateImages(array $role): array
     {
@@ -546,8 +401,9 @@ class TPIResourcesModel
     /**
      * Converts all the reminders in the given roles.
      *
-     * @param array $roles Roles whose reminders should be converted.
-     * @return array Roles with converted reminders.
+     * @param array<string, mixed>[] $roles Roles whose reminders should be
+     * converted.
+     * @return array<string, mixed>[] Roles with converted reminders.
      */
     protected function convertReminders(array $roles): array
     {
@@ -572,10 +428,10 @@ class TPIResourcesModel
     /**
      * Converts the given reminders into the modern format.
      *
-     * @param array $reminders Local reminder to convert.
-     * @param array $remindersGlobal Global reminder to convert.
-     * @param array $special Special information about the role.
-     * @return array Converted reminders.
+     * @param array<mixed> $reminders Local reminder to convert.
+     * @param array<mixed> $remindersGlobal Global reminder to convert.
+     * @param array<string, mixed> $special Special information about the role.
+     * @return array<string, mixed>[] Converted reminders.
      */
     protected function convertRoleReminders(
         array $reminders,
@@ -834,7 +690,7 @@ class TPIResourcesModel
      * Checks to see if the given array and related key are a valid nightsheet
      * entry.
      *
-     * @param array $array Night sheet.
+     * @param array<string, mixed> $array Night sheet.
      * @param string $key Key for the night sheet.
      * @return bool `true` if the data in the given array at the given key is a
      * valid night sheet entry, `false` otherwise.
