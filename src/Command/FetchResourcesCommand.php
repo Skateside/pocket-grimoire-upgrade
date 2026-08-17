@@ -52,18 +52,21 @@ class FetchResourcesCommand
 
         $config = $this->storage->readYaml('config', 'fetch.yaml');
         $rawRoles = $this->fetch->getJson($config['roles']);
+        $rawRolesError = $this->fetch->getLastError();
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
         $rawJinxes = $this->fetch->getJson($config['jinxes']);
+        $rawJinxesError = $this->fetch->getLastError();
 
         if ($io->isVerbose()) {
             $io->progressAdvance();
         }
 
         $rawNightsheet = $this->fetch->getJson($config['nightsheet']);
+        $rawNightsheetError = $this->fetch->getLastError();
 
         if ($io->isVerbose()) {
             $io->progressFinish();
@@ -72,9 +75,9 @@ class FetchResourcesCommand
         if (
             $rawSpecials === null
             || $rawImages === null
-            || !$rawRoles['success']
-            || !$rawJinxes['success']
-            || !$rawNightsheet['success']
+            || $rawRolesError !== ''
+            || $rawJinxesError !== ''
+            || $rawNightsheetError !== ''
         ) {
             $io->getErrorStyle()->error('Data not valid');
             return Command::FAILURE;
@@ -82,9 +85,9 @@ class FetchResourcesCommand
 
         $specials = $this->resourcesModel->filterSpecials($rawSpecials);
         $images = $this->resourcesModel->filterImages($rawImages);
-        $roles = $this->resourcesModel->filterRoles($rawRoles['body']);
-        $jinxes = $this->resourcesModel->filterJinxes($rawJinxes['body']);
-        $nightsheet = $this->resourcesModel->filterNightsheet($rawNightsheet['body']);
+        $roles = $this->resourcesModel->filterRoles($rawRoles);
+        $jinxes = $this->resourcesModel->filterJinxes($rawJinxes);
+        $nightsheet = $this->resourcesModel->filterNightsheet($rawNightsheet);
 
         if ($io->isVerbose()) {
 
@@ -94,9 +97,9 @@ class FetchResourcesCommand
                 [
                     ['Special', count($rawSpecials), count($specials)],
                     ['Images', count($rawImages), count($images)],
-                    ['Roles', count($rawRoles['body']), count($roles)],
-                    ['Jinxes', count($rawJinxes['body']), count($jinxes)],
-                    ['Nightsheet', count($rawNightsheet['body']), count($nightsheet)],
+                    ['Roles', count($rawRoles), count($roles)],
+                    ['Jinxes', count($rawJinxes), count($jinxes)],
+                    ['Nightsheet', count($rawNightsheet), count($nightsheet)],
                 ]
             );
 
@@ -105,9 +108,9 @@ class FetchResourcesCommand
         if (
             count($rawSpecials) !== count($specials)
             || count($rawImages) !== count($images)
-            || count($rawRoles['body']) !== count($roles)
-            || count($rawJinxes['body']) !== count($jinxes)
-            || count($rawNightsheet['body']) !== count($nightsheet)
+            || count($rawRoles) !== count($roles)
+            || count($rawJinxes) !== count($jinxes)
+            || count($rawNightsheet) !== count($nightsheet)
         ) {
             $io->getErrorStyle()->warning('Some filtering occurred');
         }

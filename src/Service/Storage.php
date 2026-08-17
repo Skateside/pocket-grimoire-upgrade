@@ -72,48 +72,48 @@ class Storage
      * location.
      *
      * @param string $locationId ID of the location.
-     * @param string $filename Filename.
+     * @param string ...$parts Parts to create the file name.
      * @return string Full file name.
      */
-    public function getFilename(string $locationId, string $filename): string
+    public function getFilename(string $locationId, string ...$parts): string
     {
-        return static::concat($this->getRealpath($locationId), $filename);
+        return static::concat($this->getRealpath($locationId), ...$parts);
     }
 
     /**
      * Reads the contents of the file at the given location.
      *
      * @param string $locationId ID of the location where the file is located.
-     * @param string $filename Name of the file to read.
+     * @param string ...$parts Parts of the file name to read.
      * @return string|false The contents of the file or false on an error.
      */
-    public function read(string $locationId, string $filename): mixed
+    public function read(string $locationId, string ...$parts): mixed
     {
-        return file_get_contents($this->getFilename($locationId, $filename));
+        return file_get_contents($this->getFilename($locationId, ...$parts));
     }
 
     /**
      * Reads the contents of the file at the given location as JSON.
      *
      * @param string $locationId ID of the location where the file is located.
-     * @param string $filename Name of the file to read.
+     * @param string ...$parts Parts of the file location.
      * @return mixed JSON data.
      */
-    public function readJson(string $locationId, string $filename): mixed
+    public function readJson(string $locationId, string ...$parts): mixed
     {
-        return json_decode($this->read($locationId, $filename), true);
+        return json_decode($this->read($locationId, ...$parts), true);
     }
 
     /**
      * Reads the contents of the file at the given location as YAML.
      *
      * @param string $locationId ID of the location where the file is located.
-     * @param string $filename Name of the file to read.
+     * @param string ...$parts Parts of the file location.
      * @return mixed YAML data.
      */
-    public function readYaml(string $locationId, string $filename): mixed
+    public function readYaml(string $locationId, string ...$parts): mixed
     {
-        return Yaml::parse($this->read($locationId, $filename));
+        return Yaml::parse($this->read($locationId, ...$parts));
     }
 
     /**
@@ -262,12 +262,12 @@ class Storage
      * Checks to see if the given file exists.
      *
      * @param string $locationId ID of the location of the file.
-     * @param string $filename Name of the file.
+     * @param string ...$parts Parts of the file location.
      * @return bool true if the file exists, false if it doesn't.
      */
-    public function exists(string $locationId, string $filename): bool
+    public function exists(string $locationId, string ...$parts): bool
     {
-        return file_exists($this->getFilename($locationId, $filename));
+        return file_exists($this->getFilename($locationId, ...$parts));
     }
 
     /**

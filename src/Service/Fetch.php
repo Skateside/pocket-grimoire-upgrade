@@ -5,6 +5,51 @@ namespace App\Service;
 class Fetch
 {
     /**
+     * @var string $lastError The last error message that occurred.
+     */
+    protected string $lastError = '';
+
+    /**
+     * Gets the status code from the given URL.
+     *
+     * @param string $source URL whose HTTP status code should be returned.
+     * @return int Status code.
+     */
+    public function getStatusCode(string $source): int
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_URL => $source,
+        ]);
+        curl_exec($curl);
+        $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        return $response_code;
+    }
+
+    /**
+     * Gets the contents of the given URL.
+     *
+     * @param string $source URL whose contents should be returned.
+     * @return string Contents from the given URL.
+     */
+    public function getContents(string $source): string
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $source,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+        ]);
+        $contents = curl_exec($curl);
+        curl_close($curl);
+
+        return $contents;
+    }
+
+    /**
      * Gets the contents of the given source and attempts to parse it as JSON,
      * returning an array with a "success" key and a "body" key.
      *
@@ -16,57 +61,109 @@ class Fetch
      */
     public function getJson(string $source, bool $isAssoc = true): array
     {
-        $headers = get_headers($source);
-        $matches = [];
-        preg_match('/(\d{3})/', $headers[0], $matches);
+        $this->resetLastError();
+        $status = $this->getStatusCode($source);
 
-        if (
-            !count($matches)
-            || (int) $matches[0] < 200
-            || ((int) $matches[0] >= 300 && (int) $matches[0] !== 302)
-        ) {
-            return $this->failure("'{$source}' response: {$headers[0]}");
+        if ($status < 200 || ($status >= 300 && $status !== 302)) {
+            return $this->setLastError("Status code response {$status}");
         }
 
-        $contents = file_get_contents($source);
+        $contents = $this->getContents($source);
 
         if ($contents === false) {
-            return $this->failure("'{$source}' not found");
-        }
-
-        if (!json_validate($contents)) {
-            return $this->failure("'{$source}' not valid JSON");
+            return $this->setLastError("Can't get contents");
         }
 
         $decoded = json_decode($contents, $isAssoc);
 
-        if (!is_array($decoded)) {
-            return $this->failure('JSON not an array');
+        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+            return $this->setLastError(json_last_error_msg());
         }
 
-        return $this->success($decoded);
+        return $decoded;
+    }
+
+    public function getFile(
+        string $url,
+        string $destination,
+        ?callable $onProgress = null,
+    ): bool {
+        $this->resetLastError();
+        $file = fopen($destination, 'wb');
+
+        if (!$file === false) {
+            return $this->setLastError("Unable to open {$destination} for writing");
+        }
+
+        $curl = curl_init($url);
+        curl_setopt_array($curl, [
+            CURLOPT_FILE => $file,
+            CURLOPE_FOLLOWLOCATION => true,
+            CURLOPT_FAILONERROR => true,
+            CURLOPT_NOPROGRESS => false,
+            CURLOPT_PROGRESSFUNCTION => function (
+                $resource,
+                float $downloadTotal,
+                float $downloaded,
+                float $uploadTotal,
+                float $uploaded,
+            ) use ($onProgress): void {
+                if (!is_callable($onProgress)) {
+                    return; // No progress function, nothing to do.
+                }
+
+                $onProgress(
+                    (int) $downloaded,
+                    $downloadTotal > 0 ? (int) $downloadTotal : null,
+                );
+            },
+        ]);
+
+        $success = false;
+
+        try {
+            if (curl_exec($curl) === false) {
+                throw new \RuntimeException(curl_error($curl));
+            }
+
+            $success = true;
+        } finally {
+            curl_close($curl);
+            fclose($file);
+        }
+
+        return $success;
     }
 
     /**
-     * Returns a success.
+     * Gets the last error message, which will be an empty string if no error
+     * has occured.
      *
-     * @param mixed $data Body for the success response.
-     * @return array{success: bool, body: mixed} Success response.
+     * @return string Last error message.
      */
-    protected function success(mixed $data): array
+    public function getLastError(): string
     {
-        return ['success' => true, 'body' => $data];
+        return $this->lastError;
     }
 
     /**
-     * Returns a failure.
+     * Helper function for setting the last error message and returning null.
      *
-     * @param mixed $data Body for the failure response.
-     * @return array{success: bool, body: mixed} Failure response.
+     * @param string $laseError Last error message.
+     * @return null Null.
      */
-    protected function failure(mixed $data): array
+    protected function setLastError(string $lastError): null
     {
-        return ['success' => false, 'body' => $data];
+        $this->lastError = $lastError;
+        return null;
+    }
+
+    /**
+     * Helper function for resetting the last error message.
+     */
+    protected function resetLastError(): void
+    {
+        $this->setLastError('');
     }
 }
 
