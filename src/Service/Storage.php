@@ -197,6 +197,19 @@ class Storage
     }
 
     /**
+     * Removes a file at the given location.
+     *
+     * @param string $locationId ID of the location where the file should be
+     *        removed.
+     * @param string ...$parts Parts of the filename to remove.
+     * @return bool true if the file was removed, false otherwise.
+     */
+    public function rm(string $locationId, string ...$parts): bool
+    {
+        return unlink(Storage::concat($this->getRealpath($locationId), ...$parts));
+    }
+
+    /**
      * Removes a directory. Optionally, the directory can be emptied before
      * being removed and/or the reference to the directory can be removed.
      *
@@ -334,27 +347,21 @@ class Storage
     }
 
     /**
-     * Processes the contents of a zip file by extracting the contents into a
-     * temporary directory.
+     * Processes the contents of a zip file at the given location.
      *
      * @param string $zipLocation Location of the zip file whose contents should
      *        be processed.
-     * @param callable(\SplFileInfo): void $process Processing function.
-     * @return bool true if everything is successful, false if there's an error.
+     * @param callable(\SplFileInfo): void $process Process to execute on the
+     *        zip file contents.
+     * @return bool true if the files were processed without an errors, false if
+     *         an error occured.
      */
     public function processZip(string $zipLocation, callable $process): bool
     {
         $id = uniqid('tmpdir_');
         $tempDir = $this->mktmpdir('tmp', $id, 0744);
-        $tempZip = uniqid('tmpzip_') . '.zip';
-        $fullZip = static::concat($this->getRealpath('tmp'), $tempZip);
-
-        if (!$this->copyFile($zipLocation, $fullZip)) {
-            return false;
-        }
-
         $zip = new \ZipArchive();
-        $result = $zip->open($fullZip);
+        $result = $zip->open($zipLocation);
 
         if ($result !== true) {
             return false;
@@ -378,9 +385,6 @@ class Storage
             }
         }
 
-        unlink($fullZip);
-
         return $this->rmdir($id, static::REMOVE_ALL);
     }
 }
-

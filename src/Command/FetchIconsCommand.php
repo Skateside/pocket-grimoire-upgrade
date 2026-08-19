@@ -74,21 +74,6 @@ class FetchIconsCommand
             $io->writeln('Icons copied successfully');
         }
 
-        $data = $this->storage->readJson('raw', 'fetched-roles.json');
-        $specialRoleIds = [
-            RoleIdEnums::DAWN->value,
-            RoleIdEnums::DEMON_INFO->value,
-            RoleIdEnums::DUSK->value,
-            RoleIdEnums::META->value,
-            RoleIdEnums::MINION_INFO->value,
-            RoleIdEnums::NO_ROLE->value,
-            RoleIdEnums::UNIVERSAL->value,
-            RoleIdEnums::UNRECOGNISED->value,
-        ];
-        $roles = array_filter($data, function ($role) use($specialRoleIds) {
-            return !in_array($role['id'], $specialRoleIds);
-        });
-        $total = count($roles);
         $indicator = null;
 
         if ($io->isVerbose()) {
@@ -112,6 +97,28 @@ class FetchIconsCommand
         if (is_string($files)) {
             $io->getErrorStyle()->error($files);
             return Command::FAILURE;
+        }
+
+        $data = $this->storage->readJson('raw', 'fetched-roles.json');
+        $specialRoleIds = [
+            RoleIdEnums::DAWN->value,
+            RoleIdEnums::DEMON_INFO->value,
+            RoleIdEnums::DUSK->value,
+            RoleIdEnums::META->value,
+            RoleIdEnums::MINION_INFO->value,
+            RoleIdEnums::NO_ROLE->value,
+            RoleIdEnums::UNIVERSAL->value,
+            RoleIdEnums::UNRECOGNISED->value,
+        ];
+        $roles = array_filter($data, function ($role) use($specialRoleIds) {
+            return !in_array($role['id'], $specialRoleIds);
+        });
+        $total = count($roles);
+        $linked = $this->linkRolesAndIcons($roles, $files);
+
+        if ($total !== $linked) {
+            $missing = $total - $linked;
+            $io->getErrorStyle()->warning("{$missing} icons failed to copy");
         }
 
         $io->getErrorStyle()->success('Icons downloaded and copied');
@@ -162,41 +169,23 @@ class FetchIconsCommand
      */
     protected function fetchSVGContents(callable $onProgress): array|string
     {
-        $id = uniqid('tmpdir_');
-        $tempDir = $this->storage->mktmpdir('tmp', $id, 0744);
         $tempZip = uniqid('tmpzip_') . '.zip';
 
         if (!$this->storage->touch('tmp', $tempZip, 0744)) {
             return 'Failed to create file/set permissions';
         }
 
-        $downloaded = $this->fetch->getFile(
-            static::URL_ZIP,
-            $this->storage->getFilename('tmp', $tempZip),
-            $onProgress,
-        );
+        $fullZip = $this->storage->getFilename('tmp', $tempZip);
+        $downloaded = $this->fetch->getFile(static::URL_ZIP, $fullZip, $onProgress);
 
         if (!$downloaded) {
             return $this->fetch->getLastError();
         }
 
         $files = [];
-        return $files;
-    }
 
-    /**
-     * Fetches the SVGs from the remote zip file and processes them. An array
-     * with a `success` boolean and `body` property is returned which describes
-     * the success or any failure.
-     *
-     * @param array{id: string, team: string}[] $roles Roles that should gain icons.
-     * @return array{success: bool, body: string|int} Array with success/failure information.
-     */
-    protected function fetchSVGs(array $roles): array
-    {
-        $files = [];
-        $result = $this->storage->processZip(
-            static::URL_ZIP,
+        $this->storage->processZip(
+            $fullZip,
             function (\SplFileInfo $file) use (&$files) {
                 $filename = $file->getFilename();
 
@@ -206,10 +195,21 @@ class FetchIconsCommand
             },
         );
 
-        if (!$result) {
-            return ['success' => false, 'body' => 'Zip processing failed'];
-        }
+        $this->storage->rm('tmp', $tempZip);
 
+        return $files;
+    }
+
+    /**
+     * Loops through the roles and saves the related icons to them, saving the
+     * SVGs where they need to be saved.
+     *
+     * @param array<string, string>[] $roles Roles whose icons should be saved.
+     * @param array<string, string> $files Files that were downloaded.
+     * @return int The number of roles that were processed.
+     */
+    protected function linkRolesAndIcons(array $roles, array $files): int
+    {
         $successful = 0;
 
         foreach ($roles as $role) {
@@ -232,6 +232,6 @@ class FetchIconsCommand
             $successful += 1;
         }
 
-        return ['success' => true, 'body' => $successful];
+        return $successful;
     }
 }
