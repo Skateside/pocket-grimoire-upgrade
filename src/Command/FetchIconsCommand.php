@@ -28,31 +28,12 @@ class FetchIconsCommand
      */
     const URL_ZIP = 'https://github.com/tomozbot/botc-icons/archive/refs/heads/main.zip';
 
-    /**
-     * @var string LOCATION_SPECIAL_ICONS Key for the location of the special icons.
-     */
-    const LOCATION_SPECIAL_ICONS = 'special-role-icons';
-
-    /**
-     * @var string LOCATION_DESTINATIONS Key for the destination of the icons.
-     */
-    const LOCATION_DESTINATION = 'role-icons-destination';
-
-    /**
-     * @var string LOCATION_ALTERNATIVE Key for the destination of the icon alternatives.
-     */
-    const LOCATION_ALTERNATIVE = 'role-icons-alternative';
-
     public function __construct(
         private IconsModel $iconsModel,
         private TPIResourcesModel $resourcesModel,
         private Fetch $fetch,
         private Storage $storage,
     ) {
-        $this->iconsModel = $iconsModel;
-        $this->resourcesModel = $resourcesModel;
-        $this->fetch = $fetch;
-        $this->storage = $storage;
     }
 
     public function __invoke(
@@ -133,12 +114,12 @@ class FetchIconsCommand
      */
     protected function copyIcons(): bool
     {
-        if (!$this->storage->mkdir(static::LOCATION_DESTINATION, 0744)) {
+        if (!$this->storage->mkdir('icons', 0744)) {
             return false;
         }
 
         $icons = $this->storage->getFilenames(
-            static::LOCATION_SPECIAL_ICONS,
+            'icons-special',
             function (string $file) {
                 return str_ends_with($file, '.svg');
             },
@@ -150,8 +131,8 @@ class FetchIconsCommand
 
         foreach ($icons as $icon) {
             if (!$this->storage->copyFile(
-                $this->storage->getFilename(static::LOCATION_SPECIAL_ICONS, $icon),
-                $this->storage->getFilename(static::LOCATION_DESTINATION, $icon),
+                $this->storage->getFilename('icons-special', $icon),
+                $this->storage->getFilename('icons', $icon),
             )) {
                 return false;
             }
@@ -222,11 +203,11 @@ class FetchIconsCommand
             $icons = $this->iconsModel->writeIcons($role['id'], $files[$key], $role['team']);
 
             foreach ($icons['base'] as $name => $contents) {
-                $this->storage->write(static::LOCATION_DESTINATION, $name, $contents);
+                $this->storage->write('icons', $name, $contents);
             }
 
             foreach ($icons['alt'] as $name => $contents) {
-                $this->storage->write(static::LOCATION_ALTERNATIVE, $name, $contents);
+                $this->storage->write('icons-alt', $name, $contents);
             }
 
             $successful += 1;

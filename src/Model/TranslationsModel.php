@@ -12,138 +12,48 @@ use App\Enums\{
 class TranslationsModel
 {
     /**
-     * @var string Directory where the comipled file(s) will be saved.
-     */
-    const DIRECTORY_COMPILED = 'compiled';
-
-    /**
-     * @var string Directory where the source files can be found.
-     */
-    const DIRECTORY_RAW = 'raw';
-
-    /**
-     * @var string Filename of the "i18n" data.
-     */
-    const FILENAME_I18N = 'i18n.json';
-
-    /**
-     * @var string Filename of the "info tokens" data.
-     */
-    const FILENAME_INFO_TOKENS = 'info-tokens.json';
-
-    /**
-     * @var string Filename of the "roles" data.
-     */
-    const FILENAME_ROLES = '';//TPIResourcesModel::FILENAME_DESTINATION;
-
-    /**
-     * @var string Filename of the "scripts" data.
-     */
-    const FILENAME_SCRIPTS = 'scripts.json';
-
-    /**
-     * @var string "app" type of remote data.
-     */
-    const TYPE_APP = 'app';
-
-    /**
-     * @var string "game" type of remote data.
-     */
-    const TYPE_GAME = 'game';
-
-    /**
-     * @var string URL (with placeholders) to get the remote data.
-     */
-    const URL_REMOTE = 'https://raw.githubusercontent.com/ThePandemoniumInstitute/botc-translations/refs/heads/main/%1$s/%2$s.json';
-
-    /**
      * @var string The official script author.
      * @todo Store this information in a better place.
      */
     const SCRIPT_AUTHOR = 'The Pandemonium Institute';
 
-    /**
-     * @var array<string, mixed> Cache for the remote information per locale.
-     */
-    private array $remotes;
-
     public function __construct(
-
-        #[Autowire('%kernel.project_dir%/assets/data')]
-        private string $dataDirectory,
-
         private TPIResourcesModel $tpiResourcesModel,
-
     )
     {
-        $this->remotes = [];
-    }
-
-    /**
-     * Sets the data for the given remote.
-     *
-     * @param string $locale The Locale of the "i18n" data to set.
-     * @param array<string, mixed> $app The App translations to set.
-     * @param array<string, mixed> $game The Game translations to set.
-     */
-    public function setRemote(string $locale, array $app, array $game): void
-    {
-        if (array_key_exists($locale, $this->remotes)) {
-            throw new \Exception("'{$locale}' remote already set", E_USER_ERROR);
-        }
-
-        $this->remotes[$locale] = [
-            static::TYPE_APP => $app,
-            static::TYPE_GAME => $game,
-        ];
     }
 
     /**
      * Gets the "i18n" data.
      *
-     * @param string $locale The Locale of the "i18n" data to get.
-     * @return ?array Either the "i18n" data or `null` if the source couldn't be
-     * access or parsed.
+     * @param ?array $json Source data, which might be null.
+     * @param array<string, string> $grimoire Translated text (or null).
+     * @return Either the "i18n" data or `null` if the source data was null.
      */
-    public function getI18n(string $locale): ?array
+    public function getI18n(?array $json, array $grimoire): ?array
     {
-        $source = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::DIRECTORY_RAW
-            . DIRECTORY_SEPARATOR
-            . static::FILENAME_I18N
-        );
-
-        if (($json = $this->getJsonFromSource($source)) === null) {
+        if (is_null($json)) {
             return null;
         }
 
-        return array_merge($json, $this->makeI18n($locale));
+        return array_merge($json, $this->makeI18n($grimoire));
     }
 
     /**
      * Gets the "info tokens" data.
      *
-     * @param string $locale The Locale of the "info tokens" data to get.
-     * @return ?array Either the "info tokens" data or `null` if the source
-     * couldn't be access or parsed.
+     * @param ?array $json Raw data, which might be null.
+     * @param array<string, string> $cards Translations for the cards.
+     * @return ?array Either the "info tokens" data or `null` if the given JSON
+     *         data was null.
      */
-    public function getInfoTokens(string $locale): ?array
+    public function getInfoTokens(?array $json, array $cards): ?array
     {
-        $source = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::DIRECTORY_RAW
-            . DIRECTORY_SEPARATOR
-            . static::FILENAME_INFO_TOKENS
-        );
-
-        if (($json = $this->getJsonFromSource($source)) === null) {
+        if (is_null($json)) {
             return null;
         }
 
-        foreach ($this->makeInfoTokens($locale) as $key => $translation) {
+        foreach ($this->makeInfoTokens($cards) as $key => $translation) {
             $index = array_find_key($json, function ($item) use ($key) {
                 return $item['id'] === $key;
             });
@@ -159,27 +69,20 @@ class TranslationsModel
     /**
      * Gets the "roles" data.
      *
-     * @param string $locale The Locale of the "roles" data to get.
-     * @return ?array Either the "roles" data or `null` if the source couldn't
-     * be access or parsed.
+     * @param ?array $json Raw data, which might be null.
+     * @param array<string, string> $game Game translations.
+     * @return ?array Either the "roles" data or `null` if the given JSON data
+     *         was null.
      */
-    public function getRoles(string $locale): ?array
+    public function getRoles(?array $json, array $game): ?array
     {
-        $source = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::DIRECTORY_RAW
-            . DIRECTORY_SEPARATOR
-            . static::FILENAME_ROLES
-        );
-
-        if (($json = $this->getJsonFromSource($source)) === null) {
+        if (is_null($json)) {
             return null;
         }
 
         // TODO: Get extra roles (e.g. Chinese Community roles)
-        $converted = $this->convertReminders($json);
-        $translation = $this->makeRoles($locale);
+        $converted = $this->convertReminders($json, $game);
+        $translation = $this->makeRoles($game);
 
         return array_map(function ($role) use ($translation) {
 
@@ -243,25 +146,18 @@ class TranslationsModel
     /**
      * Gets the "scripts" data.
      *
-     * @param string $locale The Locale of the "scripts" data to get.
-     * @return ?array Either the "scripts" data or `null` if the source couldn't
-     * be access or parsed.
+     * @param ?array $json Raw JSON data, which might be null.
+     * @param array<string, string> $game Game translations.
+     * @return ?array Either the "scripts" data or `null` if the given JSON data
+     *         was null.
      */
-    public function getScripts(string $locale): ?array
+    public function getScripts(?array $json, array $game): ?array
     {
-        $source = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::DIRECTORY_RAW
-            . DIRECTORY_SEPARATOR
-            . static::FILENAME_SCRIPTS
-        );
-
-        if (($json = $this->getJsonFromSource($source)) === null) {
+        if (is_null($json)) {
             return null;
         }
 
-        $translation = $this->makeScripts($locale);
+        $translation = $this->makeScripts($game);
 
         foreach ($json as $key => $script) {
 
@@ -299,57 +195,33 @@ class TranslationsModel
     }
 
     /**
-     * Writes the JSON data to the destination.
+     * Converts the given data into a JSON string so that it can be written to a
+     * file.
      *
-     * @param array $data JSON data to write.
-     * @param string $locale Name of the file (without the file extension).
-     * @param bool $pretty If `true`, the written file will be formatted and
-     * easier to read, if `false` (default) then the file will be minified.
-     * @return bool `true` if the data was sucessfully written, `false`
-     * otherwise.
+     * @param array<string, mixed> $data Data to convert.
+     * @param bool $pretty true to format the JSON string, false to leave it
+     *        unformatted.
+     * @return string|bool Converted data or false on an error.
      */
-    public function writeData(
-        array $data,
-        string $locale,
-        bool $pretty = false,
-    ): bool
+    public function convertData(array $data, bool $pretty = false): string|bool
     {
-        $directory = (
-            $this->dataDirectory
-            . DIRECTORY_SEPARATOR
-            . static::DIRECTORY_COMPILED
-        );
-
-        if (!is_dir($directory) && !mkdir($directory, 0744, true)) {
-            return false;
-        }
-
-        $destination = (
-            $directory
-            . DIRECTORY_SEPARATOR
-            . "{$locale}.js"
-        );
         $json = json_encode($data, $pretty ? JSON_PRETTY_PRINT : 0);
 
-        if (
-            $json === false
-            || file_put_contents($destination, "window.PG={$json}") === false
-        ) {
+        if ($json === false) {
             return false;
         }
 
-        return true;
+        return "window.PG={$json}";
     }
 
     /**
      * Gets the translation information for the "i18n" data.
      *
-     * @param string $locale The locale for the translation data.
+     * @param array<string, string> $grimoire Translated text.
      * @return array Translation data.
      */
-    protected function makeI18n(string $locale): array
+    protected function makeI18n(array $grimoire): array
     {
-        $app = $this->getRemote(static::TYPE_APP, $locale);
         $keys = [
             RoleTeamEnums::TOWNSFOLK->value,
             RoleTeamEnums::OUTSIDER->value,
@@ -362,7 +234,7 @@ class TranslationsModel
         $i18n = [];
 
         foreach ($keys as $key) {
-            if ($value = $this->getPlural($app['grimoire'] ?? null, $key)) {
+            if ($value = $this->getPlural($grimoire, $key)) {
                 $i18n[$key] = $value;
             }
         }
@@ -373,12 +245,11 @@ class TranslationsModel
     /**
      * Gets the translation information for the "info tokens" data.
      *
-     * @param string $locale The locale for the translation data.
+     * @param array<string, string> $cards Translations for the cards.
      * @return array Translation data.
      */
-    protected function makeInfoTokens(string $locale): array
+    protected function makeInfoTokens(array $cards): array
     {
-        $app = $this->getRemote(static::TYPE_APP, $locale);
         $keys = [
             'isdemon' => 'demon',
             'isminion' => 'minions',
@@ -390,10 +261,7 @@ class TranslationsModel
         $infoTokens = [];
 
         foreach ($keys as $destination => $key) {
-            if (
-                ($value = $app['modals']['signal']['cards'][$key] ?? null)
-                && is_string($value)
-            ) {
+            if (($value = $cards[$key] ?? null) && is_string($value)) {
                 $infoTokens[$destination] = $value;
             }
         }
@@ -404,12 +272,11 @@ class TranslationsModel
     /**
      * Gets the translation information for the "roles" data.
      *
-     * @param string $locale The locale for the translation data.
+     * @param array $game Game translations.
      * @return array Translation data.
      */
-    protected function makeRoles(string $locale): array
+    protected function makeRoles(array $game): array
     {
-        $game = $this->getRemote(static::TYPE_GAME, $locale);
         $jinxes = [];
 
         foreach (($game['jinxes'] ?? []) as $id => $reason) {
@@ -492,12 +359,11 @@ class TranslationsModel
     /**
      * Gets the translation information for the "scripts" data.
      *
-     * @param string $locale The locale for the translation data.
-     * @return array Translation data.
+     * @param array<string, string> $game Game translations.
+     * @return array<string, string> Translation data.
      */
-    protected function makeScripts(string $locale): ?array
+    protected function makeScripts(array $game): ?array
     {
-        $game = $this->getRemote(static::TYPE_GAME, $locale);
         $scripts = [];
 
         foreach (($game['editions'] ?? []) as $key => $edition) {
@@ -535,11 +401,12 @@ class TranslationsModel
      * text, allowing them to be translated.
      *
      * @param array $roles Roles whose reminders should be converted.
+     * @param array<string, mixed> $game Game translations.
      * @return array Roles with converted reminders.
      */
-    protected function convertReminders(array $roles): array
+    protected function convertReminders(array $roles, array $game): array
     {
-        $reminders = $this->getReminders();
+        $reminders = $this->getReminders($game);
 
         return array_map(function ($role) use ($reminders) {
 
@@ -567,12 +434,11 @@ class TranslationsModel
      * Gets the reminders from the English (master) remote source and returns
      * them in the format `text => key` to make converting them easier.
      *
+     * @param array<string, mixed> $game Game translations.
      * @return array Reminder conversions.
      */
-    protected function getReminders()
+    protected function getReminders(array $game)
     {
-        $game = $this->getRemote(static::TYPE_GAME, 'en');
-
         return array_flip($game['reminders'] ?? []);
     }
 
@@ -599,71 +465,5 @@ class TranslationsModel
         }
 
         return substr($source[$key], $index + strlen($divider));
-    }
-
-    /**
-     * Gets the remote information from the cache, fetching it if necessary.
-     *
-     * @param string $type Type of remote data to get.
-     * @param string $locale Locale of the remote to get.
-     * @return ?array Data from the remote or `null` if anything went wrong.
-     */
-    protected function getRemote(string $type, string $locale): ?array
-    {
-        if (!array_key_exists($locale, $this->remotes)) {
-            $remotes = $this->fetchRemotes($locale);
-
-            if ($remotes === null) {
-                return null;
-            }
-
-            $this->remotes[$locale] = $remotes;
-        }
-
-        return $this->remotes[$locale][$type];
-    }
-
-    /**
-     * Fetches both the "app" and "game" remote data for the given remote.
-     *
-     * @param string $locale Locale whose remote data should be fetched.
-     * @return ?arrray Fetched data or `null` if anything went wrong.
-     */
-    protected function fetchRemotes(string $locale): ?array
-    {
-        if (($app = $this->fetchRemote(static::TYPE_APP, $locale)) === null) {
-            return null;
-        }
-
-        if (($game = $this->fetchRemote(static::TYPE_GAME, $locale)) === null) {
-            return null;
-        }
-
-        return [
-            static::TYPE_APP => $app,
-            static::TYPE_GAME => $game,
-        ];
-    }
-
-    /**
-     * Fetches either the "app" or "game" data from the remote for the given
-     * locale.
-     *
-     * @param string $type Type of remote data to fetch.
-     * @param string $locale Locale of the data to fetch.
-     * @return ?array The fetched data or `null` if anything went wrong.
-     */
-    protected function fetchRemote(string $type, string $locale): ?array
-    {
-        $url = sprintf(static::URL_REMOTE, $type, $locale);
-
-        if (
-            (($contents = file_get_contents($url)) === false)
-            || !json_validate($contents)
-        ) {
-            return null;
-        }
-
-        return json_decode($contents, true);
     }
 }

@@ -6,8 +6,10 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Model\TPIResourcesModel;
-use App\Service\Fetch;
-use App\Service\Storage;
+use App\Service\{
+    Fetch,
+    Storage,
+};
 
 #[AsCommand(
     name: 'pocket-grimoire:fetch-resources',
@@ -20,9 +22,6 @@ class FetchResourcesCommand
         private Fetch $fetch,
         private Storage $storage,
     ) {
-        $this->resourcesModel = $resourcesModel;
-        $this->fetch = $fetch;
-        $this->storage = $storage;
     }
 
     public function __invoke(

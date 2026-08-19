@@ -6,6 +6,10 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Model\TranslationsModel;
+use App\Service\{
+    Fetch,
+    Storage,
+};
 
 #[AsCommand(
     name: 'pocket-grimoire:fetch-translations',
@@ -13,10 +17,16 @@ use App\Model\TranslationsModel;
 )]
 class FetchTranslationsCommand
 {
+    /**
+     * @var string URL (with placeholders) to get the remote data.
+     */
+    const URL_REMOTE = 'https://raw.githubusercontent.com/ThePandemoniumInstitute/botc-translations/refs/heads/main/%1$s/%2$s.json';
+
     public function __construct(
-        private TranslationsModel $translationsModel,
+        private TranslationsModel $model,
+        private Fetch $fetch,
+        private Storage $storage,
     ) {
-        $this->translationsModel = $translationsModel;
     }
 
     public function __invoke(
@@ -40,6 +50,11 @@ class FetchTranslationsCommand
         $hasError = false;
         $results = [];
 
+        $rawI18n = $this->storage->readJson('raw', 'i18n.json');
+        $rawInfoTokens = $this->storage->readJson('raw', 'info-tokens.json');
+        $rawRoles = $this->storage->readJson('raw', 'fetched-roles.json');
+        $rawScripts = $this->storage->readJson('raw', 'scripts.json');
+
         foreach ($locales as $filename => $remote) {
 
             $index = count($results);
@@ -52,11 +67,26 @@ class FetchTranslationsCommand
                 'written' => 'No',
             ];
 
+            $app = $this->fetch->getJson(sprintf(static::URL_REMOTE, 'app', $remote));
+            $game = $this->fetch->getJson(sprintf(static::URL_REMOTE, 'game', $remote));
+
             $data = [
-                'i18n' => $this->translationsModel->getI18n($remote),
-                'infoTokens' => $this->translationsModel->getInfoTokens($remote),
-                'roles' => $this->translationsModel->getRoles($remote),
-                'scripts' => $this->translationsModel->getScripts($remote),
+                'i18n' => $this->model->getI18n(
+                    $rawI18n,
+                    $app['grimoire'] ?? [],
+                ),
+                'infoTokens' => $this->model->getInfoTokens(
+                    $rawInfoTokens,
+                    $app['modals']['signal']['cards'] ?? [],
+                ),
+                'roles' => $this->model->getRoles(
+                    $rawRoles,
+                    $game ?? [],
+                ),
+                'scripts' => $this->model->getScripts(
+                    $rawScripts,
+                    $game ?? [],
+                ),
             ];
 
             foreach ($data as $key => $datum) {
@@ -67,17 +97,27 @@ class FetchTranslationsCommand
                 }
             }
 
-            if (
-                !$hasError
-                && $this->translationsModel->writeData(
+
+            if (!$hasError) {
+                $text = 'Yes';
+                $converted = $this->model->convertData(
                     $data,
-                    $filename,
-                    $io->isVerbose(),
-                )
-            ) {
-                $results[$index]['written'] = 'Yes';
-            } else {
-                $hasError = true;
+                    $io->isVeryVerbose(),
+                );
+
+                if ($converted === false) {
+                    $text = 'Conversion failed';
+                    $hasError = true;
+                } elseif (($this->storage->write(
+                    'compiled',
+                    "{$filename}.js",
+                    $converted,
+                )) === false) {
+                    $text = 'Writing failed';
+                    $hasError = true;
+                }
+
+                $results[$index]['written'] = $text;
             }
 
             if ($io->isVerbose()) {
