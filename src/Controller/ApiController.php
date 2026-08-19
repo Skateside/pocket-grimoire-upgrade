@@ -3,11 +3,13 @@
 namespace App\Controller;
 
 use App\Model\BotcScriptModel;
+use App\Service\Fetch;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Psr\Log\LoggerInterface;
 
 #[Route('/api', name: 'api_')]
 class ApiController extends AbstractController
@@ -23,15 +25,18 @@ class ApiController extends AbstractController
     }
 
     #[Route('/get-url', name: 'get_url', methods: ['POST'])]
-    public function getUrlAction(Request $request): JsonResponse
-    {
+    public function getUrlAction(
+        Request $request,
+        Fetch $fetch,
+        LoggerInterface $logger,
+    ): JsonResponse {
         $url = $request->getPayload()->get('url');
 
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             return $this->jsonError('error.url_not_valid');
         }
 
-        try {
+        /*try {
             $contents = file_get_contents($url);
         } catch (\Exception $ignore) {
             $contents = false;
@@ -45,14 +50,28 @@ class ApiController extends AbstractController
 
         if ($json === null) {
             return $this->jsonError('error.invalid_json');
+        }*/
+
+        if (
+            ($json = $fetch->getJson($url)) === null
+            && (($lastError = $fetch->getLastError()) !== '')
+        ) {
+            $logger->debug('URL "{url}" failed to get parsable JSON', [
+                'url' => $url,
+            ]);
+            return $this->jsonError($lastError);
         }
 
         return $this->jsonSuccess($json);
     }
 
     #[Route('/get-botc', name: 'get_botc', methods: ['POST'])]
-    public function getBotcAction(Request $request, BotcScriptModel $model): JsonResponse
-    {
+    public function getBotcAction(
+        Request $request,
+        BotcScriptModel $model,
+        Fetch $fetch,
+        LoggerInterface $logger,
+    ): JsonResponse {
         $payload = $request->getPayload();
         $query = [
             'search' => $payload->get('term'),
@@ -64,7 +83,7 @@ class ApiController extends AbstractController
 
         $url = 'https://botcscripts.com/api/scripts/?' . http_build_query($query);
         
-        try {
+        /*try {
             $contents = file_get_contents($url);
         } catch (\Exception $ignore) {
             $contents = false;
@@ -78,6 +97,16 @@ class ApiController extends AbstractController
 
         if ($json === null) {
             return $this->jsonError('error.invalid_json');
+        }*/
+
+        if (
+            ($json = $fetch->getJson($url)) === null
+            && (($lastError = $fetch->getLastError()) !== '')
+        ) {
+            $logger->debug('URL "{url}" failed to get parsable JSON', [
+                'url' => $url,
+            ]);
+            return $this->jsonError($lastError);
         }
 
         $converted = $model->convert($json);

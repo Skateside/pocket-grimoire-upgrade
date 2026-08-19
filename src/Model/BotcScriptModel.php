@@ -4,14 +4,18 @@ namespace App\Model;
 
 class BotcScriptModel
 {
-    public function convert(array $json)
+    public function convert(?array $json)
     {
         $response = [
             'success' => true,
             'body' => [],
         ];
 
-        if (!array_key_exists('results', $json) || count($json['results']) === 0) {
+        if (
+            !is_array($json)
+            || !array_key_exists('results', $json)
+            || count($json['results']) === 0
+        ) {
 
             return [
                 'success' => false,

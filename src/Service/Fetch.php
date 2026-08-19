@@ -59,7 +59,7 @@ class Fetch
      * @return array{success: bool, body: mixed} Results of parsing the contents
      *         (if possible).
      */
-    public function getJson(string $source, bool $isAssoc = true): array
+    public function getJson(string $source, bool $isAssoc = true): mixed
     {
         $this->resetLastError();
         $status = $this->getStatusCode($source);

@@ -37,6 +37,7 @@ class FetchTranslationsCommand
             $io->title('Compiling Translations');
         }
 
+        // TODO: move this into a YAML file.
         $locales = [
             'de_DE' => 'de',
             'en_GB' => 'en',
