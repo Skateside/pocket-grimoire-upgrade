@@ -82,8 +82,9 @@ class ApiController extends AbstractController
         }
 
         $url = 'https://botcscripts.com/api/scripts/?' . http_build_query($query);
-        
-        /*try {
+
+        /* 
+        try {
             $contents = file_get_contents($url);
         } catch (\Exception $ignore) {
             $contents = false;
@@ -97,8 +98,8 @@ class ApiController extends AbstractController
 
         if ($json === null) {
             return $this->jsonError('error.invalid_json');
-        }*/
-
+        }
+        /*/
         if (
             ($json = $fetch->getJson($url)) === null
             && (($lastError = $fetch->getLastError()) !== '')
@@ -108,6 +109,7 @@ class ApiController extends AbstractController
             ]);
             return $this->jsonError($lastError);
         }
+        //*/
 
         $converted = $model->convert($json);
 

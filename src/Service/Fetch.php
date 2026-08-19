@@ -77,10 +77,30 @@ class Fetch
         $decoded = json_decode($contents, $isAssoc);
 
         if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
-            return $this->setLastError(json_last_error_msg());
+            return $this->setLastError($this->getJsonError(json_last_error()));
         }
 
         return $decoded;
+    }
+
+    protected function getJsonError(int $code): string
+    {
+        switch ($code) {
+        case JSON_ERROR_NONE:
+            return 'No error';
+        case JSON_ERROR_DEPTH:
+            return 'Maximum stack depth exceeded';
+        case JSON_ERROR_STATE_MISMATCH:
+            return 'Underflow or the modes mismatch';
+        case JSON_ERROR_CTRL_CHAR:
+            return 'Unexpected control character found';
+        case JSON_ERROR_SYNTAX:
+            return 'Syntax error, malformed JSON';
+        case JSON_ERROR_UTF8:
+            return 'Malformed UTF-8 characters, possibly incorrectly encoded';
+        default:
+            return "Unknown JSON error: {$code}";
+        }
     }
 
     /**
