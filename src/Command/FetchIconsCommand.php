@@ -12,7 +12,10 @@ use App\Model\{
     TPIResourcesModel,
 };
 use App\Enums\RoleIdEnums;
-use App\Service\Storage;
+use App\Service\{
+    Fetch,
+    Storage,
+};
 
 #[AsCommand(
     name: 'pocket-grimoire:fetch-icons',
@@ -43,10 +46,12 @@ class FetchIconsCommand
     public function __construct(
         private IconsModel $iconsModel,
         private TPIResourcesModel $resourcesModel,
+        private Fetch $fetch,
         private Storage $storage,
     ) {
         $this->iconsModel = $iconsModel;
         $this->resourcesModel = $resourcesModel;
+        $this->fetch = $fetch;
         $this->storage = $storage;
     }
 
@@ -84,6 +89,7 @@ class FetchIconsCommand
             return !in_array($role['id'], $specialRoleIds);
         });
         $total = count($roles);
+        $indicator = null;
 
         if ($io->isVerbose()) {
             $io->section('Downloading icons');
@@ -91,14 +97,20 @@ class FetchIconsCommand
             $indicator->start('Downloading ...');
         }
 
-        $files = $this->fetchSVGContents();
+        $files = $this->fetchSVGContents(
+            function (int $downloaded, ?int $total) use ($indicator) {
+                if (!is_null($indicator)) {
+                    $indicator->advance();
+                }
+            },
+        );
 
         if ($io->isVerbose()) {
             $indicator->finish('Downloaded SVGs');
         }
 
-        if ($files === false) {
-            $io->getErrorStyle()->error('Failed to fetch SVGs');
+        if (is_string($files)) {
+            $io->getErrorStyle()->error($files);
             return Command::FAILURE;
         }
 
@@ -145,27 +157,30 @@ class FetchIconsCommand
      * Fetches the SVG contents an returns an array. If there is an error, false
      * is returned.
      *
-     * @return array<string, string>|bool Either an array of file names to file
-     * contents or false on an error.
+     * @return array<string, string>|stringEither an array of file names to file
+     * contents or a string with an error message on error.
      */
-    protected function fetchSVGContents(): array|bool
+    protected function fetchSVGContents(callable $onProgress): array|string
     {
-        $files = [];
-        $result = $this->storage->processZip(
-            static::URL_ZIP,
-            function (\SplFileInfo $file) use (&$files) {
-                $filename = $file->getFilename();
+        $id = uniqid('tmpdir_');
+        $tempDir = $this->storage->mktmpdir('tmp', $id, 0744);
+        $tempZip = uniqid('tmpzip_') . '.zip';
 
-                if (str_ends_with($filename, '.svg')) {
-                    $files[$filename] = file_get_contents($file->getRealPath());
-                }
-            },
-        );
-
-        if (!$result) {
-            return false;
+        if (!$this->storage->touch('tmp', $tempZip, 0744)) {
+            return 'Failed to create file/set permissions';
         }
 
+        $downloaded = $this->fetch->getFile(
+            static::URL_ZIP,
+            $this->storage->getFilename('tmp', $tempZip),
+            $onProgress,
+        );
+
+        if (!$downloaded) {
+            return $this->fetch->getLastError();
+        }
+
+        $files = [];
         return $files;
     }
 

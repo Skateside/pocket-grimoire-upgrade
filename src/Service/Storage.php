@@ -123,7 +123,7 @@ class Storage
      * @param string $locationId ID of the location to create.
      * @param int $permissions Permissions for the directory.
      * @return bool true if the directory was created (or already exists),
-     * false on an error.
+     *         false on an error.
      */ 
     public function mkdir(string $locationId, int $permissions = 0664): bool
     {
@@ -141,7 +141,7 @@ class Storage
      * Creates a directory that should be temporary.
      *
      * @param string $locationId ID of the location where the temporary
-     * directory should be created.
+     *        directory should be created.
      * @param string $directory Name of the directory to create.
      * @param int $permissions Permissions for the temporary directory.
      * @return string|bool The directory on success or false on failure.
@@ -170,6 +170,30 @@ class Storage
         $this->locations[$directory] = $realPath;
 
         return $realPath;
+    }
+
+    /**
+     * Touches a file to create it if it doesn't exist.
+     *
+     * @param string $locationId ID of the location that contains the file.
+     * @param string $filename Name of the file to create.
+     * @param ?int $persmission Optional permissions for the file.
+     * @return bool Either true if everything worker or false if anything
+     *         failed.
+     */
+    public function touch(string $locationId, string $filename, ?int $permissions = null): bool
+    {
+        $filepath = Storage::concat($this->getRealpath($locationId), $filename);
+
+        if (!touch($filepath)) {
+            return false;
+        }
+
+        if (!is_int($permissions)) {
+            return chmod($filepath, $permissions);
+        }
+
+        return true;
     }
 
     /**
@@ -275,9 +299,10 @@ class Storage
      * file names can be filtered by a filter function.
      *
      * @param string $locationId ID of the location.
-     * @param ?(callable(string): bool) $filter Optional filter for the file names.
+     * @param ?(callable(string): bool) $filter Optional filter for the file
+     *        names.
      * @return bool|string[] Either the array of any (matching) file names or
-     * false if there were any errors.
+     *         false if there were any errors.
      */
     public function getFilenames(
         string $locationId,
@@ -313,7 +338,7 @@ class Storage
      * temporary directory.
      *
      * @param string $zipLocation Location of the zip file whose contents should
-     * be processed.
+     *        be processed.
      * @param callable(\SplFileInfo): void $process Processing function.
      * @return bool true if everything is successful, false if there's an error.
      */

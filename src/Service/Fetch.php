@@ -55,9 +55,9 @@ class Fetch
      *
      * @param string $source Source of the contents to get and parse.
      * @param bool $isAssoc Whether to parse the JSON as an associative array or
-     * an object. Defaults to array.
+     *        an object. Defaults to array.
      * @return array{success: bool, body: mixed} Results of parsing the contents
-     * (if possible).
+     *         (if possible).
      */
     public function getJson(string $source, bool $isAssoc = true): array
     {
@@ -83,6 +83,16 @@ class Fetch
         return $decoded;
     }
 
+    /**
+     * Gets a file from the given URL and saves it to the given location.
+     * Optionally, a function can be called as the download is progressing.
+     *
+     * @param string $url URL of the file to locate.
+     * @param string $destination Destination location for the file.
+     * @param callable(int $downloaded, ?int $total): void $onProgress Callback
+     *        for any download progress.
+     * @return bool true on success, false on any error.
+     */
     public function getFile(
         string $url,
         string $destination,
@@ -91,14 +101,17 @@ class Fetch
         $this->resetLastError();
         $file = fopen($destination, 'wb');
 
-        if (!$file === false) {
-            return $this->setLastError("Unable to open {$destination} for writing");
+        if ($file === false) {
+            $this->setLastError("Unable to open {$destination} for writing");
+            return false;
         }
 
-        $curl = curl_init($url);
+        $curl = curl_init();
         curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_FILE => $file,
-            CURLOPE_FOLLOWLOCATION => true,
+            CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_FAILONERROR => true,
             CURLOPT_NOPROGRESS => false,
             CURLOPT_PROGRESSFUNCTION => function (
@@ -119,20 +132,17 @@ class Fetch
             },
         ]);
 
-        $success = false;
-
         try {
             if (curl_exec($curl) === false) {
-                throw new \RuntimeException(curl_error($curl));
+                $this->setLastError(curl_error($curl));
+                return false;
             }
-
-            $success = true;
         } finally {
             curl_close($curl);
             fclose($file);
         }
 
-        return $success;
+        return true;
     }
 
     /**
