@@ -66,7 +66,20 @@ class FetchIconsCommand
         $files = $this->fetchSVGContents(
             function (int $downloaded, ?int $total) use ($indicator) {
                 if (!is_null($indicator)) {
-                    $indicator->advance();
+                    if (is_null($total)) {
+                        $message = sprintf(
+                            'Downloaded %s bytes',
+                            Fetch::formatBytes($downloaded),
+                        );
+                    } else {
+                        $message = sprintf(
+                            'Downloaded %s/%s bytes',
+                            Fetch::formatBytes($downloaded),
+                            Fetch::formatBytes($total),
+                        );
+                    }
+
+                    $indicator->setMessage($message);
                 }
             },
         );

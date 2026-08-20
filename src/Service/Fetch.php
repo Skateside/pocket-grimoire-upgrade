@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 class Fetch
 {
     /**
@@ -9,45 +11,9 @@ class Fetch
      */
     protected string $lastError = '';
 
-    /**
-     * Gets the status code from the given URL.
-     *
-     * @param string $source URL whose HTTP status code should be returned.
-     * @return int Status code.
-     */
-    public function getStatusCode(string $source): int
-    {
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_URL => $source,
-        ]);
-        curl_exec($curl);
-        $response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-        return $response_code;
-    }
-
-    /**
-     * Gets the contents of the given URL.
-     *
-     * @param string $source URL whose contents should be returned.
-     * @return string Contents from the given URL.
-     */
-    public function getContents(string $source): string
-    {
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $source,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HEADER => false,
-            CURLOPT_FOLLOWLOCATION => true,
-        ]);
-        $contents = curl_exec($curl);
-        curl_close($curl);
-
-        return $contents;
+    public function __construct(
+        private HttpClientInterface $client,
+    ) {
     }
 
     /**
@@ -63,51 +29,23 @@ class Fetch
     public function getJson(string $source, bool $isAssoc = true): mixed
     {
         $this->resetLastError();
-        $status = $this->getStatusCode($source);
 
-        if ($status < 200 || ($status >= 300 && $status !== 302)) {
-            return $this->setLastError("Status code response {$status}");
-        }
+        try {
+            $response = $this->client->request('GET', $source, [
+                'max_redirects' => 3,
+                'timeout' => 5,
+                'max_duration' => 10,
+            ]);
 
-        $contents = $this->getContents($source);
+            $status = $response->getStatusCode();
 
-        if ($contents === false) {
-            return $this->setLastError("Can't get contents");
-        }
+            if ($status < 200 || ($status >= 300 && $status !== 302)) {
+                return $this->setLastError("Status code response {$status}");
+            }
 
-        $decoded = json_decode($contents, $isAssoc);
-        $errorCode = json_last_error();
-
-        if ($decoded === null && $errorCode !== JSON_ERROR_NONE) {
-            return $this->setLastError($this->getJsonError($errorCode));
-        }
-
-        return $decoded;
-    }
-
-    /**
-     * Converts the JSON error core into human-readable text.
-     *
-     * @param int $code The error code from json_last_error().
-     * @return string Error message.
-     */
-    protected function getJsonError(int $code): string
-    {
-        switch ($code) {
-        case JSON_ERROR_NONE:
-            return 'No error';
-        case JSON_ERROR_DEPTH:
-            return 'Maximum stack depth exceeded';
-        case JSON_ERROR_STATE_MISMATCH:
-            return 'Underflow or the modes mismatch';
-        case JSON_ERROR_CTRL_CHAR:
-            return 'Unexpected control character found';
-        case JSON_ERROR_SYNTAX:
-            return 'Syntax error, malformed JSON';
-        case JSON_ERROR_UTF8:
-            return 'Malformed UTF-8 characters, possibly incorrectly encoded';
-        default:
-            return "Unknown JSON error: {$code}";
+            return $response->toArray();
+        } catch (\Throwable $error) {
+            return $this->setLastError($error->getMessage());
         }
     }
 
@@ -130,43 +68,56 @@ class Fetch
         $file = fopen($destination, 'wb');
 
         if ($file === false) {
-            $this->setLastError("Unable to open {$destination} for writing");
-            return false;
+            return $this->setLastError("Unable to open {$destination} for writing", false);
         }
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_FILE => $file,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_FAILONERROR => true,
-            CURLOPT_NOPROGRESS => false,
-            CURLOPT_PROGRESSFUNCTION => function (
-                $resource,
-                float $downloadTotal,
-                float $downloaded,
-                float $uploadTotal,
-                float $uploaded,
-            ) use ($onProgress): void {
-                if (!is_callable($onProgress)) {
-                    return; // No progress function, nothing to do.
-                }
-
-                $onProgress(
-                    (int) $downloaded,
-                    $downloadTotal > 0 ? (int) $downloadTotal : null,
-                );
-            },
-        ]);
+        $maxSize = 100 * 1024 * 1024; // 100 MB
 
         try {
-            if (curl_exec($curl) === false) {
-                $this->setLastError(curl_error($curl));
-                return false;
+            $response = $this->client->request('GET', $url, [
+                'max_redirects' => 3,
+                'timeout' => 10,
+                'max_duration' => 300,
+            ]);
+
+            $status = $response->getStatusCode();
+
+            if ($status < 200 || ($status >= 300 && $status !== 302)) {
+                return $this->setLastError("Status code response {$status}", false);
             }
+
+            $downloaded = 0;
+            $length = $response->getHeaders(false)['content-length'][0] ?? null;
+            $total = is_numeric($length) ? ((int) $length) : null;
+
+            foreach ($this->client->stream($response) as $chunk) {
+                if ($chunk->isTimeout()) {
+                    return $this->setLastError('Download timed out', false);
+                }
+
+                $content = $chunk->getContent();
+
+                if ($content === '') {
+                    continue;
+                }
+
+                if (fwrite($file, $content) === false) {
+                    return $this->setLastError('Unable to write downloaded file', false);
+                }
+
+                $downloaded += strlen($content);
+
+                if ($downloaded > $maxSize) {
+                    return $this->setLastError('Download file is too large', false);
+                }
+
+                if (is_callable($onProgress)) {
+                    $onProgress($downloaded, $total);
+                }
+            }
+        } catch (\Throwable $error) {
+            return $this->setLastError($error->getMessage(), false);
         } finally {
-            curl_close($curl);
             fclose($file);
         }
 
@@ -188,12 +139,13 @@ class Fetch
      * Helper function for setting the last error message and returning null.
      *
      * @param string $laseError Last error message.
-     * @return null Null.
+     * @param mixed $return The value to return.
+     * @return mixed Whatever was passed as the return value.
      */
-    protected function setLastError(string $lastError): null
+    protected function setLastError(string $lastError, mixed $return = null): mixed
     {
         $this->lastError = $lastError;
-        return null;
+        return $return;
     }
 
     /**
@@ -202,6 +154,25 @@ class Fetch
     protected function resetLastError(): void
     {
         $this->setLastError('');
+    }
+
+    /**
+     * Converts a number of bytes into a human-readable format.
+     *
+     * @param int $bytes Bytes to convert.
+     * @param int Decimals Optional number of decimals, defaults to 2.
+     * @return string Human-readable bytes.
+     */
+    public static function formatBytes(int $bytes, int $decimals = 2): string
+    {
+        $size = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+
+        if ($factor === 0) {
+            $decimals = 0;
+        }
+
+        return sprintf("%.{$decimals}f %s", $bytes / (1024 ** $factor), $size[$factor]);
     }
 }
 
