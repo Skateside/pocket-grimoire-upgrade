@@ -42,6 +42,7 @@ class Fetch
             CURLOPT_URL => $source,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HEADER => false,
+            CURLOPT_FOLLOWLOCATION => true,
         ]);
         $contents = curl_exec($curl);
         curl_close($curl);
@@ -75,14 +76,21 @@ class Fetch
         }
 
         $decoded = json_decode($contents, $isAssoc);
+        $errorCode = json_last_error();
 
-        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
-            return $this->setLastError($this->getJsonError(json_last_error()));
+        if ($decoded === null && $errorCode !== JSON_ERROR_NONE) {
+            return $this->setLastError($this->getJsonError($errorCode));
         }
 
         return $decoded;
     }
 
+    /**
+     * Converts the JSON error core into human-readable text.
+     *
+     * @param int $code The error code from json_last_error().
+     * @return string Error message.
+     */
     protected function getJsonError(int $code): string
     {
         switch ($code) {
