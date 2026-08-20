@@ -8,8 +8,8 @@
                 empty-text="Any"
                 :open="true"
                 :choices="[
-                    { text: 'Full', value: 'Full' },
-                    { text: 'Teensyville', value: 'Teensyville' },
+                    { text: 'Full', value: 'full' },
+                    { text: 'Teensyville', value: 'teensy' },
                 ]"
             />
             <BaseLabel label="Search BotC Scripts">

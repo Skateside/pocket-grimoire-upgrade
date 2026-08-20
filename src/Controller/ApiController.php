@@ -9,11 +9,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Psr\Log\LoggerInterface;
 
 #[Route('/api', name: 'api_')]
 class ApiController extends AbstractController
 {
+    const BOTC_SCRIPTS_URL = 'https://botcscripts.com/api/scripts/?%s';
 
     #[Route('/test', name: 'test')]
     public function test(): JsonResponse
@@ -55,35 +58,66 @@ class ApiController extends AbstractController
         BotcScriptModel $model,
         Fetch $fetch,
         LoggerInterface $logger,
+        CacheInterface $cache,
     ): JsonResponse {
         $payload = $request->getPayload();
-        $query = [
-            'search' => $payload->get('term'),
-        ];
-
-        if ($type = $payload->get('type')) {
-            $query['script_type'] = $type;
-        }
-
-        $url = 'https://botcscripts.com/api/scripts/?' . http_build_query($query);
+        $query = [];
 
         if (
-            ($json = $fetch->getJson($url)) === null
-            && (($lastError = $fetch->getLastError()) !== '')
+            ($term = $payload->get('term'))
+            && strlen($term) > 0
+            && strlen($term) < 100
         ) {
-            $logger->debug('URL "{url}" failed to get parsable JSON', [
-                'url' => $url,
+            $query['search'] = $term;
+        }
+
+        $typeMap = [
+            'full' => 'Full',
+            'teensy' => 'Teensyville',
+        ];
+
+        if (
+            ($type = $payload->get('type'))
+            && array_key_exists($type, $typeMap)
+        ) {
+            $query['script_type'] = $typeMap[$type];
+        }
+
+        if (empty($query)) {
+            $logger->debug('Empty or invalid query terms', [
+                'term' => $payload->get('term'),
+                'type' => $payload->get('type'),
             ]);
-            return $this->jsonError($lastError);
+            return $this->jsonError('error.empty_or_invalid_search');
         }
 
-        $converted = $model->convert($json);
+        $url = sprintf(static::BOTC_SCRIPTS_URL, http_build_query($query));
 
-        if (!$converted['success']) {
-            return $this->jsonError($converted['body']);
-        }
+        return $cache->get(
+            hash('sha256', $url),
+            function (ItemInterface $item) use ($url, $fetch, $logger, $model, $payload) {
+                $item->expiresAfter(600); // 10 minutes
 
-        return $this->jsonSuccess($converted['body']);
+                if (
+                    ($json = $fetch->getJson($url)) === null
+                    && (($lastError = $fetch->getLastError()) !== '')
+                ) {
+                    $logger->debug('URL failed to get parsable JSON', [
+                        'term' => $payload->get('term'),
+                        'type' => $payload->get('type'),
+                    ]);
+                    return $this->jsonError($lastError);
+                }
+
+                $converted = $model->convert($json);
+
+                if (!$converted['success']) {
+                    return $this->jsonError($converted['body']);
+                }
+
+                return $this->jsonSuccess($converted['body']);
+            },
+        );
     }
 
     protected function jsonResponse(mixed $body, bool $success = true): JsonResponse
