@@ -28,6 +28,11 @@ class FetchIconsCommand
      */
     const URL_ZIP = 'https://github.com/tomozbot/botc-icons/archive/refs/heads/main.zip';
 
+    /**
+     * @var int MAX_SIZE Maximum size of the zip file.
+     */
+    const MAX_SIZE = 104_857_600; // 100 * 1024 * 1024 = 100 MB
+
     public function __construct(
         private IconsModel $iconsModel,
         private TPIResourcesModel $resourcesModel,
@@ -170,7 +175,12 @@ class FetchIconsCommand
         }
 
         $fullZip = $this->storage->getFilename('tmp', $tempZip);
-        $downloaded = $this->fetch->getFile(static::URL_ZIP, $fullZip, $onProgress);
+        $downloaded = $this->fetch->getFile(
+            static::URL_ZIP,
+            $fullZip,
+            static::MAX_SIZE,
+            $onProgress,
+        );
 
         if (!$downloaded) {
             return $this->fetch->getLastError();

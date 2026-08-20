@@ -55,6 +55,7 @@ class Fetch
      *
      * @param string $url URL of the file to locate.
      * @param string $destination Destination location for the file.
+     * @param int $maxSize Optional maximum file size. Defaults to 10 MB,
      * @param callable(int $downloaded, ?int $total): void $onProgress Callback
      *        for any download progress.
      * @return bool true on success, false on any error.
@@ -62,6 +63,7 @@ class Fetch
     public function getFile(
         string $url,
         string $destination,
+        int $maxSize = 10_485_760,
         ?callable $onProgress = null,
     ): bool {
         $this->resetLastError();
@@ -70,8 +72,6 @@ class Fetch
         if ($file === false) {
             return $this->setLastError("Unable to open {$destination} for writing", false);
         }
-
-        $maxSize = 100 * 1024 * 1024; // 100 MB
 
         try {
             $response = $this->client->request('GET', $url, [
@@ -89,6 +89,10 @@ class Fetch
             $downloaded = 0;
             $length = $response->getHeaders(false)['content-length'][0] ?? null;
             $total = is_numeric($length) ? ((int) $length) : null;
+
+            if (is_int($total) && $total > $maxSize) {
+                return $this->setLastError('Download file size is too large', false);
+            }
 
             foreach ($this->client->stream($response) as $chunk) {
                 if ($chunk->isTimeout()) {
