@@ -177,7 +177,7 @@ class Storage
      *
      * @param string $locationId ID of the location that contains the file.
      * @param string $filename Name of the file to create.
-     * @param ?int $persmission Optional permissions for the file.
+     * @param ?int $permissions Optional permissions for the file.
      * @return bool Either true if everything worker or false if anything
      *         failed.
      */
@@ -189,7 +189,7 @@ class Storage
             return false;
         }
 
-        if (!is_int($permissions)) {
+        if (is_int($permissions)) {
             return chmod($filepath, $permissions);
         }
 

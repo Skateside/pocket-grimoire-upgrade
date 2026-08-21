@@ -2,7 +2,6 @@
 
 namespace App\Model;
 
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use App\Model\TPIResourcesModel;
 use App\Enums\{
     RoleIdEnums,
@@ -26,9 +25,10 @@ class TranslationsModel
     /**
      * Gets the "i18n" data.
      *
-     * @param ?array $json Source data, which might be null.
+     * @param ?array<string, string> $json Source data, which might be null.
      * @param array<string, string> $grimoire Translated text (or null).
-     * @return Either the "i18n" data or `null` if the source data was null.
+     * @return ?array<string, string> Either the "i18n" data or `null` if the
+     *         source data was null.
      */
     public function getI18n(?array $json, array $grimoire): ?array
     {
@@ -42,10 +42,10 @@ class TranslationsModel
     /**
      * Gets the "info tokens" data.
      *
-     * @param ?array $json Raw data, which might be null.
+     * @param ?array<string, string>[] $json Raw data, which might be null.
      * @param array<string, string> $cards Translations for the cards.
-     * @return ?array Either the "info tokens" data or `null` if the given JSON
-     *         data was null.
+     * @return ?array<string, string>[] Either the "info tokens" data or `null`
+     *         if the given JSON data was null.
      */
     public function getInfoTokens(?array $json, array $cards): ?array
     {
@@ -58,7 +58,7 @@ class TranslationsModel
                 return $item['id'] === $key;
             });
 
-            if ($index !== false) {
+            if ($index !== null) {
                 $json[$index]['text'] = $translation;
             }
         }
@@ -69,10 +69,10 @@ class TranslationsModel
     /**
      * Gets the "roles" data.
      *
-     * @param ?array $json Raw data, which might be null.
-     * @param array<string, string> $game Game translations.
-     * @return ?array Either the "roles" data or `null` if the given JSON data
-     *         was null.
+     * @param ?StanRoles $json Raw data, which might be null.
+     * @param StanTranslationValue $game Game translations.
+     * @return ?StanRoles Either the "roles" data or `null` if the given JSON
+     *         data was null.
      */
     public function getRoles(?array $json, array $game): ?array
     {
@@ -146,10 +146,11 @@ class TranslationsModel
     /**
      * Gets the "scripts" data.
      *
-     * @param ?array $json Raw JSON data, which might be null.
-     * @param array<string, string> $game Game translations.
-     * @return ?array Either the "scripts" data or `null` if the given JSON data
-     *         was null.
+     * @param ?array<string, array<array<string, string>|string>> $json Raw JSON
+     *        data, which might be null.
+     * @param StanTranslationValue $game Game translations.
+     * @return ?array<string, array<array<string, string>|string>> Either the
+     *         "scripts" data or `null` if the given JSON data was null.
      */
     public function getScripts(?array $json, array $game): ?array
     {
@@ -218,7 +219,7 @@ class TranslationsModel
      * Gets the translation information for the "i18n" data.
      *
      * @param array<string, string> $grimoire Translated text.
-     * @return array Translation data.
+     * @return array<string, string> Translation data.
      */
     protected function makeI18n(array $grimoire): array
     {
@@ -246,7 +247,7 @@ class TranslationsModel
      * Gets the translation information for the "info tokens" data.
      *
      * @param array<string, string> $cards Translations for the cards.
-     * @return array Translation data.
+     * @return array<string, string> Translation data.
      */
     protected function makeInfoTokens(array $cards): array
     {
@@ -261,8 +262,8 @@ class TranslationsModel
         $infoTokens = [];
 
         foreach ($keys as $destination => $key) {
-            if (($value = $cards[$key] ?? null) && is_string($value)) {
-                $infoTokens[$destination] = $value;
+            if (is_string($cards[$key] ?? null)) {
+                $infoTokens[$destination] = $cards[$key];
             }
         }
 
@@ -272,8 +273,8 @@ class TranslationsModel
     /**
      * Gets the translation information for the "roles" data.
      *
-     * @param array $game Game translations.
-     * @return array Translation data.
+     * @param array<string, mixed> $game Game translations.
+     * @return array<string, mixed> Translation data.
      */
     protected function makeRoles(array $game): array
     {
@@ -359,15 +360,23 @@ class TranslationsModel
     /**
      * Gets the translation information for the "scripts" data.
      *
-     * @param array<string, string> $game Game translations.
+     * @param StanTranslationValue $game Game translations.
      * @return array<string, string> Translation data.
      */
     protected function makeScripts(array $game): ?array
     {
         $scripts = [];
 
-        foreach (($game['editions'] ?? []) as $key => $edition) {
-            if (is_array($edition) && is_string($edition['name'] ?? null)) {
+        if (
+            !array_key_exists('editions', $game)
+            || !is_array($game['editions'])
+            || !count($game['editions'])
+        ) {
+            return $scripts;
+        }
+
+        foreach ($game['editions'] as $key => $edition) {
+            if (array_key_exists('name', $edition) && is_string($edition['name'])) {
                 $scripts[$key] = $edition['name'];
             }
         }
@@ -376,37 +385,16 @@ class TranslationsModel
     }
 
     /**
-     * Parses the data at the given source.
-     *
-     * @param string $source Location of the data to parse.
-     * @return ?array The parsed data or `null` if anything went wrong (source
-     * councouldn't be found, data couldn't be parsed, etc.)
-     */
-    protected function getJsonFromSource(string $source): ?array
-    {
-        if (
-            !file_exists($source)
-            || ($contents = file_get_contents($source)) === false
-            || !json_validate($contents)
-            || ($json = json_decode($contents, true)) === false
-        ) {
-            return null;
-        }
-
-        return $json;
-    }
-
-    /**
      * Converts the reminders on the given roles to use the keys rather than the
      * text, allowing them to be translated.
      *
-     * @param array $roles Roles whose reminders should be converted.
-     * @param array<string, mixed> $game Game translations.
-     * @return array Roles with converted reminders.
+     * @param StanRoles $roles Roles whose reminders should be converted.
+     * @param StanTranslationValue $game Game translations.
+     * @return StanRoles Roles with converted reminders.
      */
     protected function convertReminders(array $roles, array $game): array
     {
-        $reminders = $this->getReminders($game);
+        $reminders = $this->getReminders($game['reminders'] ?? []);
 
         return array_map(function ($role) use ($reminders) {
 
@@ -434,19 +422,19 @@ class TranslationsModel
      * Gets the reminders from the English (master) remote source and returns
      * them in the format `text => key` to make converting them easier.
      *
-     * @param array<string, mixed> $game Game translations.
-     * @return array Reminder conversions.
+     * @param array<string, string> $reminders Game translations.
+     * @return array<string, string> Reminder conversions.
      */
-    protected function getReminders(array $game)
+    protected function getReminders(array $reminders): array
     {
-        return array_flip($game['reminders'] ?? []);
+        return array_flip($reminders);
     }
 
     /**
      * Gets the plural term.
      *
-     * @param ?array $source Source containing the plurals.
-     * @param string $key Type of polplural to return.
+     * @param ?array<string, string> $source Source containing the plurals.
+     * @param string $key Type of plural to return.
      * @param string $divider String separating the singular from the plural.
      * @return ?string The plural or `null` if anything went wrong.
      */

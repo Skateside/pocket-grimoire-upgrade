@@ -6,3 +6,7 @@ parameters:
         - public/
         - src/
         - tests/
+    typeAliases:
+        StanTranslationValue: 'array<string, string|array<string, string|array<string, string|array<string, string|array<string, string|string>>>>>'
+        StanRoles: 'array{id: string, name: string, edition: string, firstNight: int, otherNight: int, ability: string, setup?: bool, flavor?: string, firstNightReminder?: string, otherNightReminder?: string, image?: string|string[], special?: array<string, string>[], jinxes?: array{id: string, reason: string}[], reminders?: array{name: string, flags?: string[]}[]}[]'
+        StanScripts: 'array<string, string|array{id: string, firstNight: string[], otherNight: string[]}>'

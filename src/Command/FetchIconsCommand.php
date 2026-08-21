@@ -7,10 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressIndicator;
-use App\Model\{
-    IconsModel,
-    TPIResourcesModel,
-};
+use App\Model\IconsModel;
 use App\Enums\RoleIdEnums;
 use App\Service\{
     Fetch,
@@ -35,7 +32,6 @@ class FetchIconsCommand
 
     public function __construct(
         private IconsModel $iconsModel,
-        private TPIResourcesModel $resourcesModel,
         private Fetch $fetch,
         private Storage $storage,
     ) {
@@ -163,8 +159,10 @@ class FetchIconsCommand
      * Fetches the SVG contents an returns an array. If there is an error, false
      * is returned.
      *
-     * @return array<string, string>|stringEither an array of file names to file
-     * contents or a string with an error message on error.
+     * @param callable(int, ?int): void $onProgress A callback that executes
+     *        whenever progress has occurred on the file download.
+     * @return array<string, string>|string Either an array of file names to
+     *         file contents or a string with an error message on error.
      */
     protected function fetchSVGContents(callable $onProgress): array|string
     {

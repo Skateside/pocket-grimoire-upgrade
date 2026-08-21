@@ -23,10 +23,10 @@ class Fetch
      * @param string $source Source of the contents to get and parse.
      * @param bool $isAssoc Whether to parse the JSON as an associative array or
      *        an object. Defaults to array.
-     * @return array{success: bool, body: mixed} Results of parsing the contents
-     *         (if possible).
+     * @return ?array<mixed> Either the parsed array or null if an error
+     *         occurred.
      */
-    public function getJson(string $source, bool $isAssoc = true): mixed
+    public function getJson(string $source, bool $isAssoc = true): ?array
     {
         $this->resetLastError();
 
@@ -142,7 +142,7 @@ class Fetch
     /**
      * Helper function for setting the last error message and returning null.
      *
-     * @param string $laseError Last error message.
+     * @param string $lastError Last error message.
      * @param mixed $return The value to return.
      * @return mixed Whatever was passed as the return value.
      */
@@ -164,13 +164,13 @@ class Fetch
      * Converts a number of bytes into a human-readable format.
      *
      * @param int $bytes Bytes to convert.
-     * @param int Decimals Optional number of decimals, defaults to 2.
+     * @param int $decimals Optional number of decimals, defaults to 2.
      * @return string Human-readable bytes.
      */
     public static function formatBytes(int $bytes, int $decimals = 2): string
     {
         $size = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-        $factor = floor((strlen($bytes) - 1) / 3);
+        $factor = intval(floor((strlen((string) $bytes) - 1) / 3));
 
         if ($factor === 0) {
             $decimals = 0;
