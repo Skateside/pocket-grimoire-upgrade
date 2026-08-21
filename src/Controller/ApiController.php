@@ -35,8 +35,8 @@ class ApiController extends AbstractController
     ): JsonResponse {
         $url = $request->getPayload()->get('url');
 
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            return $this->jsonError('error.url_not_valid');
+        if (($reason = $fetch->isSafeUrl($url)) !== true) {
+            return $this->jsonError($reason);
         }
 
         if (
@@ -63,12 +63,10 @@ class ApiController extends AbstractController
         $payload = $request->getPayload();
         $query = [];
 
-        if (
-            ($term = $payload->get('term'))
-            && strlen($term) > 0
-            && strlen($term) < 100
-        ) {
-            $query['search'] = $term;
+        if (($term = $payload->get('term')) && strlen(trim($term)) > 0) {
+            $lowercase = strtolower($term);
+            $trimmed = trim(str_replace('  ', ' ', $lowercase));
+            $query['search'] = substr($trimmed, 0, 100);
         }
 
         $typeMap = [

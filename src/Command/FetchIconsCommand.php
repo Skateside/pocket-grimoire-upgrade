@@ -70,13 +70,13 @@ class FetchIconsCommand
                     if (is_null($total)) {
                         $message = sprintf(
                             'Downloaded %s bytes',
-                            Fetch::formatBytes($downloaded),
+                            $this->fetch->formatBytes($downloaded),
                         );
                     } else {
                         $message = sprintf(
                             'Downloaded %s/%s bytes',
-                            Fetch::formatBytes($downloaded),
-                            Fetch::formatBytes($total),
+                            $this->fetch->formatBytes($downloaded),
+                            $this->fetch->formatBytes($total),
                         );
                     }
 
