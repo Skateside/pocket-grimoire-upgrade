@@ -89,6 +89,7 @@ class ApiController extends AbstractController
             return $this->jsonError('error.empty_or_invalid_search');
         }
 
+        $query['ordering'] = '-score';
         $url = sprintf(static::BOTC_SCRIPTS_URL, http_build_query($query));
 
         return $cache->get(
